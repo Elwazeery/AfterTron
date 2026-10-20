@@ -1,3 +1,5 @@
+> **2026-10-20 source import verified:** Rust workspace `Cargo.toml`, upstream license files, and `docs/upstream/IMPORT-RECORD.txt` are present on `main`. Upstream ancestry imported by a two-parent merge. Native build, Rebrand, GPU/PSD/VFX performance and complete cloud MCP remain OPEN. See [original upstream README](docs/upstream/ORIGINAL-README.md) and [source receipt](docs/upstream/IMPORT-RECORD.txt).
+
 # AfterTron — Independent Tron Creative Desktop Application
 
 **Owner-approved:** 2026-10-20 · **Repository state at this commit:** documentation-only. **NO upstream source imported, fork completed, native binary tested or cloud MCP deployed by this commit.**
