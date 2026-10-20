@@ -177,7 +177,7 @@ fn main() -> eframe::Result {
     let notice = launch.notice.take();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("EffectCraft")
+            .with_title("AfterTron")
             .with_inner_size(window::DEFAULT_SIZE)
             .with_min_inner_size(window::MIN_SIZE)
             .with_drag_and_drop(true)
@@ -200,7 +200,7 @@ fn main() -> eframe::Result {
     #[cfg(target_os = "macos")]
     let apple_events = &apple_events;
     let result = eframe::run_native(
-        "EffectCraft",
+        "AfterTron",
         options,
         Box::new(move |cc| {
             match &cc.wgpu_render_state {
@@ -288,13 +288,13 @@ fn main() -> eframe::Result {
             if control_port.is_none() {
                 app.hooks.device_lost = Some(Box::new(|saved: Option<Result<String, String>>| {
                     let saved = match saved {
-                        Some(Ok(path)) => format!("\n\nYour unsaved changes were saved to:\n{path}\n\nReopen EffectCraft to recover them."),
+                        Some(Ok(path)) => format!("\n\nYour unsaved changes were saved to:\n{path}\n\nReopen AfterTron to recover them."),
                         Some(Err(e)) => format!("\n\nYour unsaved changes could not be saved ({e})."),
                         None => String::new(),
                     };
                     rfd::MessageDialog::new()
                         .set_level(rfd::MessageLevel::Error)
-                        .set_title("EffectCraft: graphics device lost")
+                        .set_title("AfterTron: graphics device lost")
                         .set_description(format!("The graphics driver stopped responding, so EffectCraft has to close.{saved}"))
                         .show();
                 }));
@@ -402,7 +402,7 @@ fn startup_failed(e: &eframe::Error, gl_next: bool) {
     }
     let _ = rfd::MessageDialog::new()
         .set_level(rfd::MessageLevel::Error)
-        .set_title("EffectCraft")
+        .set_title("AfterTron")
         .set_description(message)
         .set_buttons(rfd::MessageButtons::Ok)
         .show();
