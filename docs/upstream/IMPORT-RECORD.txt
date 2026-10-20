@@ -1,0 +1,5 @@
+Upstream: storytold/effectcraft
+Upstream SHA: de3fec28ed7a3d7a700a9d8ea307779dcda99a8e
+Tron pre-import SHA: bb81792bb12b75dd36ca611153b89723ad648cc0
+Import mode: unrelated-history merge; prefer Tron docs on conflicts
+Upstream workflows: quarantined in docs/upstream/workflows
