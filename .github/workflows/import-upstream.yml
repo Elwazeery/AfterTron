@@ -66,5 +66,17 @@ jobs:
             git commit -m 'chore(fork): archive upstream notes and disable unreviewed CI workflows'
           fi
           git merge-base --is-ancestor "$upstream_sha" HEAD
-          git push origin HEAD:refs/heads/main
-          echo "Imported upstream source and history at $upstream_sha into $GITHUB_REPOSITORY main"
+          # Do not force-push over concurrent work. Incorporate all newer main commits.
+          for attempt in 1 2 3; do
+            git fetch origin refs/heads/main:refs/remotes/origin/main
+            if ! git merge-base --is-ancestor refs/remotes/origin/main HEAD; then
+              git merge --no-edit -s ort -X ours refs/remotes/origin/main
+            fi
+            if git push origin HEAD:refs/heads/main; then
+              echo "Imported $upstream_sha into $GITHUB_REPOSITORY main"
+              exit 0
+            fi
+            echo "main advanced concurrently (attempt $attempt); retrying safe merge"
+          done
+          echo "Could not fast-forward main; refusing force push" >&2
+          exit 1
