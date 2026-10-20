@@ -46,11 +46,27 @@ fn accept_loop(listener: TcpListener, tx: Sender<ControlRequest>, ctx: egui::Con
         }
         let tx = tx.clone();
         let ctx = ctx.clone();
-        let open = Arc::clone(&open);
-        std::thread::spawn(move || {
-            serve(stream, &tx, &ctx);
-            open.fetch_sub(1, Ordering::SeqCst);
-        });
+        // Guard is dropped on disconnect, panic, and even if spawn fails.
+        // Without it, a failed spawn leaks one connection slot forever.
+        let slot = ConnectionSlot(Arc::clone(&open));
+        let spawned = std::thread::Builder::new()
+            .name("aftertron-control-conn".into())
+            .spawn(move || {
+                let _slot = slot;
+                serve(stream, &tx, &ctx);
+            });
+        if let Err(e) = spawned {
+            log::error!("control server could not start a connection thread: {e}");
+        }
+    }
+}
+
+/// RAII ownership of a connection-limit slot; also releases on unwinding.
+struct ConnectionSlot(Arc<AtomicUsize>);
+
+impl Drop for ConnectionSlot {
+    fn drop(&mut self) {
+        self.0.fetch_sub(1, Ordering::SeqCst);
     }
 }
 
@@ -154,6 +170,28 @@ fn serve_lines<R: Read, W: Write>(read: R, mut out: W, mut handle: impl FnMut(St
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn connection_slot_is_released_on_drop() {
+        let open = Arc::new(AtomicUsize::new(1));
+        {
+            let _slot = ConnectionSlot(Arc::clone(&open));
+            assert_eq!(open.load(Ordering::SeqCst), 1);
+        }
+        assert_eq!(open.load(Ordering::SeqCst), 0);
+    }
+
+    #[test]
+    fn connection_slot_is_released_if_worker_panics() {
+        let open = Arc::new(AtomicUsize::new(1));
+        let shared = Arc::clone(&open);
+        let panicked = std::panic::catch_unwind(move || {
+            let _slot = ConnectionSlot(shared);
+            panic!("simulated worker failure");
+        });
+        assert!(panicked.is_err());
+        assert_eq!(open.load(Ordering::SeqCst), 0);
+    }
 
     fn run(input: &[u8]) -> (Vec<Value>, Vec<String>) {
         let mut out = Vec::new();
