@@ -187,7 +187,7 @@ mod tests {
         let shared = Arc::clone(&open);
         let panicked = std::panic::catch_unwind(move || {
             let _slot = ConnectionSlot(shared);
-            panic!("simulated worker failure");
+            std::panic::resume_unwind(Box::new("simulated worker failure"));
         });
         assert!(panicked.is_err());
         assert_eq!(open.load(Ordering::SeqCst), 0);
