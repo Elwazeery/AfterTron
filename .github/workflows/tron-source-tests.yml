@@ -1,0 +1,26 @@
+name: AfterTron source provenance and branding
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Confirm exact upstream Git ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f Cargo.toml
+          git merge-base --is-ancestor de3fec28ed7a3d7a700a9d8ea307779dcda99a8e HEAD
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check native branding and preserved original licenses
+        run: python -m unittest discover -s tests -p 'test_tron_branding.py' -v
