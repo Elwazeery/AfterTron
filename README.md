@@ -2,7 +2,7 @@
 
 # AfterTron — Independent Tron Creative Desktop Application
 
-**Owner-approved:** 2026-10-20 · **Repository state at this commit:** documentation-only. **NO upstream source imported, fork completed, native binary tested or cloud MCP deployed by this commit.**
+**Source status (2026-10-20): UPSTREAM SOURCE IMPORTED / NATIVE BUILD UNVERIFIED.** Original `storytold/effectcraft` Git commit `de3fec28ed7a3d7a700a9d8ea307779dcda99a8e` merged with ancestry and licenses; see `docs/upstream/IMPORT-RECORD.txt`. Initial window title/Windows metadata rebrand landed; full app/installer/icon rebrand, tests, native MCP and cloud deployment remain OPEN.
 
 **Product:** Professional After Effects-class compositor, motion graphics and visual effects editor.  
 **Canonical repo:** `Elwazeery/AfterTron`  
@@ -36,4 +36,4 @@ The assistant's intelligence is in the connected ChatGPT session; this applicati
 
 ### Source import guard
 
-This repository started empty and documentation was added **before upstream code import**. During the future real fork, retain source history by properly merging/reconciling upstream Git ancestry and licensing. Do not replace this repo with a shallow zipped copy; do not call the documentation commit a functional fork. Use actual upstream/target commit references and acceptance checks.
+This repository began with planning documents before a full-history source import. Upstream source `storytold/effectcraft@de3fec28ed7a3d7a700a9d8ea307779dcda99a8e` is now merged on main; review `docs/upstream/IMPORT-RECORD.txt`. This is a **source fork only**, not proof of correct native builds, complete brand migration, production-readiness, or MCP parity. Upstream CI workflow definitions are held outside active `.github/workflows/` pending review. Use actual upstream/target commit references and acceptance checks.
