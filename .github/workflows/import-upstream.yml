@@ -1,4 +1,4 @@
-name: Import AfterTron upstream with Git history
+name: Import pinned effectcraft upstream with full Git history
 on:
   push:
     branches: [main]
@@ -8,11 +8,11 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: upstream-import-${{ github.repository }}
+  group: tron-upstream-import-main
   cancel-in-progress: false
 jobs:
   import:
-    if: github.repository == 'Elwazeery/AfterTron'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -21,62 +21,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-      - name: Import real upstream history, keep Tron documentation, quarantine upstream workflows
-        shell: bash
+      - name: Merge vetted upstream commit preserving both histories
         env:
           UPSTREAM_URL: https://github.com/storytold/effectcraft.git
-          UPSTREAM_NAME: storytold/effectcraft
+          UPSTREAM_SHA: 'de3fec28ed7a3d7a700a9d8ea307779dcda99a8e'
           PRODUCT_NAME: AfterTron
         run: |
-          set -euo pipefail
-          git config user.name 'gemitron-upstream-import[bot]'
-          git config user.email 'git@users.noreply.github.com'
-          git remote add upstream "$UPSTREAM_URL" || git remote set-url upstream "$UPSTREAM_URL"
-          git fetch --no-tags upstream '+refs/heads/*:refs/remotes/upstream/*'
-          upstream_sha="$(git rev-parse refs/remotes/upstream/main)"
-          original_target_sha="$(git rev-parse HEAD)"
-          if git merge-base --is-ancestor "$upstream_sha" HEAD; then
-            echo "Upstream already merged: $upstream_sha"
-            exit 0
-          fi
-          git merge --allow-unrelated-histories --no-ff -s ort -X ours --no-edit \
-            -m "chore(fork): import $PRODUCT_NAME full upstream main ancestry" "$upstream_sha"
-          test -f Cargo.toml
-          test -f LICENSE-MIT
-          test -f LICENSE-APACHE
-          mkdir -p docs/upstream/workflows
-          # Preserve upstream CI as inert reference until source/security audit.
-          while IFS= read -r workflow; do
-            [ -z "$workflow" ] && continue
-            if [ -f "$workflow" ]; then
-              git mv "$workflow" "docs/upstream/workflows/$(basename "$workflow")"
-            fi
-          done < <(git ls-tree -r --name-only "$upstream_sha" .github/workflows)
-          git show "$upstream_sha:README.md" > docs/upstream/ORIGINAL-README.md
-          git add docs/upstream/ORIGINAL-README.md
-          if git cat-file -e "$upstream_sha:TODO.md" 2>/dev/null; then
-            git show "$upstream_sha:TODO.md" > docs/upstream/ORIGINAL-TODO.md
-            git add docs/upstream/ORIGINAL-TODO.md
-          fi
-          printf 'Upstream: %s\nUpstream SHA: %s\nTron pre-import SHA: %s\nImport mode: unrelated-history merge; prefer Tron docs on conflicts\nUpstream workflows: quarantined in docs/upstream/workflows\n' \
-            "$UPSTREAM_NAME" "$upstream_sha" "$original_target_sha" \
-            > docs/upstream/IMPORT-RECORD.txt
-          git add docs/upstream/IMPORT-RECORD.txt
-          if ! git diff --staged --quiet; then
-            git commit -m 'chore(fork): archive upstream notes and disable unreviewed CI workflows'
-          fi
-          git merge-base --is-ancestor "$upstream_sha" HEAD
-          # Do not force-push over concurrent work. Incorporate all newer main commits.
-          for attempt in 1 2 3; do
-            git fetch origin refs/heads/main:refs/remotes/origin/main
-            if ! git merge-base --is-ancestor refs/remotes/origin/main HEAD; then
-              git merge --no-edit -s ort -X ours refs/remotes/origin/main
-            fi
-            if git push origin HEAD:refs/heads/main; then
-              echo "Imported $upstream_sha into $GITHUB_REPOSITORY main"
-              exit 0
-            fi
-            echo "main advanced concurrently (attempt $attempt); retrying safe merge"
-          done
-          echo "Could not fast-forward main; refusing force push" >&2
-          exit 1
+          git config user.name 'GemiTron Import Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          bash scripts/import-upstream.sh
