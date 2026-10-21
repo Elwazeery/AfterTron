@@ -66,6 +66,7 @@ fn summary(s: &mut Session, _: &Value) -> Result<Value> {
         "time": s.time().seconds(),
         "selectedLayers": s.state.selected_layers.iter().map(|l| l.0).collect::<Vec<_>>(),
         "undo": s.history.undo.iter().map(|u| u.0.clone()).collect::<Vec<_>>(),
+        "revision": s.revision,
     }))
 }
 
@@ -182,6 +183,8 @@ fn capabilities(s: &mut Session, _: &Value) -> Result<Value> {
     let fx = effectcraft_effects::registry();
     let formats: Vec<Value> = s.exporter.as_ref().map(|e| e.formats().iter().map(|f| json!(format!("{f:?}"))).collect()).unwrap_or_default();
     Ok(json!({
+        "product": "AfterTron",
+        "upstream": "storytold/effectcraft",
         "version": env!("CARGO_PKG_VERSION"),
         "commands": super::command_specs().len(),
         "effects": {"total": fx.len(), "gpu": fx.iter().filter(|e| e.gpu).count(), "float": fx.iter().filter(|e| e.float).count()},

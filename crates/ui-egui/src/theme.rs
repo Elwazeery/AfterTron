@@ -15,6 +15,8 @@ pub enum ThemeKind {
     Dark,
     Darker,
     Light,
+    InfernoDark,
+    InfernoLight,
 }
 
 impl ThemeKind {
@@ -23,6 +25,8 @@ impl ThemeKind {
             "dark" | "default" => Some(ThemeKind::Dark),
             "darker" | "darkest" => Some(ThemeKind::Darker),
             "light" => Some(ThemeKind::Light),
+            "inferno-dark" | "inferno" => Some(ThemeKind::InfernoDark),
+            "inferno-light" => Some(ThemeKind::InfernoLight),
             _ => None,
         }
     }
@@ -33,11 +37,13 @@ impl ThemeKind {
             ThemeKind::Dark => "dark",
             ThemeKind::Darker => "darker",
             ThemeKind::Light => "light",
+            ThemeKind::InfernoDark => "inferno-dark",
+            ThemeKind::InfernoLight => "inferno-light",
         }
     }
 
     pub fn is_light(self) -> bool {
-        self == ThemeKind::Light
+        matches!(self, ThemeKind::Light | ThemeKind::InfernoLight)
     }
 }
 
@@ -236,6 +242,85 @@ impl Tokens {
                 expr_text: Color32::from_rgb(0xa3, 0x34, 0x17),
                 ..dark
             },
+            ThemeKind::InfernoDark => Tokens {
+                app_bg: Color32::from_rgb(0x08, 0x08, 0x0a),
+                header_bg: Color32::from_rgb(0x10, 0x10, 0x13),
+                panel_bg: Color32::from_rgb(0x16, 0x16, 0x1b),
+                tab_text: Color32::from_rgb(0xac, 0xa8, 0xae),
+                tab_text_active: Color32::from_rgb(0xf5, 0xf1, 0xed),
+                focus: Color32::from_rgb(0xf8, 0x39, 0x42),
+                accent: Color32::from_rgb(0xf8, 0x39, 0x42),
+                accent_hover: Color32::from_rgb(0xff, 0x62, 0x6a),
+                text: Color32::from_rgb(0xf5, 0xf1, 0xed),
+                text_dim: Color32::from_rgb(0xac, 0xa8, 0xae),
+                text_faint: Color32::from_rgb(0x8c, 0x88, 0x90),
+                icon: Color32::from_rgb(0xbd, 0xb9, 0xbf),
+                icon_active: Color32::from_rgb(0xf5, 0xf1, 0xed),
+                hover: Color32::from_rgb(0x24, 0x24, 0x2a),
+                pressed: Color32::from_rgb(0x37, 0x32, 0x39),
+                field_bg: Color32::from_rgb(0x10, 0x10, 0x13),
+                field_border: Color32::from_rgb(0x37, 0x32, 0x39),
+                separator: Color32::from_rgb(0x24, 0x24, 0x2a),
+                row: Color32::from_rgb(0x16, 0x16, 0x1b),
+                row_alt: Color32::from_rgb(0x1c, 0x1c, 0x22),
+                row_selected: Color32::from_rgb(0x2b, 0x1d, 0x24),
+                hot_text: Color32::from_rgb(0xff, 0xd4, 0x37),
+                tl_bg: Color32::from_rgb(0x0c, 0x0c, 0x0f),
+                tl_ruler_bg: Color32::from_rgb(0x16, 0x16, 0x1b),
+                tl_ruler_tick: Color32::from_rgb(0x70, 0x6d, 0x74),
+                tl_ruler_text: Color32::from_rgb(0xac, 0xa8, 0xae),
+                cti: Color32::from_rgb(0xf8, 0x39, 0x42),
+                keyframe_selected: Color32::from_rgb(0xff, 0xd4, 0x37),
+                pasteboard: Color32::from_rgb(0x18, 0x18, 0x18),
+                timecode: Color32::from_rgb(0xff, 0xd4, 0x37),
+                fx_header: Color32::from_rgb(0x1f, 0x1f, 0x26),
+                fx_header_active: Color32::from_rgb(0x3a, 0x1e, 0x24),
+                tl_graph_selected: Color32::from_rgb(0x24, 0x20, 0x28),
+                switch_well: Color32::from_rgb(0x11, 0x11, 0x15),
+                expr_bg: Color32::from_rgb(0x11, 0x11, 0x15),
+                ..dark
+            },
+            ThemeKind::InfernoLight => Tokens {
+                app_bg: Color32::from_rgb(0xe9, 0xe2, 0xda),
+                header_bg: Color32::from_rgb(0xe0, 0xd8, 0xce),
+                panel_bg: Color32::from_rgb(0xf6, 0xf2, 0xee),
+                tab_text: Color32::from_rgb(0x5a, 0x55, 0x5e),
+                tab_text_active: Color32::from_rgb(0x15, 0x13, 0x18),
+                focus: Color32::from_rgb(0xdf, 0x1f, 0x2d),
+                accent: Color32::from_rgb(0xdf, 0x1f, 0x2d),
+                accent_hover: Color32::from_rgb(0xf8, 0x39, 0x42),
+                text: Color32::from_rgb(0x15, 0x13, 0x18),
+                text_dim: Color32::from_rgb(0x5a, 0x55, 0x5e),
+                text_faint: Color32::from_rgb(0x6e, 0x68, 0x73),
+                hot_text: Color32::from_rgb(0xb2, 0x14, 0x20),
+                timecode: Color32::from_rgb(0xb2, 0x14, 0x20),
+                icon: Color32::from_rgb(0x3a, 0x36, 0x3e),
+                icon_active: Color32::from_rgb(0x15, 0x13, 0x18),
+                hover: Color32::from_rgb(0xe2, 0xda, 0xd0),
+                pressed: Color32::from_rgb(0xd2, 0xc7, 0xbc),
+                field_bg: Color32::from_rgb(0xff, 0xff, 0xff),
+                field_border: Color32::from_rgb(0xb7, 0xab, 0xa0),
+                separator: Color32::from_rgb(0xd8, 0xcf, 0xc6),
+                row: Color32::from_rgb(0xf6, 0xf2, 0xee),
+                row_alt: Color32::from_rgb(0xef, 0xe9, 0xe2),
+                row_selected: Color32::from_rgb(0xfa, 0xd4, 0xd6),
+                tl_bg: Color32::from_rgb(0xe2, 0xda, 0xd0),
+                tl_ruler_bg: Color32::from_rgb(0xef, 0xe9, 0xe2),
+                tl_ruler_text: Color32::from_rgb(0x5a, 0x55, 0x5e),
+                cti: Color32::from_rgb(0xdf, 0x1f, 0x2d),
+                pasteboard: Color32::from_rgb(0xa8, 0xa8, 0xa8),
+                keyframe: Color32::from_rgb(0x6c, 0x68, 0x70),
+                keyframe_selected: Color32::from_rgb(0xdf, 0x1f, 0x2d),
+                fx_header: Color32::from_rgb(0xe6, 0xde, 0xd5),
+                fx_header_active: Color32::from_rgb(0xf7, 0xc6, 0xc9),
+                tl_graph_selected: Color32::from_rgb(0xd8, 0xcf, 0xc6),
+                switch_well: Color32::from_rgb(0xf6, 0xf2, 0xee),
+                tl_nav_bar: Color32::from_rgb(0x9a, 0x94, 0x8e),
+                tl_work_area_bar: Color32::from_rgb(0x94, 0x8e, 0x88),
+                expr_bg: Color32::from_rgb(0xf6, 0xf2, 0xee),
+                expr_text: Color32::from_rgb(0xa3, 0x34, 0x17),
+                ..dark
+            },
         }
     }
 
@@ -322,6 +407,9 @@ static INTER_REGULAR: &[u8] = include_bytes!("../../../assets/fonts/Inter-Regula
 static INTER_MEDIUM: &[u8] = include_bytes!("../../../assets/fonts/Inter-Medium.ttf");
 static INTER_SEMIBOLD: &[u8] = include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf");
 static JETBRAINS_MONO: &[u8] = include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf");
+static GEMI_FONT_SANS_LIGHT: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Light.ttf");
+static GEMI_FONT_SANS_MEDIUM: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Medium.ttf");
+static GEMI_FONT_SANS_BOLD: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Bold.ttf");
 
 /// Install fonts (Inter, Inter Medium/SemiBold, JetBrains Mono) and egui visuals. `language` is the
 /// resolved interface language from [`crate::i18n::language`] (`en`, `ja`, `zh-hans` or `zh-hant`),
@@ -340,6 +428,11 @@ pub fn install(ctx: &egui::Context, t: &Tokens, language: &str) {
     fonts.families.entry(FontFamily::Monospace).or_default().insert(0, "jbmono".into());
     fonts.families.insert(FontFamily::Name("semibold".into()), vec!["inter-semibold".into(), "inter".into()]);
     fonts.families.insert(FontFamily::Name("medium".into()), vec!["inter-medium".into(), "inter".into()]);
+    fonts.font_data.insert("gemi-sans-light".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_LIGHT)));
+    fonts.font_data.insert("gemi-sans-medium".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_MEDIUM)));
+    fonts.font_data.insert("gemi-sans-bold".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_BOLD)));
+    fonts.families.insert(FontFamily::Name("gemi-sans".into()), vec!["gemi-sans-medium".into(), "gemi-sans-light".into(), "inter".into()]);
+    fonts.families.insert(FontFamily::Name("gemi-sans-bold".into()), vec!["gemi-sans-bold".into(), "inter-semibold".into(), "inter".into()]);
     // Inter and egui's own fallbacks have no small triangles (the `▸` of "File ▸ Import"), which
     // would draw as missing-glyph boxes: JetBrains Mono fills in the symbols the others lack.
     for (family, stack) in &mut fonts.families {
@@ -753,5 +846,22 @@ mod tests {
         }
         // Leave the operating system's locale behind for whatever runs next.
         install_script_fallbacks(&mut fonts, "system");
+
+        let dark = Tokens::for_kind(ThemeKind::InfernoDark);
+        assert_eq!(dark.app_bg, Color32::from_rgb(0x08, 0x08, 0x0a));
+        assert_eq!(dark.header_bg, Color32::from_rgb(0x10, 0x10, 0x13));
+        assert_eq!(dark.accent, Color32::from_rgb(0xf8, 0x39, 0x42));
+        assert_eq!(dark.hot_text, Color32::from_rgb(0xff, 0xd4, 0x37));
+        assert_eq!(dark.text, Color32::from_rgb(0xf5, 0xf1, 0xed));
+        assert_eq!(dark.pasteboard.r(), dark.pasteboard.g());
+        assert_eq!(dark.pasteboard.g(), dark.pasteboard.b());
+
+        let light = Tokens::for_kind(ThemeKind::InfernoLight);
+        assert!(light.kind.is_light());
+        assert_eq!(light.panel_bg, Color32::from_rgb(0xf6, 0xf2, 0xee));
+        assert_eq!(light.accent, Color32::from_rgb(0xdf, 0x1f, 0x2d));
+        assert_eq!(light.text, Color32::from_rgb(0x15, 0x13, 0x18));
+        assert_eq!(light.pasteboard.r(), light.pasteboard.g());
+        assert_eq!(light.pasteboard.g(), light.pasteboard.b());
     }
 }

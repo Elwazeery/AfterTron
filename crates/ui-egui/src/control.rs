@@ -173,7 +173,23 @@ pub fn handle(app: &mut EffectcraftApp, ctx: &egui::Context, req: &ControlReques
     let p = &req.params;
     let s = |k: &str| p.get(k).and_then(Value::as_str);
     match req.method.as_str() {
+        "ping" => ok(json!({"pong": true, "product": "AfterTron", "revision": app.session.document_revision()})),
+        "doc.revision" => ok(json!({"revision": app.session.document_revision()})),
         "engine.execute" | "ui.menu.invoke" => {
+            if let Some(idem_key) = s("idempotencyKey").filter(|k| !k.is_empty())
+                && let Some(cached) = app.idempotency_cache.get(idem_key).cloned()
+            {
+                return Outcome::Done(cached);
+            }
+            if let Some(exp_val) = p.get("expectedRevision").filter(|v| !v.is_null()) {
+                let Some(expected) = exp_val.as_u64() else {
+                    return err("`expectedRevision` must be an unsigned integer");
+                };
+                let actual = app.session.document_revision();
+                if expected != actual {
+                    return err(format!("revision mismatch: expected {expected}, actual {actual}"));
+                }
+            }
             let Some(id) = s("command").or(s("id")) else { return err("missing `command`") };
             let params = p.get("params").cloned().filter(|v| !v.is_null()).unwrap_or(json!({}));
             // `engine.execute` runs engine commands exactly as headless (never opens a dialog, e.g.
@@ -185,7 +201,20 @@ pub fn handle(app: &mut EffectcraftApp, ctx: &egui::Context, req: &ControlReques
                 crate::menus::invoke(app, ctx, id, params).map(ok)
             };
             match r {
-                Ok(o) => o,
+                Ok(o) => {
+                    if let (Some(idem_key), Outcome::Done(reply)) = (s("idempotencyKey").filter(|k| !k.is_empty()), &o) {
+                        if !app.idempotency_cache.contains_key(idem_key) {
+                            if app.idempotency_order.len() >= 512
+                                && let Some(oldest) = app.idempotency_order.pop_front()
+                            {
+                                app.idempotency_cache.remove(&oldest);
+                            }
+                            app.idempotency_order.push_back(idem_key.to_string());
+                        }
+                        app.idempotency_cache.insert(idem_key.to_string(), reply.clone());
+                    }
+                    o
+                }
                 Err(e) => {
                     app.ui.status = e.clone();
                     err(e)
@@ -563,6 +592,7 @@ pub fn inspect(app: &EffectcraftApp, ctx: &egui::Context) -> Value {
         "workspaceStorageError": app.workspace_store.error,
         "dialog": app.dialog.map(|d| format!("{d:?}")),
         "renderMs": app.frames.last_ms.lock().map(|v| *v).unwrap_or(0.0),
+        "revision": app.session.document_revision(),
     })
 }
 

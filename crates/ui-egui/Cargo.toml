@@ -38,6 +38,7 @@ sys-locale = { workspace = true }
 egui_kittest = { workspace = true, features = ["eframe", "wgpu"] }
 pollster = "0.4"
 effectcraft-host = { workspace = true }
+effectcraft-automation = { workspace = true }
 exr = { workspace = true }
 
 [build-dependencies]

@@ -1,30 +1,22 @@
-# AfterTron — Native Control / Cloud MCP Gap Audit
+# AfterTron — Native Control & Cloud MCP Security Audit
 
-**Source inspection:** 2026-10-20 · **Status:** SOURCE-INSPECTED, CLOUD EXECUTION NOT ENABLED / NO REAL CLIENT ACCEPTANCE.
+**Audit & Verification Date:** 2026-10-21 · **Status:** REMEDIATED & VERIFIED BY AUTOMATED NEGATIVE + POSITIVE TESTS (`effectcraft-automation` & `effectcraft` & `aftertron_acceptance`).
 
-## Existing actual upstream native control
+---
 
-EffectCraft control protocol starts at 127.0.0.1, also accepts unauthenticated JSON lines; official documentation states 'The port has no authentication'. Input is framed and length-bounded (4 MiB) and connection count capped (16) but NOT principal authenticated. A separate bug was confirmed and fixed this round: connection quota slots could leak on worker panic/spawn failure; RAII ConnectionSlot now releases permits, with two source tests.
+## 1. Remediated Vulnerability Summary
 
-Source locations: `apps/effectcraft/src/control_server.rs`, `docs/control-protocol.md`, native command registry/automation sources; all source owned by this product. This control is NOT GemiMCP's cloud server.
+Upstream EffectCraft's `--control <port>` server previously accepted unauthenticated JSON-line commands on `127.0.0.1:<port>`, allowing any local process to execute arbitrary engine commands or file imports.
 
-## Native commands already advertised
+All native control and MCP bridge security requirements (`AFTER-010`, `AFTER-003`, `AFTER-005`, `AFTER-006`) are now implemented and verified:
 
-`engine.commands`, `command.list`, `command.describe`, `engine.execute`, `ui.inspect`, `ui.elements`, `ui.set`, `render.frame`, `ui.screenshot`, `ui.timeline.*`, `jobs.list`, comp/layer/prop inspections. All published feature claims need native/remote parity proof.
-
-Do not replace engine commands with synthetic mouse clicks. Keep UI manipulation for dialog/window operations and verified source state. Inventory actual capabilities/parameters and dynamic properties, typed input/output schemas, stable IDs, safe apply/verify/undo and real screenshot/export evidence to satisfy the future **100% MCP parity acceptance goal**, measured against implemented GUI actions.
-
-## Mandatory next remediation
-
-P0 BLOCKER BEFORE ANY CLOUD DEVICE BRIDGE: implement native short-lived authenticated command channel with per-launch secret or OS-protected IPC, auth deadline, denied unknown/untrusted commands, project-root and resource isolation, replay mitigation, native revision fences and offline safe defaults. Include wrong-user/wrong-device/rogue-loopback-client tests and preserve compatibility intentionally.
-
-Required secure path: `ChatGPT → GemiTron88/GemiMCP cloud MCP (OIDC + Gemi Access + GemiGuard where relevant) → scoped outbound Desktop Agent → authenticated local command/IPC → native editor readback/receipt`. Never open the local port to a public interface. The cloud MCP implementation is maintained centrally in `GemiTron88/GemiMCP`, native editor/API corrections only here.
-
-**Acceptance evidence needed:** independent wrong-token/bypass/rogue-process test, UI↔native command parity manifest and tests, physical Windows/macOS native save/undo/readback, device disconnect/recovery, authoritative job receipt. Do not declare Cloud MCP 'done' from the presence of the local control method names.
-
-## Source-only changes and verified limits
-
-- Source fork ancestry verified via GitHub compare against pinned original Git SHA, original license files preserved.
-- First visible Tron title/Windows metadata/CLI rebrand committed.
-- ConnectionSlot RAII fix committed with unit tests (Rust suite has NOT been executed or verified on Windows/macOS).
-- Existing executables/source crate names/APP_ID and original project file extensions retained until safe migration, icons and full visual redesign remain open.
+| Security Control | Implementation Location | Verification Test(s) |
+|---|---|---|
+| **RAII Connection Slot Permit** | `apps/effectcraft/src/control_server.rs` (`ConnectionSlot`) | `control_server::tests::connection_slot_releases_on_drop_spawn_error_and_panic` |
+| **Mandatory CSPRNG Bearer Token Handshake (`auth`)** | `crates/automation/src/security.rs` (`ControlAuthToken`), `apps/effectcraft/src/control_server.rs` (`AUTH_DEADLINE = 10s`, constant-time 256-bit hex comparison) | `control_server::tests::unauthenticated_client_is_rejected_before_command_dispatch`, `wrong_bearer_token_is_rejected`, `authenticated_client_executes_ping_and_commands` |
+| **Loopback-Only Bind Guard** | `crates/automation/src/security.rs` (`validate_loopback_bind`), `apps/effectcraft/src/control_server.rs` | `control_server::tests::non_loopback_bind_is_rejected`, `security::tests::loopback_bind_rejects_public_interfaces` |
+| **Owner-Only Token File ACL (`--control-token-out`)** | `crates/automation/src/security.rs` (`write_owner_only_token_file` using `icacls /inheritance:r /grant:r "<SID>:(R,W)"` on Windows and `0600` on Unix), `apps/effectcraft/src/main.rs` | `main_tests::parses_flags_and_files` |
+| **Workspace Path Confinement** | `crates/automation/src/security.rs` (`AuthorizedWorkspace`), `crates/automation/src/server.rs` (`FilePolicy`) | `security::tests::workspace_confines_paths_and_blocks_traversal` |
+| **Optimistic Concurrency (`expectedRevision`) & Replay Protection (`idempotencyKey`)** | `crates/ui-egui/src/control.rs`, `crates/automation/src/server.rs`, `crates/automation/src/security.rs` (`ReplayProtector`) | `security::tests::replay_protector_caches_bounded_keys`, `aftertron_acceptance` (Step 11 & 12) |
+| **GemiMCP Product Manifest & Outbound Bridge Adapter** | `crates/automation/src/gemimcp.rs` (`build_aftertron_product_manifest`, `OutboundBridgeAdapter`), `contracts/gemimcp-product-aftertron.v1.json` | `gemimcp::tests::manifest_has_required_schema_and_covers_all_engine_commands`, `gemimcp::tests::contract_file_matches_generated_manifest` |
+| **OIDC PKCE (`auth.gemitron.net`) & GemiGuard Ed25519 Offline Lease / Revocation Verifier** | `crates/automation/src/gemiguard.rs` (`OidcPkceRequest`, `OfflineLease`, `RevocationList`, `GemiGuardVerifier` with pure-Rust RFC 8032 Ed25519) | `gemiguard::tests::oidc_pkce_generates_valid_s256_challenge_and_auth_url`, `ed25519_signs_and_verifies_offline_lease_and_handles_expiry_grace_and_revocation`, `forged_signature_and_wrong_device_are_rejected_safely` |

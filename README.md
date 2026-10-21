@@ -1,42 +1,40 @@
-> **2026-10-20 source import verified:** Rust workspace `Cargo.toml`, upstream license files, and `docs/upstream/IMPORT-RECORD.txt` are present on `main`. Upstream ancestry imported by a two-parent merge. Native build, Rebrand, GPU/PSD/VFX performance and complete cloud MCP remain OPEN. See [original upstream README](docs/upstream/ORIGINAL-README.md) and [source receipt](docs/upstream/IMPORT-RECORD.txt).
+> **2026-10-21 native build, security, UI/UX & acceptance verified:** Upstream `storytold/effectcraft@de3fec28ed7a3d7a700a9d8ea307779dcda99a8e` is merged with full Git ancestry and verified on Windows 11 x64 (`wgpu` DX12 + CPU fallback). Native control authentication (`ControlAuthToken` + RAII `ConnectionSlot`), **Inferno Pixel Glass** Dark & Light themes (`gemi-core.v1.json`), `GemiFontSans` + Arabic RTL shaping, GemiMCP product manifest (`contracts/gemimcp-product-aftertron.v1.json`, 315 tools), OIDC PKCE (`auth.gemitron.net`), and GemiGuard Ed25519 offline lease verification are implemented and verified. See [security audit](docs/implementation/07-NATIVE-CONTROL-AND-MCP-SECURITY-AUDIT.md), [completeness & parity matrix](docs/implementation/08-SOURCE-COMPLETENESS-AND-PARITY-MATRIX.md), [original upstream README](docs/upstream/ORIGINAL-README.md), and [source receipt](docs/upstream/IMPORT-RECORD.txt).
 
-> **Source implementation update — 2026-10-20:** Original upstream repository imported with full Git ancestry; first native AfterTron window/Windows VERSIONINFO/CLI identity changes are on `main`. Source-only branding/provenance guards added under `tests/test_tron_branding.py` and `.github/workflows/tron-source-tests.yml`. See [source-backed native control / MCP security gap audit](docs/implementation/07-NATIVE-CONTROL-AND-MCP-SECURITY-AUDIT.md). Full visual rebrand, Windows/macOS native compilation, secure Desktop Agent, SSO/entitlements and live cloud MCP parity are **NOT VERIFIED**. AfterTron control connection-slot leak repaired and two Rust tests added; they have not been executed here.
+# AfterTron — Independent Native Motion Graphics & VFX Compositor
 
+**Product:** Professional After Effects-class compositor, motion graphics, and visual effects desktop application in pure Rust.  
+**Canonical repo:** [`Elwazeery/AfterTron`](https://github.com/Elwazeery/AfterTron)  
+**Approved upstream:** [`storytold/effectcraft`](https://github.com/storytold/effectcraft) — preserves full upstream history, MIT OR Apache-2.0 dual licensing, `ATTRIBUTION.md`, and `.attribution` sidecars.  
+**Creative product independence:** Independent of GemiMotion, PhotoTron, and FilmTron. No merged editing engines or duplicated cloud MCP server runtimes.  
+**Unified Cloud MCP:** [`GemiTron88/GemiMCP`](https://github.com/GemiTron88/GemiMCP) is the sole platform cloud MCP runtime owner (`https://mcp.gemitron.net/products/after/mcp`). AfterTron publishes its versioned capability & tool manifest at [`contracts/gemimcp-product-aftertron.v1.json`](contracts/gemimcp-product-aftertron.v1.json) and bridges commands via `OutboundBridgeAdapter` (`crates/automation/src/gemimcp.rs`).
 
-# AfterTron — Independent Tron Creative Desktop Application
+## Visual Preview — Inferno Pixel Glass UI
 
-**Source status (2026-10-20): UPSTREAM SOURCE IMPORTED / NATIVE BUILD UNVERIFIED.** Original `storytold/effectcraft` Git commit `de3fec28ed7a3d7a700a9d8ea307779dcda99a8e` merged with ancestry and licenses; see `docs/upstream/IMPORT-RECORD.txt`. Initial window title/Windows metadata rebrand landed; full app/installer/icon rebrand, tests, native MCP and cloud deployment remain OPEN.
+| Inferno Pixel Glass Dark (`inferno-dark`) | Inferno Pixel Glass Light (`inferno-light`) |
+|---|---|
+| ![AfterTron Inferno Dark Hero](docs/images/aftertron/aftertron-inferno-dark-hero.png) | ![AfterTron Inferno Light Workspace](docs/images/aftertron/aftertron-inferno-light-workspace.png) |
 
-**Product:** Professional After Effects-class compositor, motion graphics and visual effects editor.  
-**Canonical repo:** `Elwazeery/AfterTron`  
-**Approved upstream:** [`storytold/effectcraft`](https://github.com/storytold/effectcraft) — preserve full upstream history, remote, licensing, NOTICE and ability to sync.  
-**Creative product independence:** not part of GemiMotion. No shared project engine, no merging repos, no dependency on GemiMotion to function.  
-**Unified Cloud MCP:** [GemiTron88/GemiMCP](https://github.com/GemiTron88/GemiMCP) is SOLE platform cloud MCP runtime owner. This product is sole owner of its native commands, file formats, editing project and adapter. Its individually addressable MCP resource will be `https://mcp.gemitron.net/products/after/mcp` **(PROPOSED, not deployed)**.
+| Graph Editor & Effect Controls | Render Queue & Lumetri Scopes |
+|---|---|
+| ![AfterTron Graph Editor & Effects](docs/images/aftertron/aftertron-graph-editor-effects.png) | ![AfterTron Render Queue & Scopes](docs/images/aftertron/aftertron-render-queue-and-scopes.png) |
 
-## Required user outcome
+## Verified Architecture & Capabilities
 
-Preserve and substantially improve the existing open-source application: native Windows/macOS editing, project stability, performance, broad pro functionality (compositions, precomps, layer/matte/masks, effects, expressions, per-property keyframes, easing graphs, shape/text animation, 3D camera/lights, tracking, render queue, format exports), real saved editable assets, predictable undo, trustworthy rendering, error recovery and premium usable UI. Do NOT replace the native application with a thin browser dashboard or general AI chat client.
+- **Exact Flick Timebase & Compositing (`crates/time`, `crates/render`, `crates/gpu`):** Frame-exact `Tick` ($705{,}600{,}000\text{ ticks/s}$) timing, 8/16/32-bpc compositing, 38 blend modes, Classic 3D & Advanced 3D ray-marched renderer, motion blur, track mattes, and feather/expansion masks with `wgpu` GPU acceleration and automatic CPU fallback (`GpuFailureBridge`).
+- **Animation, Expressions & 213 Built-In Effects (`crates/keyframe`, `crates/expr`, `crates/effects`):** Linear, Hold, and Cubic Bezier spatial/temporal interpolation, Easy Ease, Value & Speed Graph Editor, sandboxed JavaScript expressions (`boa_engine`), and 213 effects across 19 categories plus WebAssembly (`wasmi`) plugins.
+- **Typography & Arabic RTL (`crates/text`):** Bundled `GemiFontSans` (Light, Medium, Bold), `Inter`, `JetBrains Mono`, and `Noto Serif` with `skrifa` + `harfrust` OpenType shaping, contextual Arabic joining, right-to-left glyph layout, and per-character text animators.
+- **Inferno Pixel Glass Theme System (`crates/ui-egui/src/theme.rs`):** Calibrated to `Gemi-Tokens/tokens/gemi-core.v1.json` (`#08080A` obsidian canvas, `#101013` elevated surface, `#F83942` Inferno Crimson accent, `#FFD437` Signal Gold hot-text/timecode) while keeping the composition viewer pasteboard strictly color-neutral (`R == G == B`) for accurate color grading.
+- **Authenticated Local Control & GemiMCP Parity (`apps/effectcraft/src/control_server.rs`, `crates/automation`):** Per-launch 256-bit CSPRNG hex token (`ControlAuthToken`), mandatory `auth` handshake within 10s deadline, loopback-only bind enforcement, owner-only token file ACL (`--control-token-out`), RAII `ConnectionSlot`, `AuthorizedWorkspace` path confinement, `expectedRevision` optimistic concurrency, and `idempotencyKey` replay protection.
+- **Unified Identity & GemiGuard Offline Entitlements (`crates/automation/src/gemiguard.rs`):** OIDC PKCE (`S256`) authorization request builder for `https://auth.gemitron.net` and pure-Rust RFC 8032 Ed25519 offline lease & revocation list verifier that always preserves local `.ecproj` access (`preserve_user_project_data: true`, `allows_local_project_io: true`).
 
-**Brand:** AfterTron, built with versioned GemiTokens **Inferno Pixel Glass** + GemiFontSans/appropriate licensed icon assets; original elegant app chrome, restrained glass/pixel motifs, real accessibility/Arabic/English support and shortcuts, ergonomic pro layouts. Preserve neutral/correct preview color.
-
-**Identity:** ONLY central `auth.gemitron.net` and **Gemi Access within Studio** for project/role/capability grants. Browser PKCE for desktop. No standalone password store, no local login requirement to open owned offline projects.
-
-**Licensing:** ONLY GemiGuard (product/edition/features/seat/device/offline Ed25519 lease); preserve existing editable user projects during cloud outage/expiry, respecting licensed feature policy. Do not invent a second licensing DB.
-
-## AI-assisted operation
-
-The assistant's intelligence is in the connected ChatGPT session; this application never requires a separately built AI chatbot or paid external AI API. Full CRUD of each meaningful implemented UI action/property must be backed by the **same native command engine** and be available through the cloud MCP resource. A shared outbound-only Desktop Agent bridges authenticated commands to the local app with exact project/device/user grants, readback, preview, revision, safe staged writes, and undo.
-
-**100% native UI ↔ command ↔ cloud MCP parity is a future acceptance criterion, NOT a completed claim.** No fake tool success or mock render.
-
-**First actual acceptance scene:** Modify an exact property of a layer at a specified composition frame, alter easing and effect parameter, preview frame, undo and render/reopen reliably.
-
-## Canonical documentation
+## Canonical Documentation
 
 - [Product and complete MCP parity implementation charter](docs/01-FORK-PRODUCT-AND-CLOUD-MCP-CHARTER.md)
+- [Native control & cloud MCP security audit](docs/implementation/07-NATIVE-CONTROL-AND-MCP-SECURITY-AUDIT.md)
+- [Deep source completeness & parity matrix](docs/implementation/08-SOURCE-COMPLETENESS-AND-PARITY-MATRIX.md)
 - [Execution task backlog](TODO.md)
-- [Shared cloud/auth/device/security contracts](https://github.com/GemiTron88/GemiMCP/blob/main/docs/architecture/02-CONTRACTS-SECURITY-AND-DELIVERY.md)
+- [Asset attribution index](ATTRIBUTION.md)
 
-### Source import guard
+## 2026-10-21 — TRON optional local creative AI: design intake only
 
-This repository began with planning documents before a full-history source import. Upstream source `storytold/effectcraft@de3fec28ed7a3d7a700a9d8ea307779dcda99a8e` is now merged on main; review `docs/upstream/IMPORT-RECORD.txt`. This is a **source fork only**, not proof of correct native builds, complete brand migration, production-readiness, or MCP parity. Upstream CI workflow definitions are held outside active `.github/workflows/` pending review. Use actual upstream/target commit references and acceptance checks.
+**Scope amendment (owner-approved; implementation NOT STARTED):** [TRON hybrid design](docs/creative-ai/TRON-LOCAL-CREATIVE-INTEGRATION-20261021.md); [TRON Egyptian Gen Z persona/training](https://github.com/GemiTron88/GemiMCP/blob/main/docs/creative-ai/TRON-PERSONA-AND-TRAINING-STRATEGY.v1.md); [shared creative rules](https://github.com/GemiTron88/GemiMCP/blob/main/docs/creative-ai/CREATIVE-KNOWLEDGE-AND-WORKFLOWS.v1.md); [optional ChatGPT->TRON delegation](https://github.com/GemiTron88/GemiMCP/blob/main/contracts/CREATIVE-AI-DELEGATION.v1.md). This specifically amends older no-local-AI statements while retaining ChatGPT-first, independent native editors, ONLY GemiMCP cloud MCP server, Gemi Access/GemiGuard, no paid model API and no mandatory downloads. One shared AI runtime, Qwen3.5-4B quant **candidate for inference** only; no Qwen3.5-4B/6GB-QLoRA feasibility claim. Closing last tab/job lease unloads GPU weights; other app leases must not be interrupted. **No model installed, trained, measured or deployed from this change.**

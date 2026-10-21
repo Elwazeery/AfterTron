@@ -13,7 +13,12 @@ use effectcraft_engine::menus::{MenuEntry, MenuNode};
 pub(crate) use ui::{set_current, tr, tr_args};
 
 /// Every language with a catalog, in the order Settings ▸ General ▸ Language lists them.
-const CATALOG_CODES: [&str; 10] = ["ja", "zh-hans", "zh-hant", "uk", "es", "pt-br", "ru", "fr", "de", "cs"];
+const CATALOG_CODES: [&str; 11] = ["ja", "zh-hans", "zh-hant", "uk", "es", "pt-br", "ru", "fr", "de", "cs", "ar"];
+
+/// Whether `language` uses right-to-left script layout.
+pub fn is_rtl_language(language: &str) -> bool {
+    matches!(language.trim().to_ascii_lowercase().as_str(), "ar" | "he" | "fa" | "ur")
+}
 
 /// The active interface language: the stored preference when it names a catalog, otherwise `en`
 /// (English is the source of every label and needs no lookup).
@@ -90,6 +95,7 @@ fn supported(locale: Option<&str>) -> &'static str {
         "uk" => "uk",
         "es" => "es",
         "cs" => "cs",
+        "ar" => "ar",
         // The only Portuguese catalog: Brazil's, also for Portugal rather than English.
         "pt" => "pt-br",
         "zh" => {
@@ -141,6 +147,7 @@ fn menu_catalog(language: &str) -> Option<&'static [(&'static str, &'static str,
         "fr" => FRENCH,
         "de" => GERMAN,
         "cs" => CZECH,
+        "ar" => ARABIC,
         _ => return None,
     })
 }
@@ -6640,6 +6647,28 @@ const CZECH: &[(&str, &str, &str)] = &[
     ("help.appPage", "EffectCraft Home Page", "Domovská stránka EffectCraft"),
     ("help.github", "EffectCraft on GitHub", "EffectCraft na GitHubu"),
     ("file.openDemoProject", "Open Demo Project", "Otevřít ukázkový projekt"),
+];
+
+const ARABIC: &[(&str, &str, &str)] = &[
+    ("", "File", "ملف"),
+    ("", "Edit", "تحرير"),
+    ("", "Composition", "تكوين"),
+    ("", "Layer", "طبقة"),
+    ("", "Effect", "تأثير"),
+    ("", "Animation", "تحريك"),
+    ("", "View", "عرض"),
+    ("", "Window", "نافذة"),
+    ("", "Help", "مساعدة"),
+    ("comp.new", "New Composition...", "تكوين جديد..."),
+    ("layer.newText", "Text", "نص"),
+    ("layer.newSolid", "Solid...", "طبقة مصمتة..."),
+    ("layer.newShape", "Shape Layer", "طبقة شكل"),
+    ("keys.easyEase", "Easy Ease", "تسهيل الحركة"),
+    ("edit.undo", "Undo", "تراجع"),
+    ("edit.redo", "Redo", "إعادة"),
+    ("file.save", "Save", "حفظ"),
+    ("file.open", "Open Project...", "فتح مشروع..."),
+    ("file.openDemoProject", "Open Demo Project", "فتح المشروع التجريبي"),
 ];
 
 #[cfg(test)]

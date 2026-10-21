@@ -26,11 +26,12 @@ const RESOURCE_NOT_FOUND: i64 = -32002;
 pub struct McpServer {
     backend: Backend,
     autosave: Option<AutoSave>,
+    replay: crate::security::ReplayProtector,
 }
 
 impl McpServer {
     pub fn new(backend: Backend) -> Self {
-        Self { backend, autosave: None }
+        Self { backend, autosave: None, replay: crate::security::ReplayProtector::default() }
     }
 
     /// Opt in to durable headless checkpoints in a separate folder per server.
@@ -183,7 +184,34 @@ impl McpServer {
             }
             "tools/call" => {
                 let name = params.get("name").and_then(Value::as_str).ok_or((INVALID_PARAMS, "missing tool `name`".to_string()))?;
-                let args = params.get("arguments").cloned().unwrap_or(json!({}));
+                let mut args = params.get("arguments").cloned().unwrap_or(json!({}));
+                let idem_key = params
+                    .get("idempotencyKey")
+                    .or_else(|| args.get("idempotencyKey"))
+                    .and_then(Value::as_str)
+                    .filter(|s| !s.is_empty())
+                    .map(str::to_string);
+                let expected_rev = params.get("expectedRevision").or_else(|| args.get("expectedRevision")).cloned();
+                if let Some(obj) = args.as_object_mut() {
+                    obj.remove("idempotencyKey");
+                    obj.remove("expectedRevision");
+                }
+                if let Some(key) = &idem_key
+                    && let Some(cached) = self.replay.check(key)
+                {
+                    return Ok(cached);
+                }
+                if let Some(exp_val) = expected_rev.filter(|v| !v.is_null()) {
+                    let Some(expected) = exp_val.as_u64() else {
+                        return Err((INVALID_PARAMS, "`expectedRevision` must be an unsigned integer".to_string()));
+                    };
+                    let actual = self.backend.document_revision().map_err(|e| (INTERNAL_ERROR, e.to_string()))?;
+                    if expected != actual {
+                        return Ok(call_result(Err(Error::BadArgs(format!(
+                            "revision mismatch: expected {expected}, actual {actual}"
+                        )))));
+                    }
+                }
                 if tools::available(self.backend.is_bridge()).all(|t| t.name != name) {
                     let hint = if tools::find(name).is_some() { format!(" ({})", crate::backend::NEED_BRIDGE) } else { String::new() };
                     return Err((INVALID_PARAMS, format!("unknown tool `{name}`{hint}")));
@@ -192,6 +220,11 @@ impl McpServer {
                     return Err((INVALID_PARAMS, m));
                 }
                 let mut result = call_result(self.guarded(name, &args));
+                if let Some(key) = idem_key
+                    && result.get("isError").and_then(Value::as_bool) == Some(false)
+                {
+                    self.replay.record(key, result.clone());
+                }
                 // Also checkpoint a partially successful tool that returned an error. The
                 // project is durable before the client receives its reply (even if it kills
                 // the process immediately afterwards).

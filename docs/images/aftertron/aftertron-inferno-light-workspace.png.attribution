@@ -1,0 +1,8 @@
+asset:        aftertron-inferno-light-workspace.png
+title:        AfterTron main workspace (Inferno Pixel Glass Light)
+author:       AfterTron / GemiTron Team
+source:       original work (headless wgpu render of AfterTron UI via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-21 by Antigravity (agent) for Elwazeery
+notes:        Screenshot of AfterTron only, showing the motion graphics composition in the Inferno Pixel Glass Light theme with color-neutral viewer pasteboard.

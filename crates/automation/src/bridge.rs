@@ -1,5 +1,6 @@
 //! Blocking client for the desktop app's JSON-lines control channel (`docs/control-protocol.md`).
 //! One persistent loopback connection. Only explicitly read-only queries can be resent.
+//! Supports mandatory per-launch bearer token authentication (`method: "auth"`).
 
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpStream, ToSocketAddrs};
@@ -7,6 +8,7 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 
+use crate::security::ControlAuthToken;
 use crate::{Error, Result};
 
 /// Slightly longer than the app's own 60 s per-request timeout, so its error reply wins.
@@ -14,19 +16,33 @@ const READ_TIMEOUT: Duration = Duration::from_secs(65);
 
 pub struct BridgeClient {
     addr: String,
+    token: Option<ControlAuthToken>,
     conn: Option<(BufReader<TcpStream>, TcpStream)>,
     next_id: u64,
 }
 
 impl BridgeClient {
     /// `addr`: a port (`9877`) or `host:port` on loopback (`127.0.0.1`, `localhost`, `[::1]`).
+    /// Automatically reads `AFTERTRON_CONTROL_TOKEN` / `EFFECTCRAFT_CONTROL_TOKEN` if present.
     pub fn new(addr: &str) -> Result<Self> {
         let addr = if addr.parse::<u16>().is_ok() { format!("127.0.0.1:{addr}") } else { addr.to_string() };
         let host = addr.rsplit_once(':').map(|(h, _)| h).unwrap_or(&addr);
         if !matches!(host, "127.0.0.1" | "localhost" | "[::1]" | "::1") {
             return Err(Error::BadArgs(format!("bridge address must be loopback (PORT or 127.0.0.1:PORT), got `{addr}`")));
         }
-        Ok(Self { addr, conn: None, next_id: 1 })
+        Ok(Self { addr, token: ControlAuthToken::from_env(), conn: None, next_id: 1 })
+    }
+
+    /// Construct an authenticated bridge client with an explicit bearer token.
+    pub fn with_token(addr: &str, token: ControlAuthToken) -> Result<Self> {
+        let mut client = Self::new(addr)?;
+        client.token = Some(token);
+        Ok(client)
+    }
+
+    pub fn set_token(&mut self, token: ControlAuthToken) {
+        self.token = Some(token);
+        self.conn = None;
     }
 
     pub fn addr(&self) -> &str {
@@ -40,12 +56,30 @@ impl BridgeClient {
             .map_err(|e| Error::Bridge(format!("{}: {e}", self.addr)))?
             .next()
             .ok_or_else(|| Error::Bridge(format!("cannot resolve {}", self.addr)))?;
-        let s = TcpStream::connect_timeout(&sa, Duration::from_secs(5))
+        let mut s = TcpStream::connect_timeout(&sa, Duration::from_secs(5))
             .map_err(|e| Error::Bridge(format!("cannot connect to {} ({e}); start the app with `effectcraft --control <port>`", self.addr)))?;
         s.set_read_timeout(Some(READ_TIMEOUT)).ok();
         s.set_nodelay(true).ok();
         let r = s.try_clone().map_err(|e| Error::Bridge(e.to_string()))?;
-        Ok((BufReader::new(r), s))
+        let mut reader = BufReader::new(r);
+
+        if let Some(token) = &self.token {
+            let auth_line = format!("{}\n", json!({"id": 0, "method": "auth", "params": {"token": token.as_str()}}));
+            s.write_all(auth_line.as_bytes()).map_err(|e| Error::Bridge(format!("auth write failed: {e}")))?;
+            let mut reply = String::new();
+            match reader.read_line(&mut reply) {
+                Ok(0) => return Err(Error::Bridge("connection closed during auth handshake".into())),
+                Ok(_) => {}
+                Err(e) => return Err(Error::Bridge(format!("auth read failed: {e}"))),
+            }
+            let v: Value = serde_json::from_str(&reply).map_err(|e| Error::Bridge(format!("bad auth reply: {e}")))?;
+            if v.get("ok").and_then(Value::as_bool) != Some(true) {
+                let err_msg = v.get("error").and_then(Value::as_str).unwrap_or("unauthorized");
+                return Err(Error::App(err_msg.to_string()));
+            }
+        }
+
+        Ok((reader, s))
     }
 
     /// Call a control method; returns the reply's `result`, or the app's `error` as [`Error::App`].

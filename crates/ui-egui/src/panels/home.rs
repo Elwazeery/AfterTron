@@ -330,6 +330,7 @@ fn home_page(
     let (x0, w) = (area.min.x, area.width());
     let mut y = area.min.y;
     p.text(pos2(x0, y + 14.0), Align2::LEFT_CENTER, tr("Welcome to EffectCraft"), Tokens::semibold(26.0), t.tab_text_active);
+    p.text(pos2(x0 + 340.0, y + 16.0), Align2::LEFT_CENTER, format!("AfterTron • GemiTron Motion Studio"), Tokens::semibold(14.0), t.accent);
     y += 40.0;
     p.text(
         pos2(x0, y + 8.0),

@@ -65,6 +65,7 @@ fn wayland_drop_notice(wayland_display: Option<&std::ffi::OsStr>, backend: Optio
 #[derive(Debug, Default, PartialEq)]
 struct Args {
     control_port: Option<u16>,
+    control_token_out: Option<String>,
     files: Vec<String>,
     /// Open the demo project when no project is given (`--demo`).
     demo: bool,
@@ -87,17 +88,25 @@ fn parse_args(args: impl IntoIterator<Item = String>, env_port: Result<String, s
         match a.as_str() {
             "--" => options = false,
             "--control" => out.control_port = Some(control_port("--control", args.next().as_deref())?),
+            "--control-token-out" => {
+                let v = args.next().filter(|s| !s.is_empty()).ok_or_else(|| "--control-token-out needs a file path".to_string())?;
+                out.control_token_out = Some(v);
+            }
             "--demo" => out.demo = true,
             "--empty" => out.demo = false,
             "--home" => out.home = Some(true),
             "--version" => return Ok(None),
             _ => match a.strip_prefix("--control=") {
                 Some(v) => out.control_port = Some(control_port("--control", Some(v))?),
-                // macOS LaunchServices may pass a process serial number (`-psn_0_1234`), notably on
-                // the first launch of a downloaded app; it is not an option of ours.
-                None if a.starts_with("-psn_") => {}
-                None if a.starts_with('-') && a != "-" => return Err(format!("unknown option `{a}`")),
-                None => out.files.push(a),
+                None => match a.strip_prefix("--control-token-out=") {
+                    Some(v) if !v.is_empty() => out.control_token_out = Some(v.to_string()),
+                    Some(_) => return Err("--control-token-out needs a file path".to_string()),
+                    // macOS LaunchServices may pass a process serial number (`-psn_0_1234`), notably on
+                    // the first launch of a downloaded app; it is not an option of ours.
+                    None if a.starts_with("-psn_") => {}
+                    None if a.starts_with('-') && a != "-" => return Err(format!("unknown option `{a}`")),
+                    None => out.files.push(a),
+                },
             },
         }
     }
@@ -144,7 +153,7 @@ fn main() -> eframe::Result {
     // feed the compatibility report.
     effectcraft_engine::logging::install();
     effectcraft_engine::logging::install_panic_hook();
-    let Args { control_port, files, demo, home } = match parse_args(std::env::args().skip(1), std::env::var("EFFECTCRAFT_CONTROL_PORT")) {
+    let Args { control_port, control_token_out, files, demo, home } = match parse_args(std::env::args().skip(1), std::env::var("EFFECTCRAFT_CONTROL_PORT")) {
         Ok(Some(args)) => args,
         Ok(None) => {
             println!("AfterTron {}", env!("CARGO_PKG_VERSION"));
@@ -327,7 +336,7 @@ fn main() -> eframe::Result {
             }
             if let Some(port) = control_port {
                 disable_app_nap();
-                let rx = control_server::start(port, cc.egui_ctx.clone());
+                let rx = control_server::start_with_token_file(port, cc.egui_ctx.clone(), control_token_out.as_deref().map(std::path::Path::new));
                 app = app.with_control(rx);
             }
             log::info!("app created; the window shows after its first frame");

@@ -1,0 +1,8 @@
+asset:        aftertron-about-and-settings.png
+title:        AfterTron Appearance Settings and Inferno Pixel Glass theme cards
+author:       AfterTron / GemiTron Team
+source:       original work (headless wgpu render of AfterTron UI via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-21 by Antigravity (agent) for Elwazeery
+notes:        Screenshot of AfterTron only, showing the Appearance Settings dialog with Inferno Pixel Glass Dark and Light theme cards.

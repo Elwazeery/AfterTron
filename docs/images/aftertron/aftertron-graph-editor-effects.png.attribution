@@ -1,0 +1,8 @@
+asset:        aftertron-graph-editor-effects.png
+title:        AfterTron Graph Editor and Effect Controls
+author:       AfterTron / GemiTron Team
+source:       original work (headless wgpu render of AfterTron UI via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-21 by Antigravity (agent) for Elwazeery
+notes:        Screenshot of AfterTron only, showing the Graph Editor with Easy Ease Bezier curves and the Effect Controls panel in Inferno Pixel Glass Dark.

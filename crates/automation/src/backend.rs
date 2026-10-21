@@ -39,6 +39,22 @@ impl Backend {
         Ok(Backend { target: Target::Bridge(BridgeClient::new(addr)?), confinement: None })
     }
 
+    /// Bridge to the app's control channel with an explicit bearer token.
+    pub fn bridge_authenticated(addr: &str, token: crate::security::ControlAuthToken) -> Result<Self> {
+        Ok(Backend { target: Target::Bridge(BridgeClient::with_token(addr, token)?), confinement: None })
+    }
+
+    /// Query the current authoritative document revision.
+    pub fn document_revision(&mut self) -> Result<u64> {
+        match &mut self.target {
+            Target::Headless(s) => Ok(s.document_revision()),
+            Target::Bridge(b) => {
+                let sum = b.call("engine.execute", json!({"command": "project.summary", "params": {}}))?;
+                Ok(sum.get("revision").and_then(Value::as_u64).unwrap_or(0))
+            }
+        }
+    }
+
     /// Confine the files the commands run here may read and write ([`Confinement`]).
     pub fn confine(&mut self, confinement: Confinement) {
         self.confinement = Some(confinement);

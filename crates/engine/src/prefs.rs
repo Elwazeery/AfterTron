@@ -36,6 +36,7 @@ pub const LANGUAGES: &[(&str, &str)] = &[
     ("Français", "fr"),
     ("Deutsch", "de"),
     ("Čeština", "cs"),
+    ("العربية", "ar"),
 ];
 
 /// Settings ▸ Startup & Repair ▸ Window Graphics: (label, `startup.windowGraphics` value).
@@ -46,13 +47,13 @@ pub const WINDOW_GRAPHICS: &[(&str, &str)] = &[("Automatic", "auto"), ("OpenGL (
 pub const APPEARANCE_MODES: &[(&str, &str)] = &[("Sync with System", "auto"), ("Dark", "dark"), ("Light", "light")];
 
 /// The dark family of themes: (label, `appearance.darkTheme` value).
-pub const DARK_THEMES: &[(&str, &str)] = &[("Dark", "dark"), ("Darker", "darker")];
+pub const DARK_THEMES: &[(&str, &str)] = &[("Dark", "dark"), ("Darker", "darker"), ("Inferno Pixel Glass Dark", "inferno-dark")];
 
 /// The light family of themes: (label, `appearance.lightTheme` value).
-pub const LIGHT_THEMES: &[(&str, &str)] = &[("Light", "light")];
+pub const LIGHT_THEMES: &[(&str, &str)] = &[("Light", "light"), ("Inferno Pixel Glass Light", "inferno-light")];
 
 /// Every theme (the legacy single-theme `appearance.theme`).
-pub const THEMES: &[(&str, &str)] = &[("Dark", "dark"), ("Darker", "darker"), ("Light", "light")];
+pub const THEMES: &[(&str, &str)] = &[("Dark", "dark"), ("Darker", "darker"), ("Light", "light"), ("Inferno Pixel Glass Dark", "inferno-dark"), ("Inferno Pixel Glass Light", "inferno-light")];
 
 /// The settings whose value must be one of their choices.
 fn choices(key: &str) -> Option<&'static [(&'static str, &'static str)]> {

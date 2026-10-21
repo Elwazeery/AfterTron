@@ -20,7 +20,10 @@ pub mod backend;
 pub mod base64;
 pub mod bridge;
 pub mod confine;
+pub mod gemiguard;
+pub mod gemimcp;
 mod long_job;
+pub mod security;
 pub mod server;
 pub mod tools;
 

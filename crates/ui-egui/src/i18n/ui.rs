@@ -47,6 +47,7 @@ fn catalog(language: &str) -> Option<&'static Index> {
     static PT_BR: OnceLock<Index> = OnceLock::new();
     static CS: OnceLock<Index> = OnceLock::new();
     static ES: OnceLock<Index> = OnceLock::new();
+    static AR: OnceLock<Index> = OnceLock::new();
     let (index, rows) = match language {
         "ja" => (&JA, JAPANESE),
         "zh-hans" => (&HANS, SIMPLIFIED_CHINESE),
@@ -55,6 +56,7 @@ fn catalog(language: &str) -> Option<&'static Index> {
         "pt-br" => (&PT_BR, PORTUGUESE),
         "cs" => (&CS, CZECH),
         "es" => (&ES, SPANISH),
+        "ar" => (&AR, ARABIC),
         _ => return None,
     };
     Some(index.get_or_init(|| rows.iter().copied().collect()))
@@ -930,6 +932,8 @@ const SIMPLIFIED_CHINESE: &[(&str, &str)] = &[
     ("Current Render", "当前渲染"),
     ("Dark", "深色"),
     ("Dark Theme", "深色主题"),
+    ("Inferno Pixel Glass Dark", "Inferno 像素玻璃深色"),
+    ("Inferno Pixel Glass Light", "Inferno 像素玻璃浅色"),
     ("Darker", "更深"),
     ("Default Output:", "默认输出："),
     ("Default: {}", "默认：{}"),
@@ -1670,6 +1674,8 @@ const TRADITIONAL_CHINESE: &[(&str, &str)] = &[
     ("Current Render", "目前算圖"),
     ("Dark", "深色"),
     ("Dark Theme", "深色主題"),
+    ("Inferno Pixel Glass Dark", "Inferno 像素玻璃深色"),
+    ("Inferno Pixel Glass Light", "Inferno 像素玻璃淺色"),
     ("Darker", "更深"),
     ("Default Output:", "預設輸出："),
     ("Default: {}", "預設：{}"),
@@ -4436,6 +4442,32 @@ const SPANISH: &[(&str, &str)] = &[
     ("After Effects project", "Proyecto de After Effects"),
     ("Lottie animation", "Animación de Lottie"),
     ("Project", "Proyecto"),
+];
+
+const ARABIC: &[(&str, &str)] = &[
+    ("Cancel", "إلغاء"),
+    ("Close", "إغلاق"),
+    ("Composition", "تكوين"),
+    ("Composition Name:", "اسم التكوين:"),
+    ("Dark", "داكن"),
+    ("Dark Theme", "السمة الداكنة"),
+    ("Darker", "أكثر دكنة"),
+    ("Inferno Pixel Glass Dark", "زجاج إنفرنو بكسل الداكن"),
+    ("Inferno Pixel Glass Light", "زجاج إنفرنو بكسل الفاتح"),
+    ("Effects", "التأثيرات"),
+    ("Home", "الرئيسية"),
+    ("Layer", "طبقة"),
+    ("Light", "فاتح"),
+    ("Light Theme", "السمة الفاتحة"),
+    ("New Composition", "تكوين جديد"),
+    ("New Project", "مشروع جديد"),
+    ("OK", "موافق"),
+    ("Open Project…", "فتح مشروع…"),
+    ("Project", "المشروع"),
+    ("Recent", "الأخيرة"),
+    ("Settings", "الإعدادات"),
+    ("Templates", "القوالب"),
+    ("Transform", "تحويل"),
 ];
 
 #[cfg(test)]

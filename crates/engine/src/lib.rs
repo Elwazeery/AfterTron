@@ -730,6 +730,11 @@ impl Session {
         Ok(r)
     }
 
+    /// Authoritative monotonic document revision for optimistic concurrency (`expectedRevision`).
+    pub fn document_revision(&self) -> u64 {
+        self.revision
+    }
+
     pub fn bump(&mut self) {
         self.revision += 1;
         // Back at the saved state (undo, redo, a history jump or a rolled-back batch).

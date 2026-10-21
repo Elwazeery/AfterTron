@@ -327,11 +327,11 @@ fn about_main(app: &mut EffectcraftApp, ui: &mut egui::Ui, t: &Tokens, cmd: &mut
     let p = ui.painter();
     p.rect_filled(r, 10.0, Color32::from_rgb(0x1b, 0x22, 0x3c));
     crate::header::paint_logo(p, Rect::from_min_size(r.min + vec2(18.0, 20.0), vec2(56.0, 56.0)));
-    p.text(r.min + vec2(90.0, 34.0), Align2::LEFT_CENTER, "EffectCraft", Tokens::semibold(24.0), Color32::WHITE);
+    p.text(r.min + vec2(90.0, 34.0), Align2::LEFT_CENTER, "AfterTron (EffectCraft Engine)", Tokens::semibold(24.0), Color32::WHITE);
     p.text(
         r.min + vec2(90.0, 62.0),
         Align2::LEFT_CENTER,
-        format!("Version {}  •  Motion graphics & VFX in pure Rust", env!("CARGO_PKG_VERSION")),
+        format!("AfterTron {}  •  Motion graphics & VFX in pure Rust (upstream: storytold/effectcraft)", env!("CARGO_PKG_VERSION")),
         Tokens::ui(12.0),
         t.text_dim,
     );

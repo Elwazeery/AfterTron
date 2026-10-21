@@ -16,6 +16,9 @@ iconography, images or other Adobe assets; open licences only; every asset attri
 | `assets/fonts/Inter-Italic.ttf` | The Inter Project Authors | https://github.com/rsms/inter | OFL-1.1 (`assets/fonts/OFL-Inter.txt`) |
 | `assets/fonts/NotoSerif-Regular.ttf` | The Noto Project Authors | https://github.com/notofonts/latin-greek-cyrillic | OFL-1.1 (`assets/fonts/OFL-NotoSerif.txt`) |
 | `assets/fonts/JetBrainsMono-Regular.ttf` | The JetBrains Mono Project Authors | https://github.com/JetBrains/JetBrainsMono | OFL-1.1 (`assets/fonts/OFL-JetBrainsMono.txt`) |
+| `assets/fonts/GemiFontSans-Light.ttf` | GemiTron Team | Original work: GemiFontSans Light corporate typeface (`Gemi-Font` v1.000) | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
+| `assets/fonts/GemiFontSans-Medium.ttf` | GemiTron Team | Original work: GemiFontSans Medium corporate typeface (`Gemi-Font` v1.000) | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
+| `assets/fonts/GemiFontSans-Bold.ttf` | GemiTron Team | Original work: GemiFontSans Bold corporate typeface (`Gemi-Font` v1.000) | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
 | `apps/effectcraft-web/web/favicon.svg` | EffectCraft contributors | Original work: web app icon, a copy of `assets/app-icon/effectcraft-small.svg` (the unicorn app icon) | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
 | `packaging/macos/dmg/background.svg` | @XusBadia | Original work: macOS DMG Finder window background, derived from the EffectCraft app icon (`assets/app-icon/effectcraft.svg`); rendered to a TIFF by `packaging/macos/package.sh` at package time | MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) |
 | `assets/app-icon/effectcraft-1024.png` | EffectCraft contributors | Original work: effectCraft app icon, 1024 px (owner's ArtCraft unicorn drawing, vectorised) | MIT OR Apache-2.0 (`assets/app-icon/LICENSE.txt`) |
@@ -55,6 +58,11 @@ Screenshots of EffectCraft itself, rendered headlessly, showing only procedurall
 | `docs/images/effectcraft-graph-editor.png` | EffectCraft contributors | Original work: screenshot of EffectCraft (EffectCraft Graph Editor) | MIT OR Apache-2.0 |
 | `docs/images/effectcraft-effects.png` | EffectCraft contributors | Original work: screenshot of EffectCraft (EffectCraft effects) | MIT OR Apache-2.0 |
 | `docs/images/effectcraft-render-queue.png` | EffectCraft contributors | Original work: screenshot of EffectCraft (EffectCraft Render Queue panel with the demo compositions queued for H.264 and ProRes export) | MIT OR Apache-2.0 |
+| `docs/images/aftertron/aftertron-inferno-dark-hero.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron UI in Inferno Pixel Glass Dark | MIT OR Apache-2.0 |
+| `docs/images/aftertron/aftertron-inferno-light-workspace.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron UI in Inferno Pixel Glass Light | MIT OR Apache-2.0 |
+| `docs/images/aftertron/aftertron-graph-editor-effects.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Graph Editor and Effect Controls | MIT OR Apache-2.0 |
+| `docs/images/aftertron/aftertron-render-queue-and-scopes.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Render Queue and Lumetri Scopes | MIT OR Apache-2.0 |
+| `docs/images/aftertron/aftertron-about-and-settings.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Appearance Settings | MIT OR Apache-2.0 |
 
 ## Code-drawn assets (original work, MIT OR Apache-2.0)
 

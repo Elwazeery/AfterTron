@@ -352,6 +352,9 @@ pub struct EffectcraftApp {
     pub(crate) template_thumbs: std::collections::HashMap<String, Option<egui::TextureHandle>>,
     /// Home ▸ Templates: the gallery, and the user template files it was listed from.
     pub(crate) template_list: Option<(Vec<String>, Vec<effectcraft_engine::templates::TemplateInfo>)>,
+    /// Bounded idempotency cache for control-channel requests with `idempotencyKey`.
+    pub(crate) idempotency_cache: std::collections::HashMap<String, serde_json::Value>,
+    pub(crate) idempotency_order: std::collections::VecDeque<String>,
 }
 
 /// The saved workspaces in the settings store ([`effectcraft_engine::config::ConfigStore`]).
@@ -427,6 +430,8 @@ impl EffectcraftApp {
             window_title: String::new(),
             template_thumbs: Default::default(),
             template_list: None,
+            idempotency_cache: Default::default(),
+            idempotency_order: Default::default(),
         }
         .with_ui_commands()
     }

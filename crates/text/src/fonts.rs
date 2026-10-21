@@ -25,6 +25,9 @@ pub static INTER_BOLD: &[u8] = include_bytes!("../../../assets/fonts/Inter-Bold.
 pub static INTER_ITALIC: &[u8] = include_bytes!("../../../assets/fonts/Inter-Italic.ttf");
 pub static JETBRAINS_MONO_REGULAR: &[u8] = include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf");
 pub static NOTO_SERIF_REGULAR: &[u8] = include_bytes!("../../../assets/fonts/NotoSerif-Regular.ttf");
+pub static GEMI_FONT_SANS_LIGHT: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Light.ttf");
+pub static GEMI_FONT_SANS_MEDIUM: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Medium.ttf");
+pub static GEMI_FONT_SANS_BOLD: &[u8] = include_bytes!("../../../assets/fonts/GemiFontSans-Bold.ttf");
 
 /// The default family for new text.
 pub const DEFAULT_FAMILY: &str = "Inter";
@@ -300,7 +303,18 @@ fn db() -> &'static RwLock<Db> {
     static DB: OnceLock<RwLock<Db>> = OnceLock::new();
     DB.get_or_init(|| {
         let mut db = Db { faces: Vec::new(), scanned: false };
-        for b in [INTER_REGULAR, INTER_MEDIUM, INTER_SEMIBOLD, INTER_BOLD, INTER_ITALIC, JETBRAINS_MONO_REGULAR, NOTO_SERIF_REGULAR] {
+        for b in [
+            INTER_REGULAR,
+            INTER_MEDIUM,
+            INTER_SEMIBOLD,
+            INTER_BOLD,
+            INTER_ITALIC,
+            JETBRAINS_MONO_REGULAR,
+            NOTO_SERIF_REGULAR,
+            GEMI_FONT_SANS_LIGHT,
+            GEMI_FONT_SANS_MEDIUM,
+            GEMI_FONT_SANS_BOLD,
+        ] {
             for n in read_faces_bytes(b) {
                 push(&mut db, info_from(n, FaceData::Static(b), "bundled"));
             }
@@ -696,7 +710,7 @@ const TRADITIONAL_CHINESE_FAMILIES: &[&str] =
 const KOREAN_FAMILIES: &[&str] = &["Malgun Gothic", "Gulim", "Apple SD Gothic Neo", "Noto Sans CJK KR", "Noto Sans KR", "Source Han Sans KR", "NanumGothic"];
 /// The platforms' plain text families for the other scripts the bundled fonts lack, in the same
 /// order (Windows, macOS, then the Linux/Noto names).
-const ARABIC_FAMILIES: &[&str] = &["Segoe UI", "Tahoma", "Geeza Pro", "Noto Sans Arabic", "Noto Naskh Arabic", "DejaVu Sans", "Arial"];
+const ARABIC_FAMILIES: &[&str] = &["GemiFontSans", "Segoe UI", "Tahoma", "Geeza Pro", "Noto Sans Arabic", "Noto Naskh Arabic", "DejaVu Sans", "Arial"];
 const HEBREW_FAMILIES: &[&str] = &["Segoe UI", "Tahoma", "Arial Hebrew", "Noto Sans Hebrew", "DejaVu Sans", "Arial"];
 const INDIC_FAMILIES: &[&str] = &[
     "Nirmala UI",
@@ -992,6 +1006,7 @@ mod tests {
         }
         assert!(fams.iter().any(|(f, _)| f == "Noto Serif"));
         assert!(fams.iter().any(|(f, _)| f == "JetBrains Mono"));
+        assert!(fams.iter().any(|(f, _)| f == "GemiFontSans"));
         let b = resolve("inter", "bold");
         assert_eq!(face(b.face).info.style, "Bold");
         assert!(!b.synth_bold);
