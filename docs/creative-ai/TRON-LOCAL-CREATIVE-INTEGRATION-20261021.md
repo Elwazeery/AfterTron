@@ -27,3 +27,33 @@ Inspect actual state/current capability manifest -> create short motion graphics
 - Functional: one actual local TRON task using shipped typed native commands and proof of native readback/undo/reopen; separate ChatGPT -> GemiMCP direct path and delegated path proven on paired physical workstation; negative wrong project/revision/auth/approval tests.
 - Creative: reproducible inputs, genuine editable work, preview compared to stated brief, no dialect contamination, no faked generation/output. Assess QLoRA/LoRA only after real baseline failures and shared training evaluation plan.
 - Release: preserve product's current task hierarchy/ExecutionKit and previously unfinished gates; document design on main now, mark runtime work **PLANNED** rather than ACCEPTED. No native implementation, cloud deployment, model downloads, training, GPU proof or acceptance executed by this document.
+
+## 2026-10-22 — TRON motion-director source integration (IN PROGRESS, NOT WINDOWS ACCEPTED)
+
+This section updates the original 2026-10-21 PROPOSED-only baseline. FilmTron local technical acceptance is reported on `Elwazeery/FilmTron@7bbbf90`; it is not evidence that **AfterTron** itself has passed. Cloud AfterMCP remains separately gated.
+
+### Implemented source modules and boundaries
+
+- `crates/automation/src/tron_local.rs`: authenticated, loopback-only client to the **single existing GemiMCP workstation runtime**. Explicit user ON lease, status/heartbeat/release/minimize/cancel and `/tron/after/plan`. No duplicate model or local inference server. Cross-product leases are shared; GemiMCP stays runtime owner.
+- `crates/automation/src/tron.rs`: strict `aftertron.tron.plan.v1` parser; binds active project identity, composition ID, authoritative document revision and exact rational FPS. Up to 12 bounded real semantic operations with native command-existence checks. Local user approval required before native `Session::execute_checked`; source-native receipts and truthful partial execution.
+- `crates/ui-egui/src/tron_actions.rs`: derives owner-local project fingerprint and active composition facts from the real `Session`, with two-step native review then explicit apply. No injected model permissions.
+- `crates/ui-egui/src/tron_chat.rs`: native floating TRON motion director UI with opt-in model ON/OFF, true shared broker state, independent Thinking status, asynchronous proposal, visible steps, preflight, explicit approval and native receipt. User can close it without blocking ordinary AfterTron editing.
+- `GemiTron88/GemiMCP/src/tron-after-director.mjs`: specialist professional Egyptian Creative Director persona (no forced slang), real editable motion art direction, distinct concept comparison, frame-precise planning, anti-shell/unsafe path gates, render/easing/alpha evidence checklist. `src/tron-local-runtime.mjs` uses existing shared model for `/tron/after/plan` with bounded active job leases. Dedicated Node tests added.
+
+### Precise exclusions / quality bar
+
+**Do NOT** claim AfterTron TRON is accepted yet: Windows Rust build, actual GPU+DX12 runtime, first native motion edit, editable `.ecproj` roundtrip, three real sampled composition frames with alpha proof, easing/motion-blur review, quality of physical VFX assets and authentic final creative render have NOT been witnessed by this source-only integration.
+
+No second Ollama runtime. No production VPS modification. No untrusted raw native command/shell/script/expression execution from AI. No hidden file import/export. The current execution set is deliberately narrow: native text/shape/solid/null/adjustment layers, parenting, blend, layer timing, keyframe property changes, simple native effect applications, mask/matte and text content, provided its exact native command passes parameter validation. Complex `tool:*` workflows are denied until safely mapped and tested. There is no silent fallback to simulated designs.
+
+### Mandatory Windows acceptance
+
+1. Confirm latest `origin/main`, compile `effectcraft-automation` and `effectcraft-ui-egui`, run real Rust and Node suites. Fix failures in source; do not disable tests.
+2. Verify true shared model ON/Thinking/VRAM leasing concurrently with **PhotoTron + FilmTron + AfterTron**, full unload after final user lease/job, and no preview UI freeze.
+3. Real motion case A: branded typography/title reveal with proper font shaping, real keyframes, tailored easing and actual motion timing; use editable project.
+4. Real motion case B: licensed product hero/compositing using authentic image assets, masks/mattes/alpha, actual color/transparency readback, NOT colored rectangles and gratuitous glow.
+5. Real motion case C: distinct VFX/visual identity transition, native effect capability verified, real first/mid/end renders, alpha/motion blur/effect-order proof.
+6. For each: model reasoning proposes two substantively different art directions; approved native operations produce actual readable frames; save, close, reopen `.ecproj`, export decodable media where supported, inspect aesthetics and correct observed defects. Evidence screenshots and hashes must be real; do not fabricate quality scores.
+7. Cloud `AfterMCP` native direct + ChatGPT delegated acceptance remains `GMCP-011/013/014/015`, not inferred from localhost.
+
+Mark task states only from observed evidence. The assistant cannot run the owner's Windows compositor or GPU from the GitHub connector; all source commits from this wave remain **SOURCE IMPLEMENTED / WINDOWS NOT VERIFIED** until real workstation testing.
