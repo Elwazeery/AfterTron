@@ -33,12 +33,12 @@ image = { workspace = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 sys-locale = { workspace = true }
+effectcraft-automation = { workspace = true }
 
 [dev-dependencies]
 egui_kittest = { workspace = true, features = ["eframe", "wgpu"] }
 pollster = "0.4"
 effectcraft-host = { workspace = true }
-effectcraft-automation = { workspace = true }
 exr = { workspace = true }
 
 [build-dependencies]
