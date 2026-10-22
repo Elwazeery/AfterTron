@@ -73,8 +73,8 @@ fn broker_request(route: &'static str, payload: Option<Value>) -> Result<Value, 
             | "/tron/release"
             | "/tron/heartbeat"
             | "/tron/minimize"
-            | "/tron/film/plan"
-            | "/tron/film/critique"
+            | "/tron/after/plan"
+           
             | "/tron/cancel"
     ) {
         return Err("TRON_ROUTE_NOT_ALLOWED".to_owned());
@@ -88,7 +88,7 @@ fn broker_request(route: &'static str, payload: Option<Value>) -> Result<Value, 
     let addr = SocketAddrV4::new(Ipv4Addr::LOCALHOST, d.port);
     let mut stream = TcpStream::connect_timeout(&addr.into(), Duration::from_secs(2))
         .map_err(|_| "TRON_SHARED_BROKER_UNREACHABLE".to_owned())?;
-    let timeout = if matches!(route, "/tron/acquire" | "/tron/film/plan" | "/tron/film/critique") { 180 } else { 8 };
+    let timeout = if matches!(route, "/tron/acquire" | "/tron/after/plan" | "/tron/after/critique") { 180 } else { 8 };
     stream.set_read_timeout(Some(Duration::from_secs(timeout))).map_err(|e| e.to_string())?;
     stream.set_write_timeout(Some(Duration::from_secs(8))).map_err(|e| e.to_string())?;
     let method = if payload.is_some() { "POST" } else { "GET" };
@@ -202,16 +202,16 @@ pub fn cancel_job() -> Result<Value, String> {
 /** Ask the live shared model for a AFTER-specific plan (never apply edits).
  * The native UI must acquire an explicit aftertron lease first.
  */
-pub fn prepare_film_plan(user_prompt: &str, project_state: &Value) -> Result<Value, String> {
+pub fn prepare_after_plan(user_prompt: &str, project_state: &Value) -> Result<Value, String> {
     let locale = if user_prompt.to_ascii_lowercase().contains("english") {
         "en-US"
     } else {
         "ar-EG"
     };
-    prepare_film_plan_with_locale(user_prompt, project_state, locale)
+    prepare_after_plan_with_locale(user_prompt, project_state, locale)
 }
 
-pub fn prepare_film_plan_with_locale(
+pub fn prepare_after_plan_with_locale(
     user_prompt: &str,
     project_state: &Value,
     deliverable_locale: &str,
@@ -219,19 +219,11 @@ pub fn prepare_film_plan_with_locale(
     if user_prompt.trim().is_empty() || user_prompt.len() > 8000 {
         return Err("EMPTY_OR_OVERSIZED_AFTER_BRIEF".to_owned());
     }
-    broker_request("/tron/film/plan", Some(json!({
+    broker_request("/tron/after/plan", Some(json!({
         "leaseId": id(),
         "userPrompt": user_prompt,
         "projectState": project_state,
         "deliverableLocale": deliverable_locale
-    })))
-}
-
-pub fn critique_film_timeline(brief: &str, project_state: &Value) -> Result<Value, String> {
-    broker_request("/tron/film/critique", Some(json!({
-        "leaseId": id(),
-        "brief": brief,
-        "projectState": project_state
     })))
 }
 
