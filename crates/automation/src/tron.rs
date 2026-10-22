@@ -71,11 +71,11 @@ fn native_command(tool: &str, p: &Value) -> Option<&'static str> {
         "after.matte.set_track_matte" => Some("layer.trackMatte"),
         "after.text.set_source" => Some("layer.setText"),
         "after.property.set" if p.get("expression").is_none()
-            && p.get("time").is_none() => Some("prop.set"),
+            && p.get("time").is_none() && p.get("timeTick").is_none() => Some("prop.set"),
         "after.property.set" if p.get("expression").is_none()
-            && p.get("time").is_some() => Some("prop.addKey"),
+            && (p.get("time").is_some() || p.get("timeTick").is_some()) => Some("prop.addKey"),
         "after.keyframe.add" if p.get("keys").is_none()
-            && p.get("time").is_some() => Some("prop.addKey"),
+            && (p.get("time").is_some() || p.get("timeTick").is_some()) => Some("prop.addKey"),
         "after.effect.apply" if p.get("values").is_none() => Some("effect.apply"),
         _ => None,
     }
@@ -156,10 +156,19 @@ pub fn preflight(plan: &MotionPlan, authority: &LocalMotionAuthority) -> Result<
                 return Err(err("BAD_PROPERTY_PATH"));
             }
         }
+        if step.params.get("timeTick").is_some() &&
+            !matches!(step.tool.as_str(), "after.property.set" | "after.keyframe.add") {
+            return Err(err("TIME_TICK_UNSUPPORTED_BY_TOOL"));
+        }
+        if step.params.get("time").is_some() && step.params.get("timeTick").is_some() {
+            return Err(err("AMBIGUOUS_KEYFRAME_TIME"));
+        }
         if matches!(step.tool.as_str(), "after.property.set" | "after.keyframe.add") {
             if !step.params.get("layer").is_some_and(|v| v.is_string() || v.is_u64())
                 || !step.params.get("path").is_some_and(Value::is_string)
-                || step.params.get("value").is_none()
+                || step.params.get("value").is_none() ||
+                (step.tool == "after.keyframe.add" &&
+                    step.params.get("time").is_none() && step.params.get("timeTick").is_none())
             {
                 return Err(err("KEYFRAME_PROPERTY_ARGUMENTS_REQUIRED"));
             }
@@ -210,7 +219,18 @@ pub fn execute_approved(
             params = json!({"layers":[layer], "effect": effect, "comp": authority.comp_id});
         }
         if step.tool == "after.keyframe.add" || step.tool == "after.property.set" {
-            if let Some(o) = params.as_object_mut() { o.remove("keys"); }
+            if let Some(o) = params.as_object_mut() {
+                o.remove("keys");
+                if let Some(tick) = o.remove("timeTick") {
+                    let t = tick.as_i64().ok_or_else(|| err("TIME_TICK_INVALID"))?;
+                    // Checked by preflight: tick is an exact rational frame boundary.
+                    let seconds = Tick(t).seconds();
+                    if Tick::from_seconds_f64(seconds).0 != t {
+                        return Err(err("TICK_TO_SECONDS_NOT_ROUNDTRIPPABLE"));
+                    }
+                    o.insert("time".to_owned(), json!(seconds));
+                }
+            }
         }
         let before = session.document_revision();
         match session.execute_checked(cmd, params) {
