@@ -30,6 +30,10 @@ mod pointer_wrap;
 pub mod prefs_live;
 pub mod state;
 pub mod theme;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod tron_actions;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod tron_chat;
 pub mod widgets;
 mod workspace_state;
 
@@ -1856,6 +1860,8 @@ impl EffectcraftApp {
 
 impl eframe::App for EffectcraftApp {
     fn on_exit(&mut self) {
+        #[cfg(not(target_arch = "wasm32"))]
+        tron_chat::release_on_exit();
         self.save_workspace_state();
         // Clean exit: no crash recovery next launch (unless the graphics device was lost with
         // unsaved changes, which are in the auto-save it offers).
@@ -1919,6 +1925,8 @@ impl eframe::App for EffectcraftApp {
         }
         self.frame(ui);
         let ctx = ui.ctx().clone();
+        #[cfg(not(target_arch = "wasm32"))]
+        tron_chat::show(&ctx, &mut self.session);
         #[cfg(not(target_arch = "wasm32"))]
         pointer_wrap::finish_native(&ctx, frame);
         // wasm32: no frame threads; render queued frames now, between UI frames.
