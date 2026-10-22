@@ -88,7 +88,7 @@ fn broker_request(route: &'static str, payload: Option<Value>) -> Result<Value, 
     let addr = SocketAddrV4::new(Ipv4Addr::LOCALHOST, d.port);
     let mut stream = TcpStream::connect_timeout(&addr.into(), Duration::from_secs(2))
         .map_err(|_| "TRON_SHARED_BROKER_UNREACHABLE".to_owned())?;
-    let timeout = if matches!(route, "/tron/acquire" | "/tron/after/plan" | "/tron/after/critique") { 180 } else { 8 };
+    let timeout = if matches!(route, "/tron/acquire" | "/tron/after/plan") { 180 } else { 8 };
     stream.set_read_timeout(Some(Duration::from_secs(timeout))).map_err(|e| e.to_string())?;
     stream.set_write_timeout(Some(Duration::from_secs(8))).map_err(|e| e.to_string())?;
     let method = if payload.is_some() { "POST" } else { "GET" };
@@ -199,7 +199,7 @@ pub fn cancel_job() -> Result<Value, String> {
     broker_request("/tron/cancel", Some(json!({"leaseId": id(), "reason": "user_cancelled"})))
 }
 
-/** Ask the live shared model for a AFTER-specific plan (never apply edits).
+/** Ask the shared model for an AfterTron-specific plan (never apply edits).
  * The native UI must acquire an explicit aftertron lease first.
  */
 pub fn prepare_after_plan(user_prompt: &str, project_state: &Value) -> Result<Value, String> {
