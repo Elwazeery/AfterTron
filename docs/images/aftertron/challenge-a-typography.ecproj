@@ -105,8 +105,8 @@
                         "t": "Text",
                         "v": {
                           "text": "توازن الكتلة والفراغ في كل إطار",
-                          "font": "Inter",
-                          "style": "Regular",
+                          "font": "GemiFontSans",
+                          "style": "Medium",
                           "size": 34.0,
                           "fill": [
                             1.0,
@@ -150,7 +150,7 @@
                           "indent_first": 0.0,
                           "space_before": 0.0,
                           "space_after": 0.0,
-                          "direction": "Ltr",
+                          "direction": "Rtl",
                           "composer": "EveryLine",
                           "hanging_punctuation": false,
                           "vertical": false
@@ -922,8 +922,8 @@
                         "t": "Text",
                         "v": {
                           "text": "إيقاع الحركة يصنع المعنى",
-                          "font": "Inter",
-                          "style": "Regular",
+                          "font": "GemiFontSans",
+                          "style": "Bold",
                           "size": 76.0,
                           "fill": [
                             0.98,
@@ -967,7 +967,7 @@
                           "indent_first": 0.0,
                           "space_before": 0.0,
                           "space_after": 0.0,
-                          "direction": "Ltr",
+                          "direction": "Rtl",
                           "composer": "EveryLine",
                           "hanging_punctuation": false,
                           "vertical": false

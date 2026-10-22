@@ -1193,6 +1193,10 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     // Save editable .ecproj and reopen via Project::from_json
     let ecproj_a_path = out_dir.join("challenge-a-typography.ecproj");
     let ecproj_a_json = session_a.project.to_file_json().expect("serialize Challenge A .ecproj");
+    assert!(
+        ecproj_a_json.contains("\"font\": \"GemiFontSans\""),
+        "Challenge A must use GemiFontSans from GemiTron88/GemiFonts"
+    );
     std::fs::write(&ecproj_a_path, &ecproj_a_json).expect("write challenge-a-typography.ecproj");
     let reopened_a = effectcraft_engine::project::Project::from_json(&ecproj_a_json)
         .expect("reopen challenge-a-typography.ecproj");

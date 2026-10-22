@@ -738,6 +738,24 @@ fn execute_single_step(
                     }
                 }
             }
+            if !qo.contains_key("font") {
+                qo.insert("font".to_string(), json!("GemiFontSans"));
+            }
+            if !qo.contains_key("style") {
+                let sz = qo.get("size").and_then(Value::as_f64).unwrap_or(48.0);
+                qo.insert(
+                    "style".to_string(),
+                    json!(if sz >= 48.0 { "Bold" } else { "Medium" }),
+                );
+            }
+            if !qo.contains_key("direction")
+                && qo
+                    .get("text")
+                    .and_then(Value::as_str)
+                    .is_some_and(|t| t.chars().any(|c| ('\u{0600}'..='\u{06FF}').contains(&c)))
+            {
+                qo.insert("direction".to_string(), json!("rtl"));
+            }
             let out = session
                 .execute_checked("layer.newText", q)
                 .map_err(|e| e.to_string())?;

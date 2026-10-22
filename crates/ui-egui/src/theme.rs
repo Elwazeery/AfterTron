@@ -431,6 +431,9 @@ pub fn install(ctx: &egui::Context, t: &Tokens, language: &str) {
     fonts.font_data.insert("gemi-sans-light".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_LIGHT)));
     fonts.font_data.insert("gemi-sans-medium".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_MEDIUM)));
     fonts.font_data.insert("gemi-sans-bold".into(), Arc::new(FontData::from_static(GEMI_FONT_SANS_BOLD)));
+    fonts.families.entry(FontFamily::Proportional).or_default().insert(1, "gemi-sans-medium".into());
+    fonts.families.insert(FontFamily::Name("semibold".into()), vec!["inter-semibold".into(), "gemi-sans-bold".into(), "inter".into(), "gemi-sans-medium".into()]);
+    fonts.families.insert(FontFamily::Name("medium".into()), vec!["inter-medium".into(), "gemi-sans-medium".into(), "inter".into()]);
     fonts.families.insert(FontFamily::Name("gemi-sans".into()), vec!["gemi-sans-medium".into(), "gemi-sans-light".into(), "inter".into()]);
     fonts.families.insert(FontFamily::Name("gemi-sans-bold".into()), vec!["gemi-sans-bold".into(), "inter-semibold".into(), "inter".into()]);
     // Inter and egui's own fallbacks have no small triangles (the `▸` of "File ▸ Import"), which
