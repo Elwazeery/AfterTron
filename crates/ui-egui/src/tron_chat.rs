@@ -22,6 +22,7 @@ struct ChatState {
     proposal: Option<Value>,
     reviewed_id: Option<String>,
     reviewed_revision: Option<u64>,
+    reviewed_digest: Option<String>,
     review: Option<Value>,
     execution: Option<Value>,
     last_status: Instant,
@@ -34,7 +35,7 @@ impl Default for ChatState {
             model_state: "NOT_LOADED".into(), model: "qwen3.5:4b-q4_K_M".into(),
             thinking: false, warmed: false, leases: 0, error: None,
             prompt: String::new(), proposal: None,
-            reviewed_id: None, reviewed_revision: None, review: None,
+            reviewed_id: None, reviewed_revision: None, reviewed_digest: None, review: None,
             execution: None, last_status: Instant::now(),
         }
     }
@@ -96,6 +97,7 @@ fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
                         state.power_on = false;
                         state.reviewed_id = None;
                         state.reviewed_revision = None;
+                        state.reviewed_digest = None;
                         state.review = None;
                         state.error = Some("AFTERTRON_MODEL_LEASE_EXPIRED".into());
                     }
@@ -104,6 +106,7 @@ fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
                         state.review = None;
                         state.reviewed_id = None;
                         state.reviewed_revision = None;
+                        state.reviewed_digest = None;
                     }
                 }
                 Err(e) => {
@@ -128,6 +131,7 @@ fn generate(st: Arc<Mutex<ChatState>>, ctx: Context, prompt: String, context: Va
     state.execution = None;
     state.reviewed_id = None;
     state.reviewed_revision = None;
+                        state.reviewed_digest = None;
     drop(state);
     std::thread::spawn(move || {
         let reply = effectcraft_automation::tron_local::prepare_after_plan(&prompt, &context);
@@ -290,8 +294,8 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
             let result = match s.proposal.clone() {
                 Some(plan) if s.power_on && !s.working =>
                     if approved {
-                        match (s.reviewed_id.clone(), s.reviewed_revision) {
-                            (Some(id), Some(rev)) => crate::tron_actions::apply(session, &plan, &id, rev),
+                        match (s.reviewed_id.clone(), s.reviewed_revision, s.reviewed_digest.clone()) {
+                            (Some(id), Some(rev), Some(digest)) => crate::tron_actions::apply(session, &plan, &id, rev, &digest),
                             _ => Err("AFTERTRON_PLAN_NOT_REVIEWED".into())
                         }
                     } else { crate::tron_actions::review(session, &plan) },
@@ -303,11 +307,13 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
                     s.review = None;
                     s.reviewed_id = None;
                     s.reviewed_revision = None;
+                    s.reviewed_digest = None;
                     s.error = None;
                 }
                 Ok(v) => {
                     s.reviewed_id = v.get("planId").and_then(Value::as_str).map(str::to_owned);
                     s.reviewed_revision = v.get("revision").and_then(Value::as_u64);
+                    s.reviewed_digest = v.get("planDigest").and_then(Value::as_str).map(str::to_owned);
                     s.review = Some(v);
                     s.error = None;
                 }
@@ -316,6 +322,7 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
                     s.review = None;
                     s.reviewed_id = None;
                     s.reviewed_revision = None;
+                    s.reviewed_digest = None;
                 }
             }
         }
