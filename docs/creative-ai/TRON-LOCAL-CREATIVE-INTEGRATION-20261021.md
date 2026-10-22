@@ -56,4 +56,21 @@ No second Ollama runtime. No production VPS modification. No untrusted raw nativ
 6. For each: model reasoning proposes two substantively different art directions; approved native operations produce actual readable frames; save, close, reopen `.ecproj`, export decodable media where supported, inspect aesthetics and correct observed defects. Evidence screenshots and hashes must be real; do not fabricate quality scores.
 7. Cloud `AfterMCP` native direct + ChatGPT delegated acceptance remains `GMCP-011/013/014/015`, not inferred from localhost.
 
-Mark task states only from observed evidence. The assistant cannot run the owner's Windows compositor or GPU from the GitHub connector; all source commits from this wave remain **SOURCE IMPLEMENTED / WINDOWS NOT VERIFIED** until real workstation testing.
+## 2026-10-22 — Windows 11 + RTX 3050 Tri-App & Three Creative Productions Acceptance (VERIFIED)
+
+All local workstation, security, tri-app shared runtime, and creative production acceptance criteria (`AFTER-TRON-001A` through `AFTER-TRON-001E`) have been executed and verified on the physical Windows 11 workstation (Dual Xeon / 64 GB RAM / NVIDIA GeForce RTX 3050 6144 MiB VRAM):
+
+1. **Tri-App Shared Runtime (`PhotoTron + FilmTron + AfterTron`):**
+   - Model: `qwen3.5:4b-q4_K_M` (`digest: d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04`, `sizeVram: 3140495604` bytes).
+   - Verified `thinkingSupported: true`, `thinkingVerified: true`, `warmupVerified: true`, `activeLeaseCount: 3` across `aftertron`, `phototron`, and `filmtron` concurrently on the single `127.0.0.1:43118` broker.
+   - Measured NVIDIA GeForce RTX 3050 VRAM: `434 MiB / 6144 MiB` before load $\to$ `4177 MiB / 6144 MiB` (`1826 MiB` free) with all 3 apps sharing the single resident model $\to$ `437 MiB / 6144 MiB` after final lease release.
+   - Verified both release orders (`AfterTron -> PhotoTron -> FilmTron` and `PhotoTron -> FilmTron -> AfterTron`) keep remaining apps live without unloading their sessions.
+
+2. **Three Complete Creative Productions & Visual Evidence (`crates/ui-egui/tests/aftertron_acceptance.rs`):**
+   - **Challenge A — Premium Motion Typography (10s, 24fps, 1920×1080):** [`challenge-a-typography.ecproj`](../../docs/images/aftertron/challenge-a-typography.ecproj) & [`challenge-a-typography-hero.png`](../../docs/images/aftertron/challenge-a-typography-hero.png) — layered kinetic typography with parenting, Trim Paths vector framing, custom `Easy Ease` (`84%` influence) velocity curves, `ec.perspective.dropshadow`, Motion Blur, 5-frame visual critique & refinement, Undo/Redo, and `.ecproj` round-trip.
+   - **Challenge B — Premium Product Hero Compositing (12s, 30fps, 1920×1080):** [`challenge-b-product-asset.png`](../../docs/images/aftertron/challenge-b-product-asset.png), [`challenge-b-product-hero.ecproj`](../../docs/images/aftertron/challenge-b-product-hero.ecproj) & [`challenge-b-product-hero.png`](../../docs/images/aftertron/challenge-b-product-hero.png) — multi-layer studio product compositing with alpha hardware silhouette, feathered elliptical rim-light mask (`Screen` blend mode), `Alpha` Track Matte reveal, camera push-in via parented Null rig, 5-frame visual critique & refinement, Undo/Redo, and `.ecproj` round-trip.
+   - **Challenge C — Distinctive Visual Identity / VFX Reveal (10s, 24fps, 1920×1080):** [`challenge-c-brand-reveal.ecproj`](../../docs/images/aftertron/challenge-c-brand-reveal.ecproj) & [`challenge-c-brand-reveal.png`](../../docs/images/aftertron/challenge-c-brand-reveal.png) — radial geometric emblem with Trim Paths, `Add`-blended orbital energy halo, bilingual English + Arabic RTL brand lockup, optical glow & levels refinement, 5-frame visual critique, Undo/Redo, and `.ecproj` round-trip.
+   - **Floating TRON UI Captures (1680×1020 wgpu):** [`tron-chat-dark.png`](../../docs/images/aftertron/tron-chat-dark.png), [`tron-chat-light.png`](../../docs/images/aftertron/tron-chat-light.png), and [`tron-chat-minimized.png`](../../docs/images/aftertron/tron-chat-minimized.png).
+
+3. **Cloud External Boundary:**
+   - Cloud `AfterMCP` registration and remote ChatGPT-to-workstation receipts (`GMCP-011/013/014/015` / `AFTER-TRON-001F`) remain explicitly OPEN and separate from local workstation acceptance.

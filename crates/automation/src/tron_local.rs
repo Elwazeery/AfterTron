@@ -69,12 +69,13 @@ fn broker_request(route: &'static str, payload: Option<Value>) -> Result<Value, 
     if !matches!(
         route,
         "/tron/status"
+            | "/tron/status?refreshGpu=1"
             | "/tron/acquire"
             | "/tron/release"
             | "/tron/heartbeat"
             | "/tron/minimize"
             | "/tron/after/plan"
-           
+            | "/tron/after/critique"
             | "/tron/cancel"
     ) {
         return Err("TRON_ROUTE_NOT_ALLOWED".to_owned());
@@ -88,7 +89,7 @@ fn broker_request(route: &'static str, payload: Option<Value>) -> Result<Value, 
     let addr = SocketAddrV4::new(Ipv4Addr::LOCALHOST, d.port);
     let mut stream = TcpStream::connect_timeout(&addr.into(), Duration::from_secs(2))
         .map_err(|_| "TRON_SHARED_BROKER_UNREACHABLE".to_owned())?;
-    let timeout = if matches!(route, "/tron/acquire" | "/tron/after/plan") { 180 } else { 8 };
+    let timeout = if matches!(route, "/tron/acquire" | "/tron/after/plan" | "/tron/after/critique") { 180 } else { 8 };
     stream.set_read_timeout(Some(Duration::from_secs(timeout))).map_err(|e| e.to_string())?;
     stream.set_write_timeout(Some(Duration::from_secs(8))).map_err(|e| e.to_string())?;
     let method = if payload.is_some() { "POST" } else { "GET" };
@@ -171,6 +172,11 @@ pub fn status() -> Result<Value, String> {
     broker_request("/tron/status", None)
 }
 
+/// Query live status with explicit GPU VRAM telemetry refresh.
+pub fn status_with_gpu() -> Result<Value, String> {
+    broker_request("/tron/status?refreshGpu=1", None)
+}
+
 /// Called ONLY by the explicitly clicked local ON control.
 pub fn activate() -> Result<Value, String> {
     broker_for_explicit_activation()?;
@@ -224,6 +230,20 @@ pub fn prepare_after_plan_with_locale(
         "userPrompt": user_prompt,
         "projectState": project_state,
         "deliverableLocale": deliverable_locale
+    })))
+}
+
+/// Run post-execution 5-frame visual and motion critique via the shared GemiMCP broker.
+pub fn critique_after_execution(
+    project_state: &Value,
+    rendered_frames: &[Value],
+    user_prompt: &str,
+) -> Result<Value, String> {
+    broker_request("/tron/after/critique", Some(json!({
+        "leaseId": id(),
+        "projectState": project_state,
+        "renderedFrames": rendered_frames,
+        "userPrompt": user_prompt
     })))
 }
 

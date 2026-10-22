@@ -1,0 +1,8 @@
+asset:        challenge-b-product-hero.png
+title:        AfterTron x TRON Challenge B — Premium Product Hero Compositing frame
+author:       AfterTron / GemiTron Team
+source:       original work (rendered from Challenge B native composition via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-22 by Antigravity (agent) for Elwazeery
+notes:        1920x1080 rendered frame of Challenge B (12s 30fps multi-layer product compositing with studio rim lighting, feathered elliptical mask, Alpha Track Matte reveal, and TRON motion choreography).

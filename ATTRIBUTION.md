@@ -63,6 +63,13 @@ Screenshots of EffectCraft itself, rendered headlessly, showing only procedurall
 | `docs/images/aftertron/aftertron-graph-editor-effects.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Graph Editor and Effect Controls | MIT OR Apache-2.0 |
 | `docs/images/aftertron/aftertron-render-queue-and-scopes.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Render Queue and Lumetri Scopes | MIT OR Apache-2.0 |
 | `docs/images/aftertron/aftertron-about-and-settings.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Appearance Settings | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-a-typography-hero.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge A (Premium Motion Typography) | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-b-product-asset.png` | AfterTron / GemiTron Team | Original work: procedurally synthesized RGBA8 flagship audio monolith product asset | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-b-product-hero.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge B (Premium Product Hero Compositing) | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-c-brand-reveal.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge C (Distinctive Visual Identity / VFX Reveal) | MIT OR Apache-2.0 |
+| `docs/images/aftertron/tron-chat-dark.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron x TRON floating chat in Inferno Pixel Glass Dark | MIT OR Apache-2.0 |
+| `docs/images/aftertron/tron-chat-light.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron x TRON floating chat in Inferno Pixel Glass Light | MIT OR Apache-2.0 |
+| `docs/images/aftertron/tron-chat-minimized.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron x TRON minimized launcher pill | MIT OR Apache-2.0 |
 
 ## Code-drawn assets (original work, MIT OR Apache-2.0)
 

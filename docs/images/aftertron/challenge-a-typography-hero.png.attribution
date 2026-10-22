@@ -1,0 +1,8 @@
+asset:        challenge-a-typography-hero.png
+title:        AfterTron x TRON Challenge A — Premium Motion Typography hero frame
+author:       AfterTron / GemiTron Team
+source:       original work (rendered from Challenge A native composition via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-22 by Antigravity (agent) for Elwazeery
+notes:        1920x1080 rendered frame of Challenge A (10s 24fps kinetic typography composition created and refined via TRON native motion execution).

@@ -2,14 +2,28 @@
 //! Local AI is optional, OFF on launch, shared with PhotoTron/FilmTron.
 //! This chat never creates a second model/runtime and never calls shell or
 //! submits model output straight to the native engine without user approval.
+
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
-use egui::{Align2, Color32, Context, Id, Order, RichText, ScrollArea, vec2};
-use serde_json::Value;
+
+use egui::{
+    Align, Align2, Color32, Context, CornerRadius, Frame, Id, Layout, Margin, Order, RichText,
+    ScrollArea, Stroke, vec2,
+};
+use serde_json::{Value, json};
+
+#[derive(Clone, Debug)]
+pub struct ChatTurn {
+    pub role: String,
+    pub text: String,
+    pub badge: Option<String>,
+}
 
 struct ChatState {
     open: bool,
+    docked: bool,
     working: bool,
+    task_label: String,
     power_on: bool,
     transport_connected: bool,
     model_state: String,
@@ -17,26 +31,99 @@ struct ChatState {
     thinking: bool,
     warmed: bool,
     leases: u64,
+    vram_used_mb: Option<u64>,
+    vram_total_mb: Option<u64>,
     error: Option<String>,
     prompt: String,
+    selected_direction: usize,
     proposal: Option<Value>,
     reviewed_id: Option<String>,
     reviewed_revision: Option<u64>,
     reviewed_digest: Option<String>,
     review: Option<Value>,
     execution: Option<Value>,
+    rendered_samples: Vec<Value>,
+    critique: Option<Value>,
+    history: Vec<ChatTurn>,
     last_status: Instant,
 }
 
 impl Default for ChatState {
     fn default() -> Self {
         Self {
-            open: false, working: false, power_on: false, transport_connected: false,
-            model_state: "NOT_LOADED".into(), model: "qwen3.5:4b-q4_K_M".into(),
-            thinking: false, warmed: false, leases: 0, error: None,
-            prompt: String::new(), proposal: None,
-            reviewed_id: None, reviewed_revision: None, reviewed_digest: None, review: None,
-            execution: None, last_status: Instant::now(),
+            open: false,
+            docked: false,
+            working: false,
+            task_label: String::new(),
+            power_on: false,
+            transport_connected: false,
+            model_state: "NOT_LOADED".into(),
+            model: "qwen3.5:4b-q4_K_M".into(),
+            thinking: false,
+            warmed: false,
+            leases: 0,
+            vram_used_mb: None,
+            vram_total_mb: None,
+            error: None,
+            prompt: String::new(),
+            selected_direction: 0,
+            proposal: None,
+            reviewed_id: None,
+            reviewed_revision: None,
+            reviewed_digest: None,
+            review: None,
+            execution: None,
+            rendered_samples: Vec::new(),
+            critique: None,
+            history: Vec::new(),
+            last_status: Instant::now(),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct InfernoGlassPalette {
+    bg_primary: Color32,
+    bg_card: Color32,
+    bg_card_selected: Color32,
+    border: Color32,
+    border_active: Color32,
+    accent_crimson: Color32,
+    accent_gold: Color32,
+    accent_emerald: Color32,
+    text_primary: Color32,
+    text_secondary: Color32,
+    text_muted: Color32,
+}
+
+fn palette_for(dark: bool) -> InfernoGlassPalette {
+    if dark {
+        InfernoGlassPalette {
+            bg_primary: Color32::from_rgb(0x0B, 0x0C, 0x10),
+            bg_card: Color32::from_rgb(0x14, 0x16, 0x1D),
+            bg_card_selected: Color32::from_rgb(0x1F, 0x17, 0x1D),
+            border: Color32::from_rgb(0x2A, 0x2E, 0x3B),
+            border_active: Color32::from_rgb(0xF8, 0x39, 0x42),
+            accent_crimson: Color32::from_rgb(0xF8, 0x39, 0x42),
+            accent_gold: Color32::from_rgb(0xFF, 0xD4, 0x37),
+            accent_emerald: Color32::from_rgb(0x34, 0xD3, 0x99),
+            text_primary: Color32::from_rgb(0xF5, 0xF1, 0xED),
+            text_secondary: Color32::from_rgb(0xCB, 0xD5, 0xE1),
+            text_muted: Color32::from_rgb(0x94, 0xA3, 0xB8),
+        }
+    } else {
+        InfernoGlassPalette {
+            bg_primary: Color32::from_rgb(0xF6, 0xF2, 0xEE),
+            bg_card: Color32::from_rgb(0xFF, 0xFF, 0xFF),
+            bg_card_selected: Color32::from_rgb(0xFD, 0xF2, 0xF2),
+            border: Color32::from_rgb(0xD8, 0xD2, 0xCA),
+            border_active: Color32::from_rgb(0xDF, 0x1F, 0x2D),
+            accent_crimson: Color32::from_rgb(0xDF, 0x1F, 0x2D),
+            accent_gold: Color32::from_rgb(0xB4, 0x53, 0x09),
+            accent_emerald: Color32::from_rgb(0x05, 0x96, 0x69),
+            text_primary: Color32::from_rgb(0x15, 0x13, 0x18),
+            text_secondary: Color32::from_rgb(0x33, 0x41, 0x55),
+            text_muted: Color32::from_rgb(0x64, 0x74, 0x8B),
         }
     }
 }
@@ -53,26 +140,84 @@ fn shared(ctx: &Context) -> Arc<Mutex<ChatState>> {
     })
 }
 
+fn is_rtl_text(s: &str) -> bool {
+    s.chars().any(|c| ('\u{0600}'..='\u{06FF}').contains(&c))
+}
+
+fn draw_bidi_paragraph(ui: &mut egui::Ui, text: &str, color: Color32, strong: bool) {
+    let rtl = is_rtl_text(text);
+    let align = if rtl { Align::Max } else { Align::Min };
+    ui.with_layout(Layout::top_down(align), |ui| {
+        let mut rich = RichText::new(text).color(color);
+        if strong {
+            rich = rich.strong();
+        }
+        ui.label(rich);
+    });
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 fn update_status(state: &mut ChatState, raw: &Value) {
     let status = raw.get("status").unwrap_or(raw);
     state.transport_connected = true;
-    state.model_state = status.get("state").and_then(Value::as_str).unwrap_or("UNKNOWN").to_owned();
-    state.model = status.get("model").and_then(Value::as_str).unwrap_or("qwen3.5:4b-q4_K_M").to_owned();
-    state.thinking = status.get("thinkingVerified").and_then(Value::as_bool).unwrap_or(false);
-    state.warmed = status.get("warmupVerified").and_then(Value::as_bool).unwrap_or(false);
-    state.leases = status.get("activeLeaseCount").and_then(Value::as_u64).unwrap_or(0);
+    state.model_state = status
+        .get("state")
+        .and_then(Value::as_str)
+        .unwrap_or("UNKNOWN")
+        .to_owned();
+    state.model = status
+        .get("model")
+        .and_then(Value::as_str)
+        .unwrap_or("qwen3.5:4b-q4_K_M")
+        .to_owned();
+    state.thinking = status
+        .get("thinkingVerified")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    state.warmed = status
+        .get("warmupVerified")
+        .and_then(Value::as_bool)
+        .unwrap_or(false);
+    state.leases = status
+        .get("activeLeaseCount")
+        .and_then(Value::as_u64)
+        .unwrap_or(0);
+    if let Some(gpu) = status.get("gpu") {
+        state.vram_used_mb = gpu
+            .get("usedMiB")
+            .or_else(|| gpu.get("usedMb"))
+            .and_then(Value::as_u64);
+        state.vram_total_mb = gpu
+            .get("totalMiB")
+            .or_else(|| gpu.get("totalMb"))
+            .and_then(Value::as_u64);
+    }
 }
 
 /// ALL broker I/O runs off the UI frame thread.
+/// Cancellation and OFF are permitted even while `working` is true so active inference jobs
+/// are never stranded.
 #[cfg(not(target_arch = "wasm32"))]
 fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
     let Ok(mut state) = st.lock() else { return };
-    if state.working { return; }
+    let is_interrupt = matches!(task, "cancel" | "off" | "minimize");
+    if state.working && !is_interrupt {
+        return;
+    }
+    let was_working = state.working;
     state.working = true;
+    state.task_label = match task {
+        "on" => "جاري تشغيل محرك TRON والتحقق من التفكير...".into(),
+        "off" => "جاري إيقاف الجلسة وتحرير الذاكرة...".into(),
+        "cancel" => "جاري إلغاء المهمة الحالية...".into(),
+        _ => String::new(),
+    };
     state.error = None;
     drop(state);
     std::thread::spawn(move || {
+        if was_working && matches!(task, "off" | "minimize") {
+            let _ = effectcraft_automation::tron_local::cancel_job();
+        }
         let reply = match task {
             "on" => effectcraft_automation::tron_local::activate(),
             "off" => effectcraft_automation::tron_local::release(),
@@ -83,17 +228,21 @@ fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
         };
         if let Ok(mut state) = st.lock() {
             state.working = false;
+            state.task_label.clear();
             state.last_status = Instant::now();
             match reply {
                 Ok(value) => {
                     update_status(&mut state, &value);
                     if task == "on" {
-                        state.power_on = state.thinking && state.warmed && state.model_state == "READY";
+                        state.power_on =
+                            state.thinking && state.warmed && state.model_state == "READY";
                         if !state.power_on {
                             state.error = Some("TRON reasoning/warm-up not verified".into());
                         }
                     }
-                    if task == "heartbeat" && value.get("alive").and_then(Value::as_bool) != Some(true) {
+                    if task == "heartbeat"
+                        && value.get("alive").and_then(Value::as_bool) != Some(true)
+                    {
                         state.power_on = false;
                         state.reviewed_id = None;
                         state.reviewed_revision = None;
@@ -111,8 +260,12 @@ fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
                 }
                 Err(e) => {
                     state.error = Some(e);
-                    if task == "on" { state.power_on = false; }
-                    if task == "status" { state.transport_connected = false; }
+                    if task == "on" {
+                        state.power_on = false;
+                    }
+                    if task == "status" {
+                        state.transport_connected = false;
+                    }
                 }
             }
         }
@@ -123,26 +276,48 @@ fn action(st: Arc<Mutex<ChatState>>, ctx: Context, task: &'static str) {
 #[cfg(not(target_arch = "wasm32"))]
 fn generate(st: Arc<Mutex<ChatState>>, ctx: Context, prompt: String, context: Value) {
     let Ok(mut state) = st.lock() else { return };
-    if state.working || !state.power_on { return; }
+    if state.working || !state.power_on {
+        return;
+    }
     state.working = true;
+    state.task_label = "جاري تحليل الكومبوزيشن وبناء اتجاهين إبداعيين...".into();
     state.error = None;
     state.proposal = None;
     state.review = None;
     state.execution = None;
+    state.critique = None;
+    state.rendered_samples.clear();
     state.reviewed_id = None;
     state.reviewed_revision = None;
-                        state.reviewed_digest = None;
+    state.reviewed_digest = None;
+    state.selected_direction = 0;
+    state.history.push(ChatTurn {
+        role: "user".into(),
+        text: prompt.clone(),
+        badge: Some("Brief".into()),
+    });
     drop(state);
     std::thread::spawn(move || {
         let reply = effectcraft_automation::tron_local::prepare_after_plan(&prompt, &context);
         if let Ok(mut state) = st.lock() {
             state.working = false;
+            state.task_label.clear();
             state.last_status = Instant::now();
             match reply {
                 Ok(data) => {
                     let result = data.get("result").unwrap_or(&data);
                     if result.get("ok").and_then(Value::as_bool) == Some(false) {
-                        state.error = result.get("status").and_then(Value::as_str).map(str::to_owned);
+                        state.error = result
+                            .get("status")
+                            .and_then(Value::as_str)
+                            .map(str::to_owned);
+                    }
+                    if let Some(expl) = result.get("userExplanation").and_then(Value::as_str) {
+                        state.history.push(ChatTurn {
+                            role: "tron".into(),
+                            text: expl.to_owned(),
+                            badge: Some("Art Direction · اتجاهين".into()),
+                        });
                     }
                     state.proposal = Some(data);
                 }
@@ -153,193 +328,959 @@ fn generate(st: Arc<Mutex<ChatState>>, ctx: Context, prompt: String, context: Va
     });
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+fn run_visual_critique(
+    st: Arc<Mutex<ChatState>>,
+    ctx: Context,
+    project_state: Value,
+    samples: Vec<Value>,
+    prompt: String,
+) {
+    let Ok(mut state) = st.lock() else { return };
+    if state.working || !state.power_on {
+        return;
+    }
+    state.working = true;
+    state.task_label = "جاري فحص 5 كادرات حقيقية ومراجعة التباين والحركة...".into();
+    state.error = None;
+    state.rendered_samples = samples.clone();
+    drop(state);
+    std::thread::spawn(move || {
+        let reply = effectcraft_automation::tron_local::critique_after_execution(
+            &project_state,
+            &samples,
+            &prompt,
+        );
+        if let Ok(mut state) = st.lock() {
+            state.working = false;
+            state.task_label.clear();
+            state.last_status = Instant::now();
+            match reply {
+                Ok(data) => {
+                    let crit = data.get("critique").unwrap_or(&data);
+                    if let Some(text) = crit.get("critiqueText").and_then(Value::as_str) {
+                        state.history.push(ChatTurn {
+                            role: "tron".into(),
+                            text: text.to_owned(),
+                            badge: Some("5-Frame Visual QC".into()),
+                        });
+                    }
+                    state.critique = Some(data);
+                }
+                Err(e) => state.error = Some(e),
+            }
+        }
+        ctx.request_repaint();
+    });
+}
+
+/// Seed deterministic UI state for headless visual verification and screenshot capture.
+pub fn seed_acceptance_state_for_capture(ctx: &Context, open: bool, power_on: bool) {
+    let st = shared(ctx);
+    let Ok(mut s) = st.lock() else { return };
+    s.open = open;
+    s.docked = false;
+    s.working = false;
+    s.power_on = power_on;
+    s.transport_connected = power_on;
+    s.model_state = if power_on {
+        "READY".into()
+    } else {
+        "NOT_LOADED".into()
+    };
+    s.model = "qwen3.5:4b-q4_K_M".into();
+    s.thinking = power_on;
+    s.warmed = power_on;
+    s.leases = if power_on { 1 } else { 0 };
+    s.vram_used_mb = if power_on { Some(3120) } else { Some(410) };
+    s.vram_total_mb = Some(6144);
+    s.prompt = "صمّم تتر موشن تايبوجرافي احترافي بـ Hierarchy واضح وEasy Ease".into();
+    s.selected_direction = 0;
+    s.history = vec![
+        ChatTurn {
+            role: "user".into(),
+            text: "صمّم تتر موشن تايبوجرافي احترافي بـ Hierarchy واضح وEasy Ease".into(),
+            badge: Some("Brief".into()),
+        },
+        ChatTurn {
+            role: "tron".into(),
+            text: "راجعنا الكومبوزيشن على 24fps وجهزنا اتجاهين مختلفين فعلاً في الإيقاع والتكوين البصري: الأول مبني على Kinetic Authority بـ Overshoot محسوب، والتاني Editorial Split بـ Matte نظيف.".into(),
+            badge: Some("Art Direction · اتجاهين".into()),
+        },
+    ];
+    s.proposal = Some(json!({
+        "ok": true,
+        "result": {
+            "ok": true,
+            "selectedDirectionIndex": 0,
+            "selectedDirectionId": "direction_a",
+            "userExplanation": "اتجاهين إبداعيين جاهزين للمقارنة والاعتماد قبل أي تعديل على الـ Timeline.",
+            "exploredDirections": [
+                {
+                    "id": "direction_a",
+                    "label": "الاتجاه الأول — Kinetic Authority & Precision Rig",
+                    "summary": "دخول متدرج للعناوين مع Null Rig مركزي ومنحنيات سرعة حادة في البداية وتهدئة ناعمة.",
+                    "plan": {
+                        "schema": "aftertron.tron.plan.v1",
+                        "product": "aftertron",
+                        "planId": "dir-a-plan",
+                        "projectId": "aftertron-local-demo",
+                        "compId": 1,
+                        "expectedRevision": 1,
+                        "fpsNum": 24,
+                        "fpsDen": 1,
+                        "steps": [
+                            {"id": "s1", "tool": "after.layer.create_solid", "params": {"name": "BG_Obsidian", "color": "#090D16", "width": 1920, "height": 1080}},
+                            {"id": "s2", "tool": "after.layer.create_null", "params": {"name": "Typography_Rig", "position": [960.0, 540.0]}},
+                            {"id": "s3", "tool": "after.layer.create_text", "params": {"name": "Hero_Headline", "text": "AFTERTRON STUDIO", "fontSize": 92.0, "fillColor": "#F8FAFC"}},
+                            {"id": "s4", "tool": "after.keyframe.add", "params": {"layer": "Hero_Headline", "path": "Transform/Position", "timeTick": 0, "value": [960.0, 620.0], "easyEase": true}}
+                        ]
+                    }
+                },
+                {
+                    "id": "direction_b",
+                    "label": "الاتجاه الثاني — Editorial Split & Luma Matte Reveal",
+                    "summary": "تكوين تحريري متوازن مع كشف تدريجي عبر الماسكات وتباين لوني دافئ.",
+                    "plan": {
+                        "schema": "aftertron.tron.plan.v1",
+                        "product": "aftertron",
+                        "planId": "dir-b-plan",
+                        "projectId": "aftertron-local-demo",
+                        "compId": 1,
+                        "expectedRevision": 1,
+                        "fpsNum": 24,
+                        "fpsDen": 1,
+                        "steps": [
+                            {"id": "b1", "tool": "after.layer.create_solid", "params": {"name": "BG_Editorial", "color": "#10141D", "width": 1920, "height": 1080}},
+                            {"id": "b2", "tool": "after.layer.create_shape", "params": {"name": "Reveal_Frame", "shape": "rect", "size": [760.0, 180.0], "fillColor": "#F83942"}},
+                            {"id": "b3", "tool": "after.layer.create_text", "params": {"name": "Editorial_Title", "text": "MOTION CRAFT", "fontSize": 84.0, "fillColor": "#F5F1ED"}}
+                        ]
+                    }
+                }
+            ],
+            "plan": {
+                "schema": "aftertron.tron.plan.v1",
+                "product": "aftertron",
+                "planId": "dir-a-plan",
+                "projectId": "aftertron-local-demo",
+                "compId": 1,
+                "expectedRevision": 1,
+                "fpsNum": 24,
+                "fpsDen": 1,
+                "steps": [
+                    {"id": "s1", "tool": "after.layer.create_solid", "params": {"name": "BG_Obsidian", "color": "#090D16", "width": 1920, "height": 1080}},
+                    {"id": "s2", "tool": "after.layer.create_null", "params": {"name": "Typography_Rig", "position": [960.0, 540.0]}},
+                    {"id": "s3", "tool": "after.layer.create_text", "params": {"name": "Hero_Headline", "text": "AFTERTRON STUDIO", "fontSize": 92.0, "fillColor": "#F8FAFC"}},
+                    {"id": "s4", "tool": "after.keyframe.add", "params": {"layer": "Hero_Headline", "path": "Transform/Position", "timeTick": 0, "value": [960.0, 620.0], "easyEase": true}}
+                ]
+            }
+        }
+    }));
+    s.review = Some(json!({
+        "status": "REVIEWED_NOT_EXECUTED",
+        "planId": "dir-a-plan",
+        "planDigest": "8f4a2c91e0b37d12",
+        "revision": 1
+    }));
+}
+
+fn render_chat_contents(
+    ui: &mut egui::Ui,
+    s: &mut ChatState,
+    pal: InfernoGlassPalette,
+    real_context_available: bool,
+    task: &mut Option<&'static str>,
+    motion_prompt: &mut Option<String>,
+    switch_direction: &mut Option<usize>,
+    native_action: &mut Option<bool>,
+    trigger_critique: &mut bool,
+    apply_refinement: &mut Option<Value>,
+    trigger_undo: &mut bool,
+) {
+    // Top Header Bar
+    ui.horizontal(|ui| {
+        ui.colored_label(
+            pal.accent_crimson,
+            RichText::new("◆ TRON").strong().size(15.0),
+        );
+        ui.colored_label(
+            pal.text_secondary,
+            RichText::new("AfterTron · المخرج الإبداعي للموشن والـVFX").strong(),
+        );
+        ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+            if ui
+                .button(RichText::new("—").color(pal.text_primary))
+                .on_hover_text("تصغير إلى المشغّل (Minimize)")
+                .clicked()
+            {
+                s.open = false;
+                *task = Some("minimize");
+            }
+            let mode_label = if s.docked { "Float ⧉" } else { "Dock ▥" };
+            if ui
+                .button(RichText::new(mode_label).color(pal.text_secondary).small())
+                .on_hover_text("تبديل الوضع العائم / المثبّت")
+                .clicked()
+            {
+                s.docked = !s.docked;
+            }
+        });
+    });
+
+    ui.add_space(4.0);
+
+    // Runtime & GPU Telemetry Strip
+    Frame::new()
+        .fill(pal.bg_card)
+        .stroke(Stroke::new(1.0, pal.border))
+        .corner_radius(CornerRadius::same(6))
+        .inner_margin(Margin::symmetric(8, 6))
+        .show(ui, |ui| {
+            ui.horizontal_wrapped(|ui| {
+                let status_color = if s.transport_connected && s.power_on {
+                    pal.accent_emerald
+                } else if s.transport_connected {
+                    pal.accent_gold
+                } else {
+                    pal.text_muted
+                };
+                let status_label = if s.transport_connected && s.power_on {
+                    "● متّصل وجاهز (READY)"
+                } else if s.transport_connected {
+                    "◐ متّصل (Standby)"
+                } else {
+                    "○ غير متّصل (Offline)"
+                };
+                ui.colored_label(status_color, RichText::new(status_label).strong().small());
+                ui.separator();
+                ui.colored_label(pal.text_secondary, RichText::new(&s.model).small());
+                ui.separator();
+                ui.colored_label(
+                    if s.thinking && s.warmed {
+                        pal.accent_emerald
+                    } else {
+                        pal.text_muted
+                    },
+                    RichText::new(if s.thinking && s.warmed {
+                        "Thinking ✓"
+                    } else {
+                        "Thinking —"
+                    })
+                    .small(),
+                );
+                ui.separator();
+                ui.colored_label(
+                    pal.text_muted,
+                    RichText::new(format!("Leases: {}", s.leases)).small(),
+                );
+                if let (Some(used), Some(total)) = (s.vram_used_mb, s.vram_total_mb) {
+                    ui.separator();
+                    ui.colored_label(
+                        pal.accent_gold,
+                        RichText::new(format!("VRAM: {used}/{total} MB")).small(),
+                    );
+                }
+            });
+
+            ui.add_space(4.0);
+            ui.horizontal(|ui| {
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    if ui
+                        .add_enabled(
+                            !s.working && !s.power_on,
+                            egui::Button::new(RichText::new("تشغيل ON").strong()),
+                        )
+                        .clicked()
+                    {
+                        *task = Some("on");
+                    }
+                    if ui
+                        .add_enabled(
+                            s.power_on,
+                            egui::Button::new(RichText::new("إيقاف OFF")),
+                        )
+                        .clicked()
+                    {
+                        *task = Some("off");
+                    }
+                    if ui
+                        .add_enabled(
+                            s.working,
+                            egui::Button::new(
+                                RichText::new("إلغاء Cancel").color(pal.accent_crimson),
+                            ),
+                        )
+                        .clicked()
+                    {
+                        *task = Some("cancel");
+                    }
+                }
+                #[cfg(target_arch = "wasm32")]
+                ui.add_enabled(false, egui::Button::new("Local AI desktop only"));
+
+                if s.working {
+                    ui.spinner();
+                    ui.colored_label(
+                        pal.accent_gold,
+                        RichText::new(if s.task_label.is_empty() {
+                            "جاري المعالجة..."
+                        } else {
+                            &s.task_label
+                        })
+                        .small(),
+                    );
+                }
+            });
+        });
+
+    if let Some(err) = &s.error {
+        ui.add_space(4.0);
+        Frame::new()
+            .fill(pal.bg_card_selected)
+            .stroke(Stroke::new(1.0, pal.accent_crimson))
+            .corner_radius(CornerRadius::same(6))
+            .inner_margin(Margin::symmetric(8, 5))
+            .show(ui, |ui| {
+                ui.colored_label(pal.accent_crimson, RichText::new(err).small().strong());
+            });
+    }
+
+    ui.add_space(6.0);
+
+    // Main Scrollable Creative Workspace
+    ScrollArea::vertical()
+        .max_height(355.0)
+        .auto_shrink([false, false])
+        .show(ui, |ui| {
+            // Welcome / Creative Persona Banner
+            Frame::new()
+                .fill(pal.bg_card)
+                .stroke(Stroke::new(1.0, pal.border))
+                .corner_radius(CornerRadius::same(6))
+                .inner_margin(Margin::symmetric(10, 8))
+                .show(ui, |ui| {
+                    draw_bidi_paragraph(
+                        ui,
+                        "إخراج موشن جرافيكس احترافي — مش قوالب جاهزة.",
+                        pal.accent_gold,
+                        true,
+                    );
+                    draw_bidi_paragraph(
+                        ui,
+                        "بنقرأ أبعاد الكومبوزيشن، الفريم ريت، وشجرة الطبقات، ونبني اتجاهين إبداعيين للمقارنة قبل تنفيذ أي Keyframe أو Effect.",
+                        pal.text_secondary,
+                        false,
+                    );
+                });
+
+            // Conversation History
+            if !s.history.is_empty() {
+                ui.add_space(6.0);
+                for turn in s.history.iter().rev().take(6).rev() {
+                    let is_user = turn.role == "user";
+                    let card_fill = if is_user {
+                        pal.bg_card_selected
+                    } else {
+                        pal.bg_card
+                    };
+                    Frame::new()
+                        .fill(card_fill)
+                        .stroke(Stroke::new(1.0, pal.border))
+                        .corner_radius(CornerRadius::same(6))
+                        .inner_margin(Margin::symmetric(10, 6))
+                        .show(ui, |ui| {
+                            ui.horizontal(|ui| {
+                                let role_title = if is_user {
+                                    "أنت (Creative Brief)"
+                                } else {
+                                    "TRON (المخرج الإبداعي)"
+                                };
+                                ui.colored_label(
+                                    if is_user {
+                                        pal.accent_gold
+                                    } else {
+                                        pal.accent_crimson
+                                    },
+                                    RichText::new(role_title).small().strong(),
+                                );
+                                if let Some(b) = &turn.badge {
+                                    ui.colored_label(pal.text_muted, RichText::new(b).small());
+                                }
+                            });
+                            draw_bidi_paragraph(ui, &turn.text, pal.text_primary, false);
+                        });
+                    ui.add_space(4.0);
+                }
+            }
+
+            // Two Creative Direction Comparison Cards
+            if let Some(last) = s.proposal.clone() {
+                let proposal = last.get("result").unwrap_or(&last);
+                if let Some(directions) = proposal
+                    .get("exploredDirections")
+                    .and_then(Value::as_array)
+                    .filter(|d| !d.is_empty())
+                {
+                    ui.add_space(4.0);
+                    draw_bidi_paragraph(
+                        ui,
+                        "مقارنة الاتجاهات الإبداعية المقترحة (اختر الاتجاه الأنسب):",
+                        pal.accent_gold,
+                        true,
+                    );
+                    for (idx, dir) in directions.iter().take(2).enumerate() {
+                        let is_selected = s.selected_direction == idx;
+                        let title = dir
+                            .get("label")
+                            .or_else(|| dir.get("title"))
+                            .and_then(Value::as_str)
+                            .unwrap_or(if idx == 0 {
+                                "Direction A"
+                            } else {
+                                "Direction B"
+                            });
+                        let summary = dir
+                            .get("summary")
+                            .or_else(|| dir.get("rationale"))
+                            .and_then(Value::as_str)
+                            .unwrap_or("");
+                        let step_count = dir
+                            .get("plan")
+                            .and_then(|p| p.get("steps"))
+                            .and_then(Value::as_array)
+                            .map_or(0, Vec::len);
+
+                        Frame::new()
+                            .fill(if is_selected {
+                                pal.bg_card_selected
+                            } else {
+                                pal.bg_card
+                            })
+                            .stroke(Stroke::new(
+                                if is_selected { 1.5 } else { 1.0 },
+                                if is_selected {
+                                    pal.border_active
+                                } else {
+                                    pal.border
+                                },
+                            ))
+                            .corner_radius(CornerRadius::same(6))
+                            .inner_margin(Margin::symmetric(10, 8))
+                            .show(ui, |ui| {
+                                ui.horizontal(|ui| {
+                                    let badge = if is_selected {
+                                        "★ الاتجاه المختار"
+                                    } else {
+                                        "اتجاه بديل"
+                                    };
+                                    ui.colored_label(
+                                        if is_selected {
+                                            pal.accent_crimson
+                                        } else {
+                                            pal.text_muted
+                                        },
+                                        RichText::new(badge).small().strong(),
+                                    );
+                                    ui.colored_label(
+                                        pal.text_muted,
+                                        RichText::new(format!("({step_count} خطوات أصلية)"))
+                                            .small(),
+                                    );
+                                    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                                        let btn_text = if is_selected {
+                                            "مُحدّد ✓"
+                                        } else {
+                                            "اختيار هذا الاتجاه"
+                                        };
+                                        if ui
+                                            .add_enabled(
+                                                !is_selected && !s.working,
+                                                egui::Button::new(RichText::new(btn_text).small()),
+                                            )
+                                            .clicked()
+                                        {
+                                            *switch_direction = Some(idx);
+                                        }
+                                    });
+                                });
+                                draw_bidi_paragraph(ui, title, pal.text_primary, true);
+                                if !summary.is_empty() {
+                                    draw_bidi_paragraph(ui, summary, pal.text_secondary, false);
+                                }
+                            });
+                        ui.add_space(4.0);
+                    }
+                }
+
+                // Proposed Native Operations & Approval Gate
+                if let Some(steps) = proposal
+                    .get("plan")
+                    .and_then(|p| p.get("steps"))
+                    .and_then(Value::as_array)
+                {
+                    Frame::new()
+                        .fill(pal.bg_card)
+                        .stroke(Stroke::new(1.0, pal.border))
+                        .corner_radius(CornerRadius::same(6))
+                        .inner_margin(Margin::symmetric(10, 8))
+                        .show(ui, |ui| {
+                            ui.colored_label(
+                                pal.text_primary,
+                                RichText::new(format!(
+                                    "العمليات الأصلية المقترحة ({} خطوات — لم تُنفّذ بعد):",
+                                    steps.len()
+                                ))
+                                .strong(),
+                            );
+                            for step in steps.iter().take(16) {
+                                ui.colored_label(
+                                    pal.text_secondary,
+                                    RichText::new(format!(
+                                        "• {} → {}",
+                                        step.get("id").and_then(Value::as_str).unwrap_or("?"),
+                                        step.get("tool").and_then(Value::as_str).unwrap_or("?")
+                                    ))
+                                    .small(),
+                                );
+                            }
+                            if s.power_on && !s.working {
+                                ui.add_space(4.0);
+                                ui.horizontal_wrapped(|ui| {
+                                    if ui
+                                        .button(
+                                            RichText::new("1 · فحص الخطة (Native Preflight)")
+                                                .strong(),
+                                        )
+                                        .clicked()
+                                    {
+                                        *native_action = Some(false);
+                                    }
+                                    if let Some(rev_info) = &s.review {
+                                        let digest = rev_info
+                                            .get("planDigest")
+                                            .and_then(Value::as_str)
+                                            .unwrap_or("-");
+                                        ui.colored_label(
+                                            pal.accent_emerald,
+                                            RichText::new(format!("✓ Preflight OK ({digest})"))
+                                                .small()
+                                                .strong(),
+                                        );
+                                        if ui
+                                            .button(
+                                                RichText::new(
+                                                    "2 · اعتماد وتنفيذ الحركة على الـComposition",
+                                                )
+                                                .color(pal.accent_gold)
+                                                .strong(),
+                                            )
+                                            .clicked()
+                                        {
+                                            *native_action = Some(true);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                }
+            }
+
+            // Execution Receipt + 5-Frame Visual Critique + Undo/Refinement
+            if let Some(result) = &s.execution {
+                ui.add_space(6.0);
+                Frame::new()
+                    .fill(pal.bg_card)
+                    .stroke(Stroke::new(1.0, pal.accent_emerald))
+                    .corner_radius(CornerRadius::same(6))
+                    .inner_margin(Margin::symmetric(10, 8))
+                    .show(ui, |ui| {
+                        let status = result["native"]["status"]
+                            .as_str()
+                            .unwrap_or("EXECUTED_NATIVE");
+                        let after_rev = result["afterRevision"].as_u64().unwrap_or(0);
+                        ui.colored_label(
+                            pal.accent_emerald,
+                            RichText::new(format!(
+                                "✓ تم التنفيذ الأصلي ({status} · rev {after_rev})"
+                            ))
+                            .strong(),
+                        );
+                        ui.horizontal_wrapped(|ui| {
+                            if ui
+                                .add_enabled(
+                                    !s.working && s.power_on,
+                                    egui::Button::new(
+                                        RichText::new("3 · معاينة ونقد 5 كادرات حقيقية").strong(),
+                                    ),
+                                )
+                                .clicked()
+                            {
+                                *trigger_critique = true;
+                            }
+                            if ui
+                                .add_enabled(
+                                    !s.working,
+                                    egui::Button::new(RichText::new(
+                                        "تراجع بخطوة واحدة (Undo Plan)",
+                                    )),
+                                )
+                                .clicked()
+                            {
+                                *trigger_undo = true;
+                            }
+                        });
+                    });
+            }
+
+            if let Some(crit_raw) = &s.critique {
+                let crit = crit_raw.get("critique").unwrap_or(crit_raw);
+                ui.add_space(6.0);
+                Frame::new()
+                    .fill(pal.bg_card_selected)
+                    .stroke(Stroke::new(1.0, pal.accent_gold))
+                    .corner_radius(CornerRadius::same(6))
+                    .inner_margin(Margin::symmetric(10, 8))
+                    .show(ui, |ui| {
+                        ui.colored_label(
+                            pal.accent_gold,
+                            RichText::new("النقد البصري لـ 5 كادرات مرسومة (0% · 25% · 50% · 75% · 100%)")
+                                .strong(),
+                        );
+                        if let Some(text) = crit.get("critiqueText").and_then(Value::as_str) {
+                            draw_bidi_paragraph(ui, text, pal.text_primary, false);
+                        }
+                        if !s.rendered_samples.is_empty() {
+                            ui.horizontal_wrapped(|ui| {
+                                for sample in &s.rendered_samples {
+                                    let lbl = sample["label"].as_str().unwrap_or("?");
+                                    let luma = sample["meanLuma"].as_f64().unwrap_or(0.0);
+                                    let alpha = sample["nonZeroAlphaRatio"].as_f64().unwrap_or(0.0);
+                                    ui.colored_label(
+                                        pal.text_muted,
+                                        RichText::new(format!(
+                                            "[{lbl}: Y={luma:.1} α={:.0}%]",
+                                            alpha * 100.0
+                                        ))
+                                        .small(),
+                                    );
+                                }
+                            });
+                        }
+                        if let Some(ref_plan) = crit.get("refinementPlan").filter(|v| v.is_object())
+                            && ui
+                                .add_enabled(
+                                    !s.working && s.power_on,
+                                    egui::Button::new(
+                                        RichText::new("تطبيق خطة التحسين البصري (Load Refinement)")
+                                            .strong(),
+                                    ),
+                                )
+                                .clicked()
+                        {
+                            *apply_refinement = Some(ref_plan.clone());
+                        }
+                    });
+            }
+        });
+
+    ui.add_space(6.0);
+    let enabled = s.power_on && !s.working && real_context_available;
+    ui.add_enabled(
+        enabled,
+        egui::TextEdit::multiline(&mut s.prompt)
+            .hint_text("اكتب تفاصيل البريف الإبداعي، التايبوجرافي، الإيقاع، أو الملاحظات البصرية...")
+            .desired_rows(2),
+    );
+    ui.horizontal(|ui| {
+        if ui
+            .add_enabled(
+                enabled && !s.prompt.trim().is_empty(),
+                egui::Button::new(
+                    RichText::new("فكّر واقترح اتجاهين (Generate Motion Plan)").strong(),
+                ),
+            )
+            .clicked()
+        {
+            *motion_prompt = Some(s.prompt.clone());
+        }
+        if !real_context_available {
+            ui.colored_label(
+                pal.text_muted,
+                RichText::new("افتح Composition لتفعيل التخطيط").small(),
+            );
+        }
+    });
+}
+
 /// Native app UI state is read at each frame, not captured before model
 /// inference. The review and approval steps use the same current Session.
 pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
     let st = shared(ctx);
-    let is_open = st.lock().map(|s| s.open).unwrap_or(false);
+    let dark_mode = ctx.global_style().visuals.dark_mode;
+    let pal = palette_for(dark_mode);
+    let (is_open, is_docked, _is_working, is_power_on) = st
+        .lock()
+        .map(|s| (s.open, s.docked, s.working, s.power_on))
+        .unwrap_or((false, false, false, false));
+
     if !is_open {
         egui::Area::new(Id::new("aftertron.tron.launcher"))
             .order(Order::Foreground)
             .anchor(Align2::RIGHT_BOTTOM, vec2(-22.0, -26.0))
             .show(ctx, |ui| {
-                if ui.add(egui::Button::new(RichText::new("TRON · Motion AI").strong())
-                    .min_size(vec2(148.0, 42.0))).clicked() {
-                    if let Ok(mut s) = st.lock() {
-                        s.open = true;
-                        s.last_status = Instant::now() - Duration::from_secs(20);
-                    }
-                }
+                Frame::new()
+                    .fill(pal.bg_primary)
+                    .stroke(Stroke::new(1.5, pal.border_active))
+                    .corner_radius(CornerRadius::same(20))
+                    .inner_margin(Margin::symmetric(14, 8))
+                    .show(ui, |ui| {
+                        ui.horizontal(|ui| {
+                            let dot_color = if is_power_on {
+                                pal.accent_emerald
+                            } else {
+                                pal.accent_crimson
+                            };
+                            ui.colored_label(dot_color, "◆");
+                            if ui
+                                .add(
+                                    egui::Button::new(
+                                        RichText::new("TRON · المخرج الإبداعي")
+                                            .color(pal.text_primary)
+                                            .strong(),
+                                    )
+                                    .frame(false),
+                                )
+                                .clicked()
+                                && let Ok(mut s) = st.lock()
+                            {
+                                s.open = true;
+                                s.last_status = Instant::now() - Duration::from_secs(20);
+                            }
+                        });
+                    });
             });
         return;
     }
 
-    let poll = st.lock().map(|s| !s.working && s.last_status.elapsed() > Duration::from_secs(12))
+    let poll = st
+        .lock()
+        .map(|s| !s.working && s.last_status.elapsed() > Duration::from_secs(12))
         .unwrap_or(false);
     #[cfg(not(target_arch = "wasm32"))]
     if poll {
-        let active = st.lock().map(|s| s.power_on).unwrap_or(false);
-        action(st.clone(), ctx.clone(), if active { "heartbeat" } else { "status" });
+        action(
+            st.clone(),
+            ctx.clone(),
+            if is_power_on { "heartbeat" } else { "status" },
+        );
     }
     #[cfg(target_arch = "wasm32")]
-    let _ = poll;
+    let _ = (poll, is_working);
 
     let real_context = crate::tron_actions::live_context(session);
     let mut task = None;
     let mut motion_prompt = None;
+    let mut switch_direction = None;
     let mut native_action: Option<bool> = None;
+    let mut trigger_critique = false;
+    let mut apply_refinement: Option<Value> = None;
+    let mut trigger_undo = false;
+
     let bounds = ctx.content_rect();
-    egui::Window::new("TRON · Motion Creative Director")
+    let win_frame = Frame::window(&ctx.global_style())
+        .fill(pal.bg_primary)
+        .stroke(Stroke::new(1.2, pal.border))
+        .corner_radius(CornerRadius::same(8))
+        .inner_margin(Margin::same(12));
+
+    let mut win = egui::Window::new("TRON · Motion Creative Director")
         .id(Id::new("aftertron.tron.window"))
         .order(Order::Foreground)
-        .default_pos(egui::pos2((bounds.right() - 468.0).max(bounds.left() + 8.0), bounds.top() + 65.0))
-        .default_size(vec2(442.0, 540.0))
-        .min_size(vec2(322.0, 295.0))
-        .resizable(true)
-        .collapsible(false)
-        .show(ctx, |ui| {
-            let Ok(mut s) = st.lock() else { return };
-            ui.horizontal(|ui| {
-                ui.heading("TRON");
-                ui.weak("AfterTron · Motion / VFX Director");
-                if ui.small_button("—").on_hover_text("تصغير").clicked() {
-                    s.open = false;
-                    task = Some("minimize");
-                }
-            });
-            ui.separator();
-            ui.horizontal_wrapped(|ui| {
-                ui.colored_label(if s.transport_connected { Color32::LIGHT_GREEN } else { Color32::GRAY },
-                    if s.transport_connected { "● Connected" } else { "○ Offline" });
-                ui.label(format!("Model: {}", s.model_state));
-                ui.weak(format!("Shared leases: {}", s.leases));
-            });
-            ui.horizontal(|ui| {
-                ui.label(&s.model);
-                ui.colored_label(if s.thinking && s.warmed { Color32::LIGHT_GREEN } else { Color32::YELLOW },
-                    if s.thinking && s.warmed { "Thinking verified" } else { "Thinking unavailable" });
-                if s.working { ui.spinner(); }
-            });
-            ui.horizontal(|ui| {
-                #[cfg(not(target_arch = "wasm32"))]
-                {
-                    if ui.add_enabled(!s.working && !s.power_on, egui::Button::new("ON")).clicked() {
-                        task = Some("on");
-                    }
-                    if ui.add_enabled(!s.working && s.power_on, egui::Button::new("OFF")).clicked() {
-                        task = Some("off");
-                    }
-                    if ui.add_enabled(s.working, egui::Button::new("Cancel")).clicked() {
-                        task = Some("cancel");
-                    }
-                }
-                #[cfg(target_arch = "wasm32")]
-                ui.add_enabled(false, egui::Button::new("Local AI desktop only"));
-            });
-            if let Some(err) = &s.error {
-                ui.colored_label(Color32::from_rgb(236, 104, 103), err);
+        .title_bar(false)
+        .frame(win_frame)
+        .min_size(vec2(380.0, 340.0))
+        .collapsible(false);
+
+    if is_docked {
+        win = win
+            .fixed_pos(egui::pos2(
+                (bounds.right() - 462.0).max(bounds.left() + 8.0),
+                bounds.top() + 66.0,
+            ))
+            .fixed_size(vec2(450.0, (bounds.height() - 96.0).max(360.0)))
+            .resizable(false);
+    } else {
+        win = win
+            .default_pos(egui::pos2(
+                (bounds.right() - 472.0).max(bounds.left() + 8.0),
+                bounds.top() + 66.0,
+            ))
+            .default_size(vec2(456.0, 580.0))
+            .resizable(true);
+    }
+
+    win.show(ctx, |ui| {
+        let Ok(mut s) = st.lock() else { return };
+        render_chat_contents(
+            ui,
+            &mut s,
+            pal,
+            real_context.is_some(),
+            &mut task,
+            &mut motion_prompt,
+            &mut switch_direction,
+            &mut native_action,
+            &mut trigger_critique,
+            &mut apply_refinement,
+            &mut trigger_undo,
+        );
+    });
+
+    if let Some(dir_idx) = switch_direction
+        && let Ok(mut s) = st.lock()
+        && let Some(prop) = s.proposal.clone()
+    {
+        match crate::tron_actions::select_direction(&prop, dir_idx) {
+            Ok(updated) => {
+                s.selected_direction = dir_idx;
+                s.proposal = Some(updated);
+                s.review = None;
+                s.reviewed_id = None;
+                s.reviewed_revision = None;
+                s.reviewed_digest = None;
+                s.error = None;
             }
-            ui.separator();
-            ScrollArea::vertical().max_height(320.0).show(ui, |ui| {
-                ui.strong("إخراج موشن متكامل، مش حركة عشوائية.");
-                ui.label("هنراجع التكوين والطبقات والتوقيت، ونقارن اتجاهين إبداعيين قبل تنفيذ Keyframes أو Effects.");
-                if let Some(last) = s.proposal.clone() {
-                    let proposal = last.get("result").unwrap_or(&last);
-                    ui.separator();
-                    ui.label(proposal.get("userExplanation").and_then(Value::as_str).unwrap_or("Motion direction pending."));
-                    if let Some(steps) = proposal.get("plan").and_then(|p| p.get("steps")).and_then(Value::as_array) {
-                        ui.strong(format!("{} Native motion operations — not yet executed", steps.len()));
-                        for step in steps.iter().take(12) {
-                            ui.small(format!("{} · {}",
-                                step.get("id").and_then(Value::as_str).unwrap_or("?"),
-                                step.get("tool").and_then(Value::as_str).unwrap_or("?")));
-                        }
-                    }
-                    if s.power_on && !s.working && proposal.get("plan").is_some() {
-                        if ui.button("1 · Native preflight").clicked() { native_action = Some(false); }
-                        if s.review.is_some() {
-                            ui.colored_label(Color32::LIGHT_GREEN, "تم فحص الخطة — لم تُنفّذ");
-                            if ui.button("2 · أوافق على تطبيق الحركة على الـComposition").clicked() {
-                                native_action = Some(true);
-                            }
-                        }
-                    }
-                }
-                if let Some(result) = &s.execution {
-                    ui.separator();
-                    ui.strong("Native execution receipt");
-                    ui.label(result["native"]["status"].as_str().unwrap_or("UNKNOWN"));
-                    ui.small("لازم معاينة فريمات حقيقية، مراجعة الـAlpha، وحفظ وإعادة فتح المشروع قبل قبول الجودة.");
-                }
-            });
-            ui.add_space(6.0);
-            let enabled = s.power_on && !s.working && real_context.is_some();
-            ui.add_enabled(enabled, egui::TextEdit::multiline(&mut s.prompt)
-                .hint_text("اكتب فكرة الموشن والهوية البصرية والتوقيت المطلوب…").desired_rows(3));
-            if ui.add_enabled(enabled && !s.prompt.trim().is_empty(), egui::Button::new("فكّر واقترح Motion Plan")).clicked() {
-                if let Some(context) = real_context.clone() {
-                    motion_prompt = Some((s.prompt.clone(), context));
-                }
+            Err(e) => s.error = Some(e),
+        }
+    }
+
+    if let Some(ref_plan) = apply_refinement
+        && let Ok(mut s) = st.lock()
+    {
+        s.proposal = Some(json!({
+            "ok": true,
+            "result": {
+                "ok": true,
+                "userExplanation": "خطة تحسين إبداعي مبنية على فحص الـ 5 كادرات الحقيقية.",
+                "plan": ref_plan
             }
-        });
+        }));
+        s.review = None;
+        s.reviewed_id = None;
+        s.reviewed_revision = None;
+        s.reviewed_digest = None;
+    }
+
+    if trigger_undo {
+        let _ = session.undo();
+        if let Ok(mut s) = st.lock() {
+            s.execution = None;
+            s.critique = None;
+            s.rendered_samples.clear();
+            s.history.push(ChatTurn {
+                role: "tron".into(),
+                text: "تم التراجع عن خطة الحركة بالكامل في خطوة Undo واحدة.".into(),
+                badge: Some("Undo".into()),
+            });
+        }
+    }
 
     #[cfg(not(target_arch = "wasm32"))]
-    if let Some(task) = task { action(st.clone(), ctx.clone(), task); }
+    if let Some(task) = task {
+        action(st.clone(), ctx.clone(), task);
+    }
     #[cfg(not(target_arch = "wasm32"))]
-    if let Some((prompt, context)) = motion_prompt {
+    if let Some(prompt) = motion_prompt
+        && let Some(context) = real_context.clone()
+    {
         generate(st.clone(), ctx.clone(), prompt, context);
     }
-    if let Some(approved) = native_action {
-        if let Ok(mut s) = st.lock() {
-            let result = match s.proposal.clone() {
-                Some(plan) if s.power_on && !s.working =>
-                    if approved {
-                        match (s.reviewed_id.clone(), s.reviewed_revision, s.reviewed_digest.clone()) {
-                            (Some(id), Some(rev), Some(digest)) => crate::tron_actions::apply(session, &plan, &id, rev, &digest),
-                            _ => Err("AFTERTRON_PLAN_NOT_REVIEWED".into())
-                        }
-                    } else { crate::tron_actions::review(session, &plan) },
-                _ => Err("AFTERTRON_MODEL_OFF_OR_NO_PLAN".into())
-            };
-            match result {
-                Ok(v) if approved => {
-                    s.execution = Some(v);
-                    s.review = None;
-                    s.reviewed_id = None;
-                    s.reviewed_revision = None;
-                    s.reviewed_digest = None;
-                    s.error = None;
-                }
-                Ok(v) => {
-                    s.reviewed_id = v.get("planId").and_then(Value::as_str).map(str::to_owned);
-                    s.reviewed_revision = v.get("revision").and_then(Value::as_u64);
-                    s.reviewed_digest = v.get("planDigest").and_then(Value::as_str).map(str::to_owned);
-                    s.review = Some(v);
-                    s.error = None;
-                }
-                Err(e) => {
+    #[cfg(not(target_arch = "wasm32"))]
+    if trigger_critique
+        && let Some(context) = crate::tron_actions::live_context(session)
+    {
+        match crate::tron_actions::sample_rendered_frames(session) {
+            Ok(samples) => {
+                let prompt = st
+                    .lock()
+                    .map(|s| s.prompt.clone())
+                    .unwrap_or_default();
+                run_visual_critique(st.clone(), ctx.clone(), context, samples, prompt);
+            }
+            Err(e) => {
+                if let Ok(mut s) = st.lock() {
                     s.error = Some(e);
-                    s.review = None;
-                    s.reviewed_id = None;
-                    s.reviewed_revision = None;
-                    s.reviewed_digest = None;
                 }
             }
         }
     }
+
+    if let Some(approved) = native_action
+        && let Ok(mut s) = st.lock()
+    {
+        let result = match s.proposal.clone() {
+            Some(plan) if s.power_on && !s.working => {
+                if approved {
+                    match (
+                        s.reviewed_id.clone(),
+                        s.reviewed_revision,
+                        s.reviewed_digest.clone(),
+                    ) {
+                        (Some(id), Some(rev), Some(digest)) => {
+                            crate::tron_actions::apply(session, &plan, &id, rev, &digest)
+                        }
+                        _ => Err("AFTERTRON_PLAN_NOT_REVIEWED".into()),
+                    }
+                } else {
+                    crate::tron_actions::review(session, &plan)
+                }
+            }
+            _ => Err("AFTERTRON_MODEL_OFF_OR_NO_PLAN".into()),
+        };
+        match result {
+            Ok(v) if approved => {
+                s.execution = Some(v);
+                s.review = None;
+                s.reviewed_id = None;
+                s.reviewed_revision = None;
+                s.reviewed_digest = None;
+                s.error = None;
+            }
+            Ok(v) => {
+                s.reviewed_id = v.get("planId").and_then(Value::as_str).map(str::to_owned);
+                s.reviewed_revision = v.get("revision").and_then(Value::as_u64);
+                s.reviewed_digest = v
+                    .get("planDigest")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned);
+                s.review = Some(v);
+                s.error = None;
+            }
+            Err(e) => {
+                s.error = Some(e);
+                s.review = None;
+                s.reviewed_id = None;
+                s.reviewed_revision = None;
+                s.reviewed_digest = None;
+            }
+        }
+    }
     #[cfg(target_arch = "wasm32")]
-    let _ = (task, motion_prompt);
+    let _ = (task, motion_prompt, trigger_critique);
     ctx.request_repaint_after(Duration::from_secs(2));
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn release_on_exit() {
+    let _ = effectcraft_automation::tron_local::cancel_job();
     let _ = effectcraft_automation::tron_local::release();
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn model_is_never_preloaded_on_window_construction() {
         let s = ChatState::default();

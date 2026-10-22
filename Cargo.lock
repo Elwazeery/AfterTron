@@ -1191,9 +1191,11 @@ dependencies = [
 name = "effectcraft-automation"
 version = "0.13.0"
 dependencies = [
+ "effectcraft-effects",
  "effectcraft-engine",
  "effectcraft-host",
  "effectcraft-script",
+ "effectcraft-time",
  "image",
  "serde",
  "serde_json",

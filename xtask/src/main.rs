@@ -83,6 +83,7 @@ const SAME_LAYER: &[(&str, &str)] = &[
     ("host", "engine"),
     ("script", "engine"),
     ("host", "script"),
+    ("ui-egui", "automation"),
     ("cli", "effectcraft"),
 ];
 

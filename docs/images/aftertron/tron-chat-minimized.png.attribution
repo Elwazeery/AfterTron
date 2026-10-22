@@ -1,0 +1,8 @@
+asset:        tron-chat-minimized.png
+title:        AfterTron x TRON minimized launcher pill (Inferno Pixel Glass Dark)
+author:       AfterTron / GemiTron Team
+source:       original work (headless wgpu render of AfterTron UI via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-22 by Antigravity (agent) for Elwazeery
+notes:        1680x1020 screenshot of AfterTron with the TRON panel minimized to its compact non-blocking launcher pill in the bottom-right corner.

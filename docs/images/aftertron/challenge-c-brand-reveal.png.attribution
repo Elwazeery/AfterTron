@@ -1,0 +1,8 @@
+asset:        challenge-c-brand-reveal.png
+title:        AfterTron x TRON Challenge C — Distinctive Visual Identity / VFX Reveal frame
+author:       AfterTron / GemiTron Team
+source:       original work (rendered from Challenge C native composition via crates/ui-egui/tests/aftertron_acceptance.rs)
+license:      MIT OR Apache-2.0
+license-file:
+added:        2026-10-22 by Antigravity (agent) for Elwazeery
+notes:        1920x1080 rendered frame of Challenge C (10s 24fps brand identity VFX reveal with vector star emblem core, trim paths, orbital energy halo in Add blend mode, and bilingual brand lockup).

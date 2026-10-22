@@ -391,7 +391,7 @@ fn semantic_seeds() -> Vec<SemanticSeed> {
             domain: "layer",
             title: "Set Layer Parent",
             description: "Parent a child layer to a parent layer (`parent: null` clears parenting).",
-            engine_target: "layer.parent",
+            engine_target: "layer.setParent",
             read_only: false,
             schema: json!({
                 "type": "object",
@@ -408,7 +408,7 @@ fn semantic_seeds() -> Vec<SemanticSeed> {
             domain: "layer",
             title: "Set Layer Blend Mode",
             description: "Set the compositing blend mode of a layer (e.g., Normal, Multiply, Screen, Add, Overlay).",
-            engine_target: "layer.blendMode",
+            engine_target: "layer.setBlendMode",
             read_only: false,
             schema: json!({
                 "type": "object",
@@ -557,7 +557,7 @@ fn semantic_seeds() -> Vec<SemanticSeed> {
             domain: "mask",
             title: "Add Layer Mask",
             description: "Create a rectangular or elliptical vector mask on a layer with mode (`add`, `subtract`, `intersect`) and feather.",
-            engine_target: "mask.new",
+            engine_target: "layer.addMask",
             read_only: false,
             schema: json!({
                 "type": "object",
@@ -577,7 +577,7 @@ fn semantic_seeds() -> Vec<SemanticSeed> {
             domain: "matte",
             title: "Set Track Matte",
             description: "Assign an Alpha or Luma Track Matte to a layer from another layer in the composition.",
-            engine_target: "layer.trackMatte",
+            engine_target: "layer.setTrackMatte",
             read_only: false,
             schema: json!({
                 "type": "object",
