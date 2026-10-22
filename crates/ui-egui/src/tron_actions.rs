@@ -42,6 +42,13 @@ fn checked_proposal(raw: &Value) -> Result<MotionPlan, String> {
     serde_json::from_value(plan.clone()).map_err(|e| format!("AFTERTRON_INVALID_PLAN: {e}"))
 }
 
+fn digest_plan(plan: &MotionPlan) -> Result<String, String> {
+    let bytes = serde_json::to_vec(plan).map_err(|e| format!("PLAN_DIGEST_ENCODING_FAILED: {e}"))?;
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    bytes.hash(&mut h);
+    Ok(format!("{:016x}", h.finish()))
+}
+
 pub fn review(session: &Session, response: &Value) -> Result<Value, String> {
     let plan = checked_proposal(response)?;
     let trusted = authority(session, false)?;
@@ -49,6 +56,7 @@ pub fn review(session: &Session, response: &Value) -> Result<Value, String> {
     Ok(json!({
         "status": "REVIEWED_NOT_EXECUTED",
         "planId": plan.plan_id,
+        "planDigest": digest_plan(&plan)?,
         "revision": trusted.revision,
         "projectId": trusted.project_id,
         "compId": trusted.comp_id,
@@ -57,10 +65,10 @@ pub fn review(session: &Session, response: &Value) -> Result<Value, String> {
     }))
 }
 
-pub fn apply(session: &mut Session, response: &Value, reviewed_id: &str, reviewed_revision: u64) -> Result<Value, String> {
+pub fn apply(session: &mut Session, response: &Value, reviewed_id: &str, reviewed_revision: u64, reviewed_digest: &str) -> Result<Value, String> {
     let plan = checked_proposal(response)?;
     if plan.plan_id != reviewed_id || plan.expected_revision != reviewed_revision ||
-        session.document_revision() != reviewed_revision {
+        session.document_revision() != reviewed_revision || digest_plan(&plan)? != reviewed_digest {
         return Err("AFTERTRON_STALE_OR_CHANGED_PLAN".into());
     }
     let trusted = authority(session, true)?;
