@@ -243,7 +243,7 @@ mod tests {
     }
     #[test]
     fn approval_is_not_model_supplied() {
-        let session = Session::default();
-        assert!(execute_approved(&mut session.clone(), &plan(), &authority()).is_err());
+        let mut session = Session::default();
+        assert!(execute_approved(&mut session, &plan(), &authority()).is_err());
     }
 }
