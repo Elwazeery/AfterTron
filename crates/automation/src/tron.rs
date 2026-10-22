@@ -144,6 +144,31 @@ pub fn preflight(plan: &MotionPlan, authority: &LocalMotionAuthority) -> Result<
             && !matches!(step.tool.as_str(), "after.property.set" | "after.keyframe.add" | "after.effect.apply")
         { return Err(err("UNMAPPED_COMPOUND_TOOL")); }
         verify_params(&step.params, rate, plan.comp_id)?;
+        if let Some(prop_path) = step.params.get("path") {
+            if !matches!(step.tool.as_str(), "after.property.set" | "after.keyframe.add") {
+                return Err(err("PROPERTY_PATH_TOOL_MISMATCH"));
+            }
+            let path = prop_path.as_str().ok_or_else(|| err("BAD_PROPERTY_PATH"))?;
+            if path.is_empty() || path.len() > 180 || path.starts_with('/') || path.contains("..")
+                || !path.bytes().all(|b| b.is_ascii_alphanumeric()
+                    || matches!(b, b'_' | b'.' | b'/' | b'#' | b'-' | b' '))
+            {
+                return Err(err("BAD_PROPERTY_PATH"));
+            }
+        }
+        if matches!(step.tool.as_str(), "after.property.set" | "after.keyframe.add") {
+            if !step.params.get("layer").is_some_and(|v| v.is_string() || v.is_u64())
+                || !step.params.get("path").is_some_and(Value::is_string)
+                || step.params.get("value").is_none()
+            {
+                return Err(err("KEYFRAME_PROPERTY_ARGUMENTS_REQUIRED"));
+            }
+        }
+        if step.tool == "after.effect.apply"
+            && (step.params.get("layer").is_none() || !step.params.get("effect").is_some_and(Value::is_string))
+        {
+            return Err(err("EFFECT_LAYER_AND_NAME_REQUIRED"));
+        }
     }
     Ok(json!({
         "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
