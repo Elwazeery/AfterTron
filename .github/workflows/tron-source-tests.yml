@@ -19,6 +19,11 @@ jobs:
           set -euo pipefail
           test -f Cargo.toml
           git merge-base --is-ancestor de3fec28ed7a3d7a700a9d8ea307779dcda99a8e HEAD
+      - name: Parse native control source (Rust 2024, no dependencies)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --edition 2024 --emit stdout crates/ui-egui/src/control.rs > /dev/null
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
