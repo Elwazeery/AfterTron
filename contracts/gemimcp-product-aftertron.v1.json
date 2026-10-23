@@ -26,9 +26,9 @@
     "workspaceRootConfinement": true
   },
   "capabilities": {
-    "semanticToolCount": 42,
+    "semanticToolCount": 43,
     "engineCommandCount": 731,
-    "totalToolCount": 773,
+    "totalToolCount": 774,
     "registeredEffectCount": 307,
     "domains": [
       "project",
@@ -466,6 +466,56 @@
         "properties": {
           "name": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "after.layer.add_footage",
+      "domain": "layer",
+      "title": "Add Imported Footage/Asset Layer",
+      "description": "Place an already-imported project footage or image item (`itemId`, `item`, or `itemName`) as a layer in the active composition.",
+      "engineTarget": "layer.addItem",
+      "readOnly": false,
+      "mutating": true,
+      "supportsExpectedRevision": true,
+      "supportsIdempotencyKey": true,
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "blendMode": {
+            "type": "string"
+          },
+          "item": {
+            "type": [
+              "integer",
+              "string"
+            ]
+          },
+          "itemId": {
+            "type": "integer"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "opacity": {
+            "type": "number"
+          },
+          "position": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "scale": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
           }
         },
         "type": "object"

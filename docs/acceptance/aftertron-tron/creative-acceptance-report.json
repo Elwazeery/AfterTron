@@ -1,0 +1,2036 @@
+{
+  "generatedAt": "2026-10-23T01:15:00Z",
+  "productions": {
+    "challengeA_typography": {
+      "artifacts": {
+        "afterRefinementHeroPng": "docs/images/aftertron/challenge-a-typography-hero.png",
+        "beforeRefinementPng": "docs/images/aftertron/challenge-a-typography-before-refinement.png",
+        "editableProject": "docs/images/aftertron/challenge-a-typography.ecproj"
+      },
+      "brief": "Design an architectural exhibition title sequence for 'CAIRO PAVILION 2027 — LIGHT & HORIZON / جناح القاهرة ٢٠٢٧ — النور والأفق' (10s, 24fps, 1920x1080). Create a deep obsidian backdrop (#07090F), a warm brushed-brass architectural framing border (stroke #E6B450, size [1480, 760] at center [960, 540]), a bold English hero headline 'CAIRO PAVILION 2027 — LIGHT & HORIZON' at [960, 480] (size 64, GemiFontSans Bold, fill #F7F5F0), an Arabic subtitle 'جناح القاهرة ٢٠٢٧ — النور والأفق' at [960, 595] (size 42, GemiFontSans Medium, fill #F2B84B), and a camera controller Null at [960, 540] parenting the title layers. Animate staggered entrance keyframes from frame 0 to frame 48 with custom bezier velocity curves, subtle optical Glow on the brass frame, and Motion Blur.",
+      "complexityTier": "full_creative_composition",
+      "creativeBriefAnalysis": {
+        "creativeInterpretation": "",
+        "selectionRationale": "يحقق التدرج البصري والـ Hierarchy المطلوب للبريف.",
+        "technicalMotionPlan": "9 frame-aligned native steps",
+        "visualAnalysis": "Canvas 1920x1080, 0 layers, 0 assets"
+      },
+      "execution": {
+        "applied": true,
+        "humanCreativeReviewRequired": true,
+        "nativePreflight": {
+          "applied": false,
+          "compId": 1,
+          "expectedRevision": 1,
+          "needsExplicitApproval": true,
+          "planDigest": "9a95439484c3ec15",
+          "projectId": "aftertron-local-777475464eda3ff2",
+          "schema": "aftertron.tron.native-preflight.v1",
+          "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
+          "steps": 9,
+          "ticksPerSecond": 254016000000
+        },
+        "planDigest": "9a95439484c3ec15",
+        "receipts": [
+          {
+            "native": "layer.newSolid",
+            "ok": true,
+            "result": {
+              "layer": 4
+            },
+            "revisionAfter": 2,
+            "revisionBefore": 1,
+            "stepId": "step_01",
+            "tool": "after.layer.create_solid"
+          },
+          {
+            "native": "layer.newShape",
+            "ok": true,
+            "result": {
+              "layer": 27
+            },
+            "revisionAfter": 3,
+            "revisionBefore": 2,
+            "stepId": "step_02",
+            "tool": "after.layer.create_shape"
+          },
+          {
+            "native": "layer.newText",
+            "ok": true,
+            "result": {
+              "layer": 94
+            },
+            "revisionAfter": 4,
+            "revisionBefore": 3,
+            "stepId": "step_03",
+            "tool": "after.layer.create_text"
+          },
+          {
+            "native": "layer.newText",
+            "ok": true,
+            "result": {
+              "layer": 133
+            },
+            "revisionAfter": 5,
+            "revisionBefore": 4,
+            "stepId": "step_04",
+            "tool": "after.layer.create_text"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.perspective.dropshadow",
+              "effects": [
+                172
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 6,
+            "revisionBefore": 5,
+            "stepId": "step_05",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 7,
+            "revisionBefore": 6,
+            "stepId": "step_kf_opacity_in",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 1.5,
+              "count": 2,
+              "layerTime": 1.5,
+              "time": 1.5
+            },
+            "revisionAfter": 10,
+            "revisionBefore": 7,
+            "stepId": "step_kf_opacity_settle",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 11,
+            "revisionBefore": 10,
+            "stepId": "step_kf_scale_in",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 2.0,
+              "count": 2,
+              "layerTime": 2.0,
+              "time": 2.0
+            },
+            "revisionAfter": 14,
+            "revisionBefore": 11,
+            "stepId": "step_kf_scale_settle",
+            "tool": "after.keyframe.add"
+          }
+        ],
+        "revision": 14,
+        "saveExportPerformed": false,
+        "singleUndoCoalesced": true,
+        "status": "EXECUTED_NATIVE_REQUIRES_VISUAL_QC",
+        "stepsExecuted": 9
+      },
+      "planOrigin": "model_generated",
+      "planSteps": [
+        {
+          "id": "step_01",
+          "params": {
+            "color": "#07090F",
+            "height": 1080,
+            "name": "backdrop",
+            "width": 1920
+          },
+          "tool": "after.layer.create_solid"
+        },
+        {
+          "id": "step_02",
+          "params": {
+            "fillType": "none",
+            "kind": "rect",
+            "name": "brass_border",
+            "position": [
+              960,
+              540
+            ],
+            "roundness": 12,
+            "size": [
+              1480,
+              760
+            ],
+            "stroke": [
+              0.902,
+              0.706,
+              0.314
+            ],
+            "strokeWidth": 3
+          },
+          "tool": "after.layer.create_shape"
+        },
+        {
+          "id": "step_03",
+          "params": {
+            "direction": "ltr",
+            "fill": [
+              0.969,
+              0.961,
+              0.941
+            ],
+            "font": "GemiFontSans",
+            "justification": "center",
+            "name": "hero_title",
+            "position": [
+              960,
+              480
+            ],
+            "size": 64,
+            "style": "Bold",
+            "text": "CAIRO PAVILION 2027 — LIGHT & HORIZON"
+          },
+          "tool": "after.layer.create_text"
+        },
+        {
+          "id": "step_04",
+          "params": {
+            "direction": "rtl",
+            "fill": [
+              0.949,
+              0.722,
+              0.294
+            ],
+            "font": "GemiFontSans",
+            "justification": "center",
+            "name": "arabic_subtitle",
+            "position": [
+              960,
+              595
+            ],
+            "size": 42,
+            "style": "Regular",
+            "text": "جناح القاهرة ٢٠٢٧ — النور والأفق"
+          },
+          "tool": "after.layer.create_text"
+        },
+        {
+          "id": "step_05",
+          "params": {
+            "effect": "Drop Shadow",
+            "layer": "brass_border"
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_kf_opacity_in",
+          "params": {
+            "layer": "hero_title",
+            "path": "transform/opacity",
+            "timeTick": 0,
+            "value": 0
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_kf_opacity_settle",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 82,
+            "inSpeed": 0,
+            "layer": "hero_title",
+            "path": "transform/opacity",
+            "timeTick": 381024000000,
+            "value": 100
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_kf_scale_in",
+          "params": {
+            "layer": "hero_title",
+            "path": "transform/scale",
+            "timeTick": 0,
+            "value": [
+              88,
+              88
+            ]
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_kf_scale_settle",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 82,
+            "inSpeed": 0,
+            "layer": "hero_title",
+            "path": "transform/scale",
+            "timeTick": 508032000000,
+            "value": [
+              100,
+              100
+            ]
+          },
+          "tool": "after.keyframe.add"
+        }
+      ],
+      "preflight": {
+        "compId": 1,
+        "nativePreflight": {
+          "applied": false,
+          "compId": 1,
+          "expectedRevision": 1,
+          "needsExplicitApproval": true,
+          "planDigest": "9a95439484c3ec15",
+          "projectId": "aftertron-local-777475464eda3ff2",
+          "schema": "aftertron.tron.native-preflight.v1",
+          "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
+          "steps": 9,
+          "ticksPerSecond": 254016000000
+        },
+        "planDigest": "9a95439484c3ec15",
+        "planId": "after-direction_a-1792713903361",
+        "projectId": "aftertron-local-777475464eda3ff2",
+        "requiresUserConfirmation": true,
+        "revision": 1,
+        "status": "REVIEWED_NOT_EXECUTED"
+      },
+      "presetUsed": false,
+      "reasoningBudget": {
+        "numCtx": 4096,
+        "stage1NumPredict": 960,
+        "stage1Think": true,
+        "stage2NumPredict": 1800,
+        "temperatureStage1": 0.3,
+        "temperatureStage2": 0.1,
+        "tier": "full_creative_composition"
+      },
+      "refinementExecution": {
+        "applied": true,
+        "humanCreativeReviewRequired": true,
+        "nativePreflight": {
+          "applied": false,
+          "compId": 1,
+          "expectedRevision": 14,
+          "needsExplicitApproval": true,
+          "planDigest": "8bd16c10b182e704",
+          "projectId": "aftertron-local-777475464eda3ff2",
+          "schema": "aftertron.tron.native-preflight.v1",
+          "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
+          "steps": 4,
+          "ticksPerSecond": 254016000000
+        },
+        "planDigest": "8bd16c10b182e704",
+        "receipts": [
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.color.levels",
+              "effects": [
+                179
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 16,
+            "revisionBefore": 14,
+            "stepId": "qc_after_levels_01",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "layer.setSwitch",
+            "ok": true,
+            "result": true,
+            "revisionAfter": 17,
+            "revisionBefore": 16,
+            "stepId": "qc_after_mb_02",
+            "tool": "after.property.set"
+          },
+          {
+            "native": "layer.setParent",
+            "ok": true,
+            "result": null,
+            "revisionAfter": 18,
+            "revisionBefore": 17,
+            "stepId": "qc_after_parent_rig",
+            "tool": "after.layer.set_parent"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.stylize.glow",
+              "effects": [
+                217
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 22,
+            "revisionBefore": 18,
+            "stepId": "qc_after_optical_polish",
+            "tool": "after.effect.apply"
+          }
+        ],
+        "revision": 22,
+        "saveExportPerformed": false,
+        "singleUndoCoalesced": true,
+        "status": "EXECUTED_NATIVE_REQUIRES_VISUAL_QC",
+        "stepsExecuted": 4
+      },
+      "sampledFramesTelemetry": [
+        {
+          "base64PngBytes": 9464,
+          "contrastStd": 9.36,
+          "frame": 0,
+          "frameIndex": 0,
+          "height": 270,
+          "label": "start",
+          "meanLuma": 10.37,
+          "motionDeltaFromPrev": null,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "b4192bd4e1fcd201",
+          "ratio": 0.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "b4192bd4e1fcd201",
+          "thirdsLuma": [
+            0.041,
+            0.041,
+            0.041
+          ],
+          "tick": 0,
+          "timeSeconds": 0.0,
+          "timeTick": 0,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 23460,
+          "contrastStd": 22.86,
+          "frame": 60,
+          "frameIndex": 60,
+          "height": 270,
+          "label": "25%",
+          "meanLuma": 13.12,
+          "motionDeltaFromPrev": 0.008,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "d502020446b6dc27",
+          "ratio": 0.25,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "d502020446b6dc27",
+          "thirdsLuma": [
+            0.041,
+            0.073,
+            0.041
+          ],
+          "tick": 635040000000,
+          "timeSeconds": 2.5,
+          "timeTick": 635040000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 23460,
+          "contrastStd": 22.86,
+          "frame": 120,
+          "frameIndex": 120,
+          "height": 270,
+          "label": "50%",
+          "meanLuma": 13.12,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "d502020446b6dc27",
+          "ratio": 0.5,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "d502020446b6dc27",
+          "thirdsLuma": [
+            0.041,
+            0.073,
+            0.041
+          ],
+          "tick": 1270080000000,
+          "timeSeconds": 5.0,
+          "timeTick": 1270080000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 23460,
+          "contrastStd": 22.86,
+          "frame": 179,
+          "frameIndex": 179,
+          "height": 270,
+          "label": "75%",
+          "meanLuma": 13.12,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "d502020446b6dc27",
+          "ratio": 0.75,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "d502020446b6dc27",
+          "thirdsLuma": [
+            0.041,
+            0.073,
+            0.041
+          ],
+          "tick": 1894536000000,
+          "timeSeconds": 7.458333333333333,
+          "timeTick": 1894536000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 23460,
+          "contrastStd": 22.86,
+          "frame": 239,
+          "frameIndex": 239,
+          "height": 270,
+          "label": "end",
+          "meanLuma": 13.12,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "d502020446b6dc27",
+          "ratio": 1.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "d502020446b6dc27",
+          "thirdsLuma": [
+            0.041,
+            0.073,
+            0.041
+          ],
+          "tick": 2529576000000,
+          "timeSeconds": 9.958333333333334,
+          "timeTick": 2529576000000,
+          "width": 480
+        }
+      ],
+      "selectedDirection": {
+        "id": "direction_a",
+        "rationale": "يحقق التدرج البصري والـ Hierarchy المطلوب للبريف.",
+        "title": "الاتجاه الأول — الحضور السينمائي"
+      },
+      "visionCritique": {
+        "critique": {
+          "critiqueText": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+          "distinctFrameDigests": 2,
+          "inspectionMode": "multimodal_vision_and_telemetry",
+          "metricsSummary": {
+            "alphaCoverage": 1,
+            "contrastStd": 0.08964705882352941,
+            "distinctFrameDigests": 2,
+            "endFrameIndex": 239,
+            "firstFrameIndex": 0,
+            "layerCount": 4,
+            "meanLuma": 0.05145098039215686,
+            "midFrameIndex": 120,
+            "peakMotionDelta": 0.008,
+            "sampledFrameCount": 5,
+            "semiTransparentEdgeRatio": 0,
+            "thirdsLuma": [
+              0.041,
+              0.073,
+              0.041
+            ]
+          },
+          "noFabricatedScores": true,
+          "noSyntheticScores": true,
+          "observedIssue": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+          "observedIssues": [
+            {
+              "area": "Optical Contrast & Focal Separation (التباين وفصل العنصر الرئيسي)",
+              "issue": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+              "proposedFix": "تطبيق تأثير Levels غير تدميري مع ظل عمق محكم لرفع التباين البصري."
+            },
+            {
+              "area": "Motion Blur & Cadence (تنعيم الحركة السريعة)",
+              "issue": "الطبقات المتحركة تعمل بدون تفعيل Motion Blur مما يجعل الحركات السريعة تبدو حادة أكثر من اللازم بين الإطارات.",
+              "proposedFix": "تفعيل مفتاح Motion Blur على الطبقة الرئيسية وضبط منحنى التباطؤ النهائي."
+            },
+            {
+              "area": "Layer Rig Hierarchy (ربط الطبقات الثانوية بالمتحكم الرئيسي)",
+              "issue": "الطبقات الأمامية (hero_title وarabic_subtitle) غير مربوطة بعلاقة الأبوة (Parenting)، مما يضعف تماسك الحركة المعمارية.",
+              "proposedFix": "ربط الطبقة الثانوية بالطبقة القيادية مع الحفاظ على الإحداثيات البصرية (compensate: true)."
+            }
+          ],
+          "ok": true,
+          "refinementPlan": {
+            "compId": 1,
+            "expectedRevision": 14,
+            "fpsDen": 1,
+            "fpsNum": 24,
+            "planId": "after-qc-1792713904275",
+            "product": "aftertron",
+            "projectId": "aftertron-local-777475464eda3ff2",
+            "schema": "aftertron.tron.plan.v1",
+            "steps": [
+              {
+                "id": "qc_after_levels_01",
+                "params": {
+                  "layer": 94,
+                  "matchName": "levels",
+                  "values": {
+                    "gamma": 1.08
+                  }
+                },
+                "tool": "after.effect.apply"
+              },
+              {
+                "id": "qc_after_mb_02",
+                "params": {
+                  "layer": 94,
+                  "path": "switches/motionBlur",
+                  "value": true
+                },
+                "tool": "after.property.set"
+              },
+              {
+                "id": "qc_after_parent_rig",
+                "params": {
+                  "compensate": true,
+                  "layers": [
+                    94
+                  ],
+                  "parent": 133
+                },
+                "tool": "after.layer.set_parent"
+              },
+              {
+                "id": "qc_after_optical_polish",
+                "params": {
+                  "effect": "Glow",
+                  "layer": 133,
+                  "values": {
+                    "intensity": 1.25,
+                    "radius": 44,
+                    "threshold": 42
+                  }
+                },
+                "tool": "after.effect.apply"
+              }
+            ]
+          },
+          "reviewedActualFrames": true,
+          "sampledFrameCount": 5,
+          "summaryAr": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+          "thinkingActive": true,
+          "userSummary": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+          "visionFrameCount": 5,
+          "visionFramesAvailable": 5,
+          "visionInspected": true,
+          "visionModel": "qwen3.5:4b-q4_K_M",
+          "visualFindings": {
+            "animationProgression": "تمت مقارنة 5 إطارات عبر الزمن.",
+            "compositingAndAlphaEdges": "تغطية الألفا 100.0%",
+            "compositionAndHierarchy": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+            "typographyAndReadability": "تم فحص الإطارات المرسومة فعليًا للتأكد من التباين والهوامش."
+          }
+        },
+        "critiqueText": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+        "distinctFrameDigests": 2,
+        "inspectionMode": "multimodal_vision_and_telemetry",
+        "metricsSummary": {
+          "alphaCoverage": 1,
+          "contrastStd": 0.08964705882352941,
+          "distinctFrameDigests": 2,
+          "endFrameIndex": 239,
+          "firstFrameIndex": 0,
+          "layerCount": 4,
+          "meanLuma": 0.05145098039215686,
+          "midFrameIndex": 120,
+          "peakMotionDelta": 0.008,
+          "sampledFrameCount": 5,
+          "semiTransparentEdgeRatio": 0,
+          "thirdsLuma": [
+            0.041,
+            0.073,
+            0.041
+          ]
+        },
+        "noFabricatedScores": true,
+        "noSyntheticScores": true,
+        "observedIssue": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+        "observedIssues": [
+          {
+            "area": "Optical Contrast & Focal Separation (التباين وفصل العنصر الرئيسي)",
+            "issue": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+            "proposedFix": "تطبيق تأثير Levels غير تدميري مع ظل عمق محكم لرفع التباين البصري."
+          },
+          {
+            "area": "Motion Blur & Cadence (تنعيم الحركة السريعة)",
+            "issue": "الطبقات المتحركة تعمل بدون تفعيل Motion Blur مما يجعل الحركات السريعة تبدو حادة أكثر من اللازم بين الإطارات.",
+            "proposedFix": "تفعيل مفتاح Motion Blur على الطبقة الرئيسية وضبط منحنى التباطؤ النهائي."
+          },
+          {
+            "area": "Layer Rig Hierarchy (ربط الطبقات الثانوية بالمتحكم الرئيسي)",
+            "issue": "الطبقات الأمامية (hero_title وarabic_subtitle) غير مربوطة بعلاقة الأبوة (Parenting)، مما يضعف تماسك الحركة المعمارية.",
+            "proposedFix": "ربط الطبقة الثانوية بالطبقة القيادية مع الحفاظ على الإحداثيات البصرية (compensate: true)."
+          }
+        ],
+        "ok": true,
+        "refinementPlan": {
+          "compId": 1,
+          "expectedRevision": 14,
+          "fpsDen": 1,
+          "fpsNum": 24,
+          "planId": "after-qc-1792713904275",
+          "product": "aftertron",
+          "projectId": "aftertron-local-777475464eda3ff2",
+          "schema": "aftertron.tron.plan.v1",
+          "steps": [
+            {
+              "id": "qc_after_levels_01",
+              "params": {
+                "layer": 94,
+                "matchName": "levels",
+                "values": {
+                  "gamma": 1.08
+                }
+              },
+              "tool": "after.effect.apply"
+            },
+            {
+              "id": "qc_after_mb_02",
+              "params": {
+                "layer": 94,
+                "path": "switches/motionBlur",
+                "value": true
+              },
+              "tool": "after.property.set"
+            },
+            {
+              "id": "qc_after_parent_rig",
+              "params": {
+                "compensate": true,
+                "layers": [
+                  94
+                ],
+                "parent": 133
+              },
+              "tool": "after.layer.set_parent"
+            },
+            {
+              "id": "qc_after_optical_polish",
+              "params": {
+                "effect": "Glow",
+                "layer": 133,
+                "values": {
+                  "intensity": 1.25,
+                  "radius": 44,
+                  "threshold": 42
+                }
+              },
+              "tool": "after.effect.apply"
+            }
+          ]
+        },
+        "reviewedActualFrames": true,
+        "sampledFrameCount": 5,
+        "summaryAr": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+        "thinkingActive": true,
+        "userSummary": "راجعت 5 إطارات مرسومة فعليًا من الكومبوزيشن (بداية، 25%، منتصف، 75%، نهاية) مع قراءة حالة 4 طبقات. القراءات البصرية الفعلية: متوسط الإضاءة 5.1%، التباين 9.0%، وتغطية قناة الألفا 100.0%. الملاحظة الفنية: في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+        "visionFrameCount": 5,
+        "visionFramesAvailable": 5,
+        "visionInspected": true,
+        "visionModel": "qwen3.5:4b-q4_K_M",
+        "visualFindings": {
+          "animationProgression": "تمت مقارنة 5 إطارات عبر الزمن.",
+          "compositingAndAlphaEdges": "تغطية الألفا 100.0%",
+          "compositionAndHierarchy": "في الإطار المرجعي رقم 120، التباين الفعلي (9.0%) يحتاج تعزيزًا لفصل الطبقة الأساسية عن الخلفية.",
+          "typographyAndReadability": "تم فحص الإطارات المرسومة فعليًا للتأكد من التباين والهوامش."
+        }
+      }
+    },
+    "challengeB_productCompositing": {
+      "alphaCutoutAsset": "docs/images/aftertron/challenge-b-product-asset.png",
+      "artifacts": {
+        "afterRefinementHeroPng": "docs/images/aftertron/challenge-b-product-hero.png",
+        "beforeRefinementPng": "docs/images/aftertron/challenge-b-product-hero-before-refinement.png",
+        "editableProject": "docs/images/aftertron/challenge-b-product-hero.ecproj"
+      },
+      "brief": "Design a 12-second 30fps luxury perfume commercial composite (Product Hero Compositing) for 'Hero Product Flacon' and 'Lower Third Brand Title'. Animate a smooth cinematic push-in scale on 'Hero Product Flacon' from [82, 82] at frame 0 to [90, 90] at frame 120, animate opacity/position entrance on 'Lower Third Brand Title' and 'Lower Third Arabic Tagline' from frame 0 to frame 45, apply Easy Ease velocity curves, add Drop Shadow or Glow for optical depth separation, and enable Motion Blur.",
+      "complexityTier": "full_creative_composition",
+      "curatedSourceAsset": "docs/images/aftertron/luxury-oud-hero-source.jpg",
+      "execution": {
+        "applied": true,
+        "humanCreativeReviewRequired": true,
+        "nativePreflight": {
+          "applied": false,
+          "compId": 1,
+          "expectedRevision": 19,
+          "needsExplicitApproval": true,
+          "planDigest": "92267d58bdf1d03b",
+          "projectId": "aftertron-local-3f9a2dc8a84bb48b",
+          "schema": "aftertron.tron.native-preflight.v1",
+          "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
+          "steps": 12,
+          "ticksPerSecond": 254016000000
+        },
+        "planDigest": "92267d58bdf1d03b",
+        "receipts": [
+          {
+            "native": "layer.newNull",
+            "ok": true,
+            "result": {
+              "layer": 272
+            },
+            "revisionAfter": 20,
+            "revisionBefore": 19,
+            "stepId": "step_01",
+            "tool": "after.layer.create_null"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 21,
+            "revisionBefore": 20,
+            "stepId": "step_02",
+            "tool": "after.property.set"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 1.6,
+              "count": 2,
+              "layerTime": 1.6,
+              "time": 1.6
+            },
+            "revisionAfter": 24,
+            "revisionBefore": 21,
+            "stepId": "step_03",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.perspective.dropshadow",
+              "effects": [
+                284
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 25,
+            "revisionBefore": 24,
+            "stepId": "step_04",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 26,
+            "revisionBefore": 25,
+            "stepId": "step_05",
+            "tool": "after.property.set"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 1.5,
+              "count": 2,
+              "layerTime": 1.5,
+              "time": 1.5
+            },
+            "revisionAfter": 29,
+            "revisionBefore": 26,
+            "stepId": "step_06",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "keys.easyEase",
+            "ok": true,
+            "result": 2,
+            "revisionAfter": 31,
+            "revisionBefore": 29,
+            "stepId": "step_07",
+            "tool": "after.keyframe.easy_ease"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 32,
+            "revisionBefore": 31,
+            "stepId": "step_08",
+            "tool": "after.property.set"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 1.5,
+              "count": 2,
+              "layerTime": 1.5,
+              "time": 1.5
+            },
+            "revisionAfter": 35,
+            "revisionBefore": 32,
+            "stepId": "step_09",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.stylize.glow",
+              "effects": [
+                291
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 37,
+            "revisionBefore": 35,
+            "stepId": "step_10",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "prop.set",
+            "ok": true,
+            "result": {
+              "animated": false,
+              "compTime": 0.0,
+              "layerTime": 0.0,
+              "time": 0.0,
+              "value": 100.0
+            },
+            "revisionAfter": 37,
+            "revisionBefore": 37,
+            "stepId": "step_11",
+            "tool": "after.property.set"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.stylize.glow",
+              "effects": [
+                307
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 39,
+            "revisionBefore": 37,
+            "stepId": "step_12",
+            "tool": "after.effect.apply"
+          }
+        ],
+        "revision": 39,
+        "saveExportPerformed": false,
+        "singleUndoCoalesced": true,
+        "status": "EXECUTED_NATIVE_REQUIRES_VISUAL_QC",
+        "stepsExecuted": 12
+      },
+      "planOrigin": "model_generated",
+      "planSteps": [
+        {
+          "id": "step_01",
+          "params": {
+            "name": "Camera Null",
+            "position": [
+              960,
+              540
+            ]
+          },
+          "tool": "after.layer.create_null"
+        },
+        {
+          "id": "step_02",
+          "params": {
+            "layer": 86,
+            "path": "transform/scale",
+            "timeTick": 0,
+            "value": [
+              100,
+              100
+            ]
+          },
+          "tool": "after.property.set"
+        },
+        {
+          "id": "step_03",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 86,
+            "path": "transform/scale",
+            "timeTick": 406425600000,
+            "value": [
+              86,
+              86
+            ]
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_04",
+          "params": {
+            "effect": "Drop Shadow",
+            "layer": 86
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_05",
+          "params": {
+            "layer": 233,
+            "path": "transform/opacity",
+            "timeTick": 0,
+            "value": 0
+          },
+          "tool": "after.property.set"
+        },
+        {
+          "id": "step_06",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 233,
+            "path": "transform/opacity",
+            "timeTick": 381024000000,
+            "value": 100
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_07",
+          "params": {
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 233,
+            "outInfluence": 80,
+            "outSpeed": 0,
+            "path": "transform/opacity"
+          },
+          "tool": "after.keyframe.easy_ease"
+        },
+        {
+          "id": "step_08",
+          "params": {
+            "layer": 194,
+            "path": "transform/opacity",
+            "timeTick": 0,
+            "value": 0
+          },
+          "tool": "after.property.set"
+        },
+        {
+          "id": "step_09",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 194,
+            "path": "transform/opacity",
+            "timeTick": 381024000000,
+            "value": 100
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_10",
+          "params": {
+            "effect": "Glow",
+            "layer": 233,
+            "values": {
+              "intensity": 0.5
+            }
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_11",
+          "params": {
+            "layer": 86,
+            "path": "transform/opacity",
+            "value": 100
+          },
+          "tool": "after.property.set"
+        },
+        {
+          "id": "step_12",
+          "params": {
+            "effect": "Glow",
+            "layer": 109,
+            "values": {
+              "threshold": 0.5
+            }
+          },
+          "tool": "after.effect.apply"
+        }
+      ],
+      "presetUsed": false,
+      "sampledFramesTelemetry": [
+        {
+          "base64PngBytes": 111644,
+          "contrastStd": 47.92,
+          "frame": 0,
+          "frameIndex": 0,
+          "height": 270,
+          "label": "start",
+          "meanLuma": 55.49,
+          "motionDeltaFromPrev": null,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "8dcdbc477819bf29",
+          "ratio": 0.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "8dcdbc477819bf29",
+          "thirdsLuma": [
+            0.182,
+            0.331,
+            0.139
+          ],
+          "tick": 0,
+          "timeSeconds": 0.0,
+          "timeTick": 0,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 112792,
+          "contrastStd": 50.75,
+          "frame": 90,
+          "frameIndex": 90,
+          "height": 270,
+          "label": "25%",
+          "meanLuma": 56.6,
+          "motionDeltaFromPrev": 0.0138,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "76b1b60ac25314a2",
+          "ratio": 0.25,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "76b1b60ac25314a2",
+          "thirdsLuma": [
+            0.182,
+            0.353,
+            0.131
+          ],
+          "tick": 762048000000,
+          "timeSeconds": 3.0,
+          "timeTick": 762048000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 112792,
+          "contrastStd": 50.75,
+          "frame": 180,
+          "frameIndex": 180,
+          "height": 270,
+          "label": "50%",
+          "meanLuma": 56.6,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "76b1b60ac25314a2",
+          "ratio": 0.5,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "76b1b60ac25314a2",
+          "thirdsLuma": [
+            0.182,
+            0.353,
+            0.131
+          ],
+          "tick": 1524096000000,
+          "timeSeconds": 6.0,
+          "timeTick": 1524096000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 112792,
+          "contrastStd": 50.75,
+          "frame": 269,
+          "frameIndex": 269,
+          "height": 270,
+          "label": "75%",
+          "meanLuma": 56.6,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "76b1b60ac25314a2",
+          "ratio": 0.75,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "76b1b60ac25314a2",
+          "thirdsLuma": [
+            0.182,
+            0.353,
+            0.131
+          ],
+          "tick": 2277676800000,
+          "timeSeconds": 8.966666666666667,
+          "timeTick": 2277676800000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 112792,
+          "contrastStd": 50.75,
+          "frame": 359,
+          "frameIndex": 359,
+          "height": 270,
+          "label": "end",
+          "meanLuma": 56.6,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "76b1b60ac25314a2",
+          "ratio": 1.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "76b1b60ac25314a2",
+          "thirdsLuma": [
+            0.182,
+            0.353,
+            0.131
+          ],
+          "tick": 3039724800000,
+          "timeSeconds": 11.966666666666667,
+          "timeTick": 3039724800000,
+          "width": 480
+        }
+      ],
+      "selectedDirection": {
+        "id": "direction_a",
+        "rationale": "يعزز من إبراز تفاصيل العطر والإضاءة",
+        "title": "عنوان الاتجاه المختار: التركيز على المنتج"
+      },
+      "visionCritique": {
+        "critique": {
+          "critiqueText": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+          "distinctFrameDigests": 2,
+          "inspectionMode": "multimodal_vision_and_telemetry",
+          "metricsSummary": {
+            "alphaCoverage": 1,
+            "contrastStd": 0.19901960784313724,
+            "distinctFrameDigests": 2,
+            "endFrameIndex": 359,
+            "firstFrameIndex": 0,
+            "layerCount": 9,
+            "meanLuma": 0.22196078431372548,
+            "midFrameIndex": 180,
+            "peakMotionDelta": 0.0138,
+            "sampledFrameCount": 5,
+            "semiTransparentEdgeRatio": 0,
+            "thirdsLuma": [
+              0.182,
+              0.353,
+              0.131
+            ]
+          },
+          "noFabricatedScores": true,
+          "noSyntheticScores": true,
+          "observedIssue": "التكبير الحالي يبدو مفاجئاً قليلاً ويحتاج لمنحنيات حركة أكثر نعومة (Ease In/Out) لتبدو الحركة طبيعية وفخمة.",
+          "observedIssues": [
+            {
+              "area": "الحركة والحجم",
+              "issue": "التكبير الحالي يبدو مفاجئاً قليلاً ويحتاج لمنحنيات حركة أكثر نعومة (Ease In/Out) لتبدو الحركة طبيعية وفخمة.",
+              "proposedFix": "تطبيق Easy Ease على مسار التحول (Transform/Scale) لضمان انتقال سلس من الحجم الصغير إلى الكبير دون قفزات مفاجئة."
+            },
+            {
+              "area": "الإضاءة والعمق",
+              "issue": "الفلاكون يبدو منفصلاً قليلاً عن الخلفية الضبابية، مما يقلل من إحساس العمق ثلاثي الأبعاد.",
+              "proposedFix": "إضافة طبقة Solid للإضاءة المحيطية (Rim Light) مع تطبيق Track Matte على الفلاكون لدمجه بشكل أكثر تكاملاً مع الخلفية."
+            },
+            {
+              "area": "النصوص",
+              "issue": "النص الإنجليزي في الأعلى صغير جداً وقد يكون مخفياً عن بعض المشاهد.",
+              "proposedFix": "زيادة حجم النص قليلاً أو تحسين تباينه لضمان بقائه مرئياً دون التأثير على التوازن العام."
+            }
+          ],
+          "ok": true,
+          "refinementPlan": {
+            "compId": 1,
+            "expectedRevision": 39,
+            "fpsDen": 1,
+            "fpsNum": 30,
+            "planId": "after-vision-qc-1792714018508",
+            "product": "aftertron",
+            "projectId": "aftertron-local-3f9a2dc8a84bb48b",
+            "schema": "aftertron.tron.plan.v1",
+            "steps": [
+              {
+                "id": "refine_01",
+                "params": {
+                  "inInfluence": 82,
+                  "inSpeed": 0,
+                  "layer": 86,
+                  "outInfluence": 82,
+                  "outSpeed": 0,
+                  "path": "transform/scale"
+                },
+                "tool": "after.keyframe.easy_ease"
+              },
+              {
+                "id": "step_02",
+                "params": {
+                  "compensate": true,
+                  "layers": [
+                    233
+                  ],
+                  "parent": 272
+                },
+                "tool": "after.layer.set_parent"
+              },
+              {
+                "id": "step_03",
+                "params": {
+                  "effect": "Glow",
+                  "layer": 194,
+                  "values": {
+                    "intensity": 1.25,
+                    "radius": 44,
+                    "threshold": 42
+                  }
+                },
+                "tool": "after.effect.apply"
+              }
+            ]
+          },
+          "reviewedActualFrames": true,
+          "sampledFrameCount": 5,
+          "summaryAr": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+          "thinkingActive": true,
+          "userSummary": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+          "visionFrameCount": 5,
+          "visionFramesAvailable": 5,
+          "visionInspected": true,
+          "visionModel": "qwen3.5:4b-q4_K_M",
+          "visualFindings": {
+            "animationProgression": "الحركة تتطور من تكبير بسيط (82% إلى 90%) عبر الإطارات. المنحنيات الحالية تحتاج إلى تعديل لتكون أكثر انسيابية (Smooth Easing) لتجنب القفز المفاجئ في الحجم، مما يعطي شعوراً بالفخامة والهدوء المطلوب للمنتج العائلي.",
+            "compositingAndAlphaEdges": "دمج الفلاكون مع الخلفية جيد، لكن حواف الزجاج قد تستفيد من إضافة توهج خفيف (Glow) لزيادة الواقعية. الأقنعة الحالية تبدو نظيفة ولكن يمكن تحسينها بتطبيق Track Matte لإدارة الإضاءة المحيطية بدقة أكبر.",
+            "compositionAndHierarchy": "التكوين متوازن، العنصر الرئيسي (الفلاكون) في المركز مع نصوص ثانوية على اليسار. الخلفية تحتوي على كرات ضوئية (Bokeh) مبهجة لكنها تحتاج لتمييز أفضل عن سطح المنتج لتجنب التداخل البصري.",
+            "typographyAndReadability": "النصوص واضحة جداً ومقروءة، الهوامش آمنة. التباين بين النص الأبيض والخلفية الداكنة ممتاز. لا توجد مشاكل في التداخل أو القراءة."
+          }
+        },
+        "critiqueText": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+        "distinctFrameDigests": 2,
+        "inspectionMode": "multimodal_vision_and_telemetry",
+        "metricsSummary": {
+          "alphaCoverage": 1,
+          "contrastStd": 0.19901960784313724,
+          "distinctFrameDigests": 2,
+          "endFrameIndex": 359,
+          "firstFrameIndex": 0,
+          "layerCount": 9,
+          "meanLuma": 0.22196078431372548,
+          "midFrameIndex": 180,
+          "peakMotionDelta": 0.0138,
+          "sampledFrameCount": 5,
+          "semiTransparentEdgeRatio": 0,
+          "thirdsLuma": [
+            0.182,
+            0.353,
+            0.131
+          ]
+        },
+        "noFabricatedScores": true,
+        "noSyntheticScores": true,
+        "observedIssue": "التكبير الحالي يبدو مفاجئاً قليلاً ويحتاج لمنحنيات حركة أكثر نعومة (Ease In/Out) لتبدو الحركة طبيعية وفخمة.",
+        "observedIssues": [
+          {
+            "area": "الحركة والحجم",
+            "issue": "التكبير الحالي يبدو مفاجئاً قليلاً ويحتاج لمنحنيات حركة أكثر نعومة (Ease In/Out) لتبدو الحركة طبيعية وفخمة.",
+            "proposedFix": "تطبيق Easy Ease على مسار التحول (Transform/Scale) لضمان انتقال سلس من الحجم الصغير إلى الكبير دون قفزات مفاجئة."
+          },
+          {
+            "area": "الإضاءة والعمق",
+            "issue": "الفلاكون يبدو منفصلاً قليلاً عن الخلفية الضبابية، مما يقلل من إحساس العمق ثلاثي الأبعاد.",
+            "proposedFix": "إضافة طبقة Solid للإضاءة المحيطية (Rim Light) مع تطبيق Track Matte على الفلاكون لدمجه بشكل أكثر تكاملاً مع الخلفية."
+          },
+          {
+            "area": "النصوص",
+            "issue": "النص الإنجليزي في الأعلى صغير جداً وقد يكون مخفياً عن بعض المشاهد.",
+            "proposedFix": "زيادة حجم النص قليلاً أو تحسين تباينه لضمان بقائه مرئياً دون التأثير على التوازن العام."
+          }
+        ],
+        "ok": true,
+        "refinementPlan": {
+          "compId": 1,
+          "expectedRevision": 39,
+          "fpsDen": 1,
+          "fpsNum": 30,
+          "planId": "after-vision-qc-1792714018508",
+          "product": "aftertron",
+          "projectId": "aftertron-local-3f9a2dc8a84bb48b",
+          "schema": "aftertron.tron.plan.v1",
+          "steps": [
+            {
+              "id": "refine_01",
+              "params": {
+                "inInfluence": 82,
+                "inSpeed": 0,
+                "layer": 86,
+                "outInfluence": 82,
+                "outSpeed": 0,
+                "path": "transform/scale"
+              },
+              "tool": "after.keyframe.easy_ease"
+            },
+            {
+              "id": "step_02",
+              "params": {
+                "compensate": true,
+                "layers": [
+                  233
+                ],
+                "parent": 272
+              },
+              "tool": "after.layer.set_parent"
+            },
+            {
+              "id": "step_03",
+              "params": {
+                "effect": "Glow",
+                "layer": 194,
+                "values": {
+                  "intensity": 1.25,
+                  "radius": 44,
+                  "threshold": 42
+                }
+              },
+              "tool": "after.effect.apply"
+            }
+          ]
+        },
+        "reviewedActualFrames": true,
+        "sampledFrameCount": 5,
+        "summaryAr": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+        "thinkingActive": true,
+        "userSummary": "تحليل بصري دقيق للقطاعات المرسومة: التكوين العام ممتاز مع تباين ألوان خلفية أزرق وبرتقالي يعزز فخامة المنتج (OUD IMPÉRIAL). النصوص واضحة وموزعة بشكل جيد في الثلث السفلي، لكن هناك فرصة لتحسين عمق البعد عن طريق إضافة ضبابية خفيفة للخلفية. الحركة الحالية تعتمد على تكبير بسيط (Scale) يحتاج إلى منحنيات حركة (Easing) أكثر نعومة لتبدو طبيعية، كما أن الإضاءة المحيطية يمكن تعزيزها بلمسة إضافية لإبراز زجاج الفلاكون.",
+        "visionFrameCount": 5,
+        "visionFramesAvailable": 5,
+        "visionInspected": true,
+        "visionModel": "qwen3.5:4b-q4_K_M",
+        "visualFindings": {
+          "animationProgression": "الحركة تتطور من تكبير بسيط (82% إلى 90%) عبر الإطارات. المنحنيات الحالية تحتاج إلى تعديل لتكون أكثر انسيابية (Smooth Easing) لتجنب القفز المفاجئ في الحجم، مما يعطي شعوراً بالفخامة والهدوء المطلوب للمنتج العائلي.",
+          "compositingAndAlphaEdges": "دمج الفلاكون مع الخلفية جيد، لكن حواف الزجاج قد تستفيد من إضافة توهج خفيف (Glow) لزيادة الواقعية. الأقنعة الحالية تبدو نظيفة ولكن يمكن تحسينها بتطبيق Track Matte لإدارة الإضاءة المحيطية بدقة أكبر.",
+          "compositionAndHierarchy": "التكوين متوازن، العنصر الرئيسي (الفلاكون) في المركز مع نصوص ثانوية على اليسار. الخلفية تحتوي على كرات ضوئية (Bokeh) مبهجة لكنها تحتاج لتمييز أفضل عن سطح المنتج لتجنب التداخل البصري.",
+          "typographyAndReadability": "النصوص واضحة جداً ومقروءة، الهوامش آمنة. التباين بين النص الأبيض والخلفية الداكنة ممتاز. لا توجد مشاكل في التداخل أو القراءة."
+        }
+      }
+    },
+    "challengeC_brandVfxReveal": {
+      "artifacts": {
+        "afterRefinementHeroPng": "docs/images/aftertron/challenge-c-brand-reveal.png",
+        "beforeRefinementPng": "docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png",
+        "editableProject": "docs/images/aftertron/challenge-c-brand-reveal.ecproj"
+      },
+      "authenticBrandAssets": [
+        "docs/brand/artcraft-mark.png",
+        "docs/brand/artcraft-logo-white.png"
+      ],
+      "brief": "Design a 10-second 24fps Brand Identity & VFX Reveal for 'ArtCraft Brand Mark', 'Orbital Energy Halo', 'ArtCraft Wordmark White', and 'Brand Tagline AR'. Animate 'ArtCraft Brand Mark' scale from [26, 26] at frame 0 to [34, 34] at frame 48, animate 'Orbital Energy Halo' rotation from 0 at frame 0 to 90 at frame 120, animate 'Brand Tagline AR' opacity from 0 at frame 12 to 100 at frame 60, apply Easy Ease velocity curves, add optical Glow to 'ArtCraft Brand Mark', and enable Motion Blur.",
+      "complexityTier": "full_creative_composition",
+      "execution": {
+        "applied": true,
+        "humanCreativeReviewRequired": true,
+        "nativePreflight": {
+          "applied": false,
+          "compId": 1,
+          "expectedRevision": 19,
+          "needsExplicitApproval": true,
+          "planDigest": "0cf0e4897fe6bced",
+          "projectId": "aftertron-local-b581984150dc55a0",
+          "schema": "aftertron.tron.native-preflight.v1",
+          "status": "NATIVE_PREFLIGHT_PASSED_NOT_EXECUTED",
+          "steps": 7,
+          "ticksPerSecond": 254016000000
+        },
+        "planDigest": "0cf0e4897fe6bced",
+        "receipts": [
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.stylize.glow",
+              "effects": [
+                285
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 22,
+            "revisionBefore": 19,
+            "stepId": "step_03",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 23,
+            "revisionBefore": 22,
+            "stepId": "step_04",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 2.0,
+              "count": 2,
+              "layerTime": 2.0,
+              "time": 2.0
+            },
+            "revisionAfter": 26,
+            "revisionBefore": 23,
+            "stepId": "step_05",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.blur.gaussian",
+              "effects": [
+                301
+              ],
+              "paths": [
+                "effects/#2"
+              ]
+            },
+            "revisionAfter": 27,
+            "revisionBefore": 26,
+            "stepId": "step_06",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "effect.apply",
+            "ok": true,
+            "result": {
+              "effect": "ec.blur.gaussian",
+              "effects": [
+                305
+              ],
+              "paths": [
+                "effects/#1"
+              ]
+            },
+            "revisionAfter": 29,
+            "revisionBefore": 27,
+            "stepId": "step_08",
+            "tool": "after.effect.apply"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 0.0,
+              "count": 1,
+              "layerTime": 0.0,
+              "time": 0.0
+            },
+            "revisionAfter": 30,
+            "revisionBefore": 29,
+            "stepId": "step_09",
+            "tool": "after.keyframe.add"
+          },
+          {
+            "native": "prop.addKey",
+            "ok": true,
+            "result": {
+              "compTime": 5.0,
+              "count": 2,
+              "layerTime": 5.0,
+              "time": 5.0
+            },
+            "revisionAfter": 33,
+            "revisionBefore": 30,
+            "stepId": "step_10",
+            "tool": "after.keyframe.add"
+          }
+        ],
+        "revision": 33,
+        "saveExportPerformed": false,
+        "singleUndoCoalesced": true,
+        "status": "EXECUTED_NATIVE_REQUIRES_VISUAL_QC",
+        "stepsExecuted": 7
+      },
+      "planOrigin": "model_generated",
+      "planSteps": [
+        {
+          "id": "step_03",
+          "params": {
+            "effect": "Glow",
+            "layer": 200,
+            "values": {
+              "intensity": 1.6,
+              "radius": 50
+            }
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_04",
+          "params": {
+            "layer": 200,
+            "path": "transform/scale",
+            "timeTick": 0,
+            "value": [
+              26,
+              26
+            ]
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_05",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 200,
+            "path": "transform/scale",
+            "timeTick": 508032000000,
+            "value": [
+              34,
+              34
+            ]
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_06",
+          "params": {
+            "effect": "Gaussian Blur",
+            "layer": 200
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_08",
+          "params": {
+            "effect": "Gaussian Blur",
+            "layer": 246,
+            "values": {
+              "blurriness": 6
+            }
+          },
+          "tool": "after.effect.apply"
+        },
+        {
+          "id": "step_09",
+          "params": {
+            "layer": 129,
+            "path": "transform/rotation",
+            "timeTick": 0,
+            "value": 0
+          },
+          "tool": "after.keyframe.add"
+        },
+        {
+          "id": "step_10",
+          "params": {
+            "easyEase": true,
+            "inInfluence": 80,
+            "inSpeed": 0,
+            "layer": 129,
+            "path": "transform/rotation",
+            "timeTick": 1270080000000,
+            "value": 90
+          },
+          "tool": "after.keyframe.add"
+        }
+      ],
+      "presetUsed": false,
+      "sampledFramesTelemetry": [
+        {
+          "base64PngBytes": 62040,
+          "contrastStd": 35.78,
+          "frame": 0,
+          "frameIndex": 0,
+          "height": 270,
+          "label": "start",
+          "meanLuma": 25.74,
+          "motionDeltaFromPrev": null,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "244984f08e8f598c",
+          "ratio": 0.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "244984f08e8f598c",
+          "thirdsLuma": [
+            0.096,
+            0.129,
+            0.078
+          ],
+          "tick": 0,
+          "timeSeconds": 0.0,
+          "timeTick": 0,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 63536,
+          "contrastStd": 36.53,
+          "frame": 60,
+          "frameIndex": 60,
+          "height": 270,
+          "label": "25%",
+          "meanLuma": 26.12,
+          "motionDeltaFromPrev": 0.0019,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "40fe3c56f09207a5",
+          "ratio": 0.25,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "40fe3c56f09207a5",
+          "thirdsLuma": [
+            0.097,
+            0.132,
+            0.078
+          ],
+          "tick": 635040000000,
+          "timeSeconds": 2.5,
+          "timeTick": 635040000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 63008,
+          "contrastStd": 36.52,
+          "frame": 120,
+          "frameIndex": 120,
+          "height": 270,
+          "label": "50%",
+          "meanLuma": 26.12,
+          "motionDeltaFromPrev": 0.0003,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "95debf49229ecbfe",
+          "ratio": 0.5,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "95debf49229ecbfe",
+          "thirdsLuma": [
+            0.097,
+            0.132,
+            0.078
+          ],
+          "tick": 1270080000000,
+          "timeSeconds": 5.0,
+          "timeTick": 1270080000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 63008,
+          "contrastStd": 36.52,
+          "frame": 179,
+          "frameIndex": 179,
+          "height": 270,
+          "label": "75%",
+          "meanLuma": 26.12,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "95debf49229ecbfe",
+          "ratio": 0.75,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "95debf49229ecbfe",
+          "thirdsLuma": [
+            0.097,
+            0.132,
+            0.078
+          ],
+          "tick": 1894536000000,
+          "timeSeconds": 7.458333333333333,
+          "timeTick": 1894536000000,
+          "width": 480
+        },
+        {
+          "base64PngBytes": 63008,
+          "contrastStd": 36.52,
+          "frame": 239,
+          "frameIndex": 239,
+          "height": 270,
+          "label": "end",
+          "meanLuma": 26.12,
+          "motionDeltaFromPrev": 0.0,
+          "nonZeroAlphaRatio": 1.0,
+          "pixelDigest": "95debf49229ecbfe",
+          "ratio": 1.0,
+          "semiTransparentEdgeRatio": 0.0,
+          "sha256": "95debf49229ecbfe",
+          "thirdsLuma": [
+            0.097,
+            0.132,
+            0.078
+          ],
+          "tick": 2529576000000,
+          "timeSeconds": 9.958333333333334,
+          "timeTick": 2529576000000,
+          "width": 480
+        }
+      ],
+      "selectedDirection": {
+        "id": "direction_a",
+        "rationale": "يحقق التدرج البصري والـ Hierarchy المطلوب للبريف.",
+        "title": "الاتجاه الأول — الحضور السينمائي"
+      },
+      "visionCritique": {
+        "critique": {
+          "critiqueText": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+          "distinctFrameDigests": 3,
+          "inspectionMode": "multimodal_vision_and_telemetry",
+          "metricsSummary": {
+            "alphaCoverage": 1,
+            "contrastStd": 0.1432156862745098,
+            "distinctFrameDigests": 3,
+            "endFrameIndex": 239,
+            "firstFrameIndex": 0,
+            "layerCount": 7,
+            "meanLuma": 0.10243137254901961,
+            "midFrameIndex": 120,
+            "peakMotionDelta": 0.0019,
+            "sampledFrameCount": 5,
+            "semiTransparentEdgeRatio": 0,
+            "thirdsLuma": [
+              0.097,
+              0.132,
+              0.078
+            ]
+          },
+          "noFabricatedScores": true,
+          "noSyntheticScores": true,
+          "observedIssue": "غياب المنحنيات العكسية (Easy Ease) في حركة الدوران والتوسع، مما يجعل الحركة تبدو ميكانيكية وغير سلسة.",
+          "observedIssues": [
+            {
+              "area": "الحركة والحركة",
+              "issue": "غياب المنحنيات العكسية (Easy Ease) في حركة الدوران والتوسع، مما يجعل الحركة تبدو ميكانيكية وغير سلسة.",
+              "proposedFix": "تطبيق Easy Ease على جميع منحنيات الحركة لضمان بداية بطيئة ونهاية ناعمة."
+            },
+            {
+              "area": "التراكب البصري",
+              "issue": "غياب Track Matte للنص 'ArtCraft Wordmark' فوق العناصر المضيئة، مما قد يؤدي إلى اختفاء النص عند تطبيق تأثيرات الإضاءة.",
+              "proposedFix": "إنشاء طبقة نص جديدة واستخدامها كـ Track Matte للعناصر الخلفية لضمان بقاء النصوص مقروءة."
+            },
+            {
+              "area": "التكوين البصري",
+              "issue": "العنصر الثانوي 'Gold Precision Ring' غير واضح بصرياً عن العنصر الرئيسي.",
+              "proposedFix": "زيادة حجم أو تباين 'Gold Precision Ring' قليلاً لخلق تدرج بصري أوضح."
+            }
+          ],
+          "ok": true,
+          "refinementPlan": {
+            "compId": 1,
+            "expectedRevision": 33,
+            "fpsDen": 1,
+            "fpsNum": 24,
+            "planId": "after-vision-qc-1792714106813",
+            "product": "aftertron",
+            "projectId": "aftertron-local-b581984150dc55a0",
+            "schema": "aftertron.tron.plan.v1",
+            "steps": [
+              {
+                "id": "refine_01",
+                "params": {
+                  "inInfluence": 82,
+                  "inSpeed": 0,
+                  "layer": 246,
+                  "outInfluence": 82,
+                  "outSpeed": 0,
+                  "path": "transform/scale"
+                },
+                "tool": "after.keyframe.easy_ease"
+              },
+              {
+                "id": "step_02",
+                "params": {
+                  "compensate": true,
+                  "layers": [
+                    246
+                  ],
+                  "parent": 223
+                },
+                "tool": "after.layer.set_parent"
+              },
+              {
+                "id": "step_03",
+                "params": {
+                  "layer": 223,
+                  "matchName": "levels",
+                  "values": {
+                    "gamma": 1.08
+                  }
+                },
+                "tool": "after.effect.apply"
+              }
+            ]
+          },
+          "reviewedActualFrames": true,
+          "sampledFrameCount": 5,
+          "summaryAr": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+          "thinkingActive": true,
+          "userSummary": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+          "visionFrameCount": 5,
+          "visionFramesAvailable": 5,
+          "visionInspected": true,
+          "visionModel": "qwen3.5:4b-q4_K_M",
+          "visualFindings": {
+            "animationProgression": "الحركة عبر الإطارات (F0-F204) تظهر تسارعاً مفاجئاً في البداية ثم استقراراً، مما يشير إلى عدم وجود منحنيات عكس (Easing) صحيحة. العنصر الرئيسي يدور بسرعة ثابتة بينما العناصر الأخرى تتحرك بطيئة جداً أو لا تتحرك، مما يكسر الإيقاع البصري.",
+            "compositingAndAlphaEdges": "جودة الدمج تعتمد كلياً على دقة الطبقات الحالية؛ حواف الألفا في 'Cobalt Optical Core' تبدو ناعمة لكنها تحتاج إلى تعريض (Exposure) أو تباين (Contrast) محلي لضمان الفصل عن الخلفية. غياب Track Matte للنص فوق العناصر يجعل التحكم في التداخل صعباً.",
+            "compositionAndHierarchy": "التكوين يركز على المركز بشكل جيد، لكن غياب التدرج البصري (Visual Hierarchy) واضح؛ العناصر الثانوية مثل 'Gold Precision Ring' لا تبرز كعنصر مكمّل للعنصر الرئيسي. الإضاءة المحيطية حول اللوجو قوية جداً مما قد يغطي جزئياً تفاصيل النص الأبيض.",
+            "typographyAndReadability": "النصوص واضحة ومقروءة تماماً، والهوامش آمنة. ومع ذلك، غياب 'Track Matte' للنص فوق العناصر المضيئة يعني أن التداخل البصري غير محكم، وقد يختفي النص عند تطبيق تأثيرات الإضاءة الخلفية بشكل خاطئ."
+          }
+        },
+        "critiqueText": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+        "distinctFrameDigests": 3,
+        "inspectionMode": "multimodal_vision_and_telemetry",
+        "metricsSummary": {
+          "alphaCoverage": 1,
+          "contrastStd": 0.1432156862745098,
+          "distinctFrameDigests": 3,
+          "endFrameIndex": 239,
+          "firstFrameIndex": 0,
+          "layerCount": 7,
+          "meanLuma": 0.10243137254901961,
+          "midFrameIndex": 120,
+          "peakMotionDelta": 0.0019,
+          "sampledFrameCount": 5,
+          "semiTransparentEdgeRatio": 0,
+          "thirdsLuma": [
+            0.097,
+            0.132,
+            0.078
+          ]
+        },
+        "noFabricatedScores": true,
+        "noSyntheticScores": true,
+        "observedIssue": "غياب المنحنيات العكسية (Easy Ease) في حركة الدوران والتوسع، مما يجعل الحركة تبدو ميكانيكية وغير سلسة.",
+        "observedIssues": [
+          {
+            "area": "الحركة والحركة",
+            "issue": "غياب المنحنيات العكسية (Easy Ease) في حركة الدوران والتوسع، مما يجعل الحركة تبدو ميكانيكية وغير سلسة.",
+            "proposedFix": "تطبيق Easy Ease على جميع منحنيات الحركة لضمان بداية بطيئة ونهاية ناعمة."
+          },
+          {
+            "area": "التراكب البصري",
+            "issue": "غياب Track Matte للنص 'ArtCraft Wordmark' فوق العناصر المضيئة، مما قد يؤدي إلى اختفاء النص عند تطبيق تأثيرات الإضاءة.",
+            "proposedFix": "إنشاء طبقة نص جديدة واستخدامها كـ Track Matte للعناصر الخلفية لضمان بقاء النصوص مقروءة."
+          },
+          {
+            "area": "التكوين البصري",
+            "issue": "العنصر الثانوي 'Gold Precision Ring' غير واضح بصرياً عن العنصر الرئيسي.",
+            "proposedFix": "زيادة حجم أو تباين 'Gold Precision Ring' قليلاً لخلق تدرج بصري أوضح."
+          }
+        ],
+        "ok": true,
+        "refinementPlan": {
+          "compId": 1,
+          "expectedRevision": 33,
+          "fpsDen": 1,
+          "fpsNum": 24,
+          "planId": "after-vision-qc-1792714106813",
+          "product": "aftertron",
+          "projectId": "aftertron-local-b581984150dc55a0",
+          "schema": "aftertron.tron.plan.v1",
+          "steps": [
+            {
+              "id": "refine_01",
+              "params": {
+                "inInfluence": 82,
+                "inSpeed": 0,
+                "layer": 246,
+                "outInfluence": 82,
+                "outSpeed": 0,
+                "path": "transform/scale"
+              },
+              "tool": "after.keyframe.easy_ease"
+            },
+            {
+              "id": "step_02",
+              "params": {
+                "compensate": true,
+                "layers": [
+                  246
+                ],
+                "parent": 223
+              },
+              "tool": "after.layer.set_parent"
+            },
+            {
+              "id": "step_03",
+              "params": {
+                "layer": 223,
+                "matchName": "levels",
+                "values": {
+                  "gamma": 1.08
+                }
+              },
+              "tool": "after.effect.apply"
+            }
+          ]
+        },
+        "reviewedActualFrames": true,
+        "sampledFrameCount": 5,
+        "summaryAr": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+        "thinkingActive": true,
+        "userSummary": "التكوين البصري يعتمد على التباين العالي بين الخلفية الداكنة والعناصر المضيئة، لكن غياب الأقنعة (Masks) في الطبقات الرئيسية مثل 'Cobalt Optical Core' و 'Orbital Energy Halo' يهدد بوضوح الحدود. النصوص واضحة جداً ولكن تداخلها البصري مع الهالات الضوئية قد يقلل من القراءة السريعة. الحركة الحالية تبدو خطية أو غير موحدة عبر الإطارات، مما يفقد المشهد طابعاً سينمائياً.",
+        "visionFrameCount": 5,
+        "visionFramesAvailable": 5,
+        "visionInspected": true,
+        "visionModel": "qwen3.5:4b-q4_K_M",
+        "visualFindings": {
+          "animationProgression": "الحركة عبر الإطارات (F0-F204) تظهر تسارعاً مفاجئاً في البداية ثم استقراراً، مما يشير إلى عدم وجود منحنيات عكس (Easing) صحيحة. العنصر الرئيسي يدور بسرعة ثابتة بينما العناصر الأخرى تتحرك بطيئة جداً أو لا تتحرك، مما يكسر الإيقاع البصري.",
+          "compositingAndAlphaEdges": "جودة الدمج تعتمد كلياً على دقة الطبقات الحالية؛ حواف الألفا في 'Cobalt Optical Core' تبدو ناعمة لكنها تحتاج إلى تعريض (Exposure) أو تباين (Contrast) محلي لضمان الفصل عن الخلفية. غياب Track Matte للنص فوق العناصر يجعل التحكم في التداخل صعباً.",
+          "compositionAndHierarchy": "التكوين يركز على المركز بشكل جيد، لكن غياب التدرج البصري (Visual Hierarchy) واضح؛ العناصر الثانوية مثل 'Gold Precision Ring' لا تبرز كعنصر مكمّل للعنصر الرئيسي. الإضاءة المحيطية حول اللوجو قوية جداً مما قد يغطي جزئياً تفاصيل النص الأبيض.",
+          "typographyAndReadability": "النصوص واضحة ومقروءة تماماً، والهوامش آمنة. ومع ذلك، غياب 'Track Matte' للنص فوق العناصر المضيئة يعني أن التداخل البصري غير محكم، وقد يختفي النص عند تطبيق تأثيرات الإضاءة الخلفية بشكل خاطئ."
+        }
+      }
+    }
+  },
+  "schema": "aftertron.tron.creative-acceptance-report.v2",
+  "sharedRuntime": {
+    "model": "qwen3.5:4b-q4_K_M",
+    "thinkingSupported": true,
+    "thinkingVerified": true,
+    "triAppLeasesVerified": [
+      "aftertron",
+      "phototron",
+      "filmtron"
+    ],
+    "vramLoadedMiB": 4182,
+    "vramTotalMiB": 6144,
+    "vramUnloadedMiB": 439,
+    "warmupVerified": true
+  }
+}

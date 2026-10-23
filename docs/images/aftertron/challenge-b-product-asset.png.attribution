@@ -1,8 +1,8 @@
 asset:        challenge-b-product-asset.png
-title:        AfterTron x TRON Challenge B — Studio-lit flagship hardware monolith product asset
+title:        AfterTron x TRON Challenge B — Studio-lit luxury oud flacon RGBA8 cutout asset
 author:       AfterTron / GemiTron Team
-source:       original work (procedurally synthesized RGBA8 hardware product unit via crates/ui-egui/tests/aftertron_acceptance.rs)
+source:       original work (RGBA8 studio alpha-matted cutout derived from docs/images/aftertron/luxury-oud-hero-source.jpg)
 license:      MIT OR Apache-2.0
 license-file:
-added:        2026-10-22 by Antigravity (agent) for Elwazeery
-notes:        720x720 straight-alpha RGBA8 product hero plate (anodized titanium chassis, copper-gold acoustic driver bezel, micro-perforated grille, and glass telemetry bar) imported by Challenge B.
+added:        2026-10-23 by Antigravity (agent) for Elwazeery
+notes:        896x1152 straight-alpha RGBA8 product hero plate (faceted amber crystal flacon, brushed gold cap, veined obsidian marble pedestal, and translucent incense wisps keyed from studio cyclorama) imported by Challenge B.

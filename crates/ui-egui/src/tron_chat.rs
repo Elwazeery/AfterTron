@@ -45,6 +45,7 @@ struct ChatState {
     rendered_samples: Vec<Value>,
     critique: Option<Value>,
     history: Vec<ChatTurn>,
+    capture_mode: Option<String>,
     last_status: Instant,
 }
 
@@ -76,6 +77,7 @@ impl Default for ChatState {
             rendered_samples: Vec::new(),
             critique: None,
             history: Vec::new(),
+            capture_mode: None,
             last_status: Instant::now(),
         }
     }
@@ -374,7 +376,13 @@ fn run_visual_critique(
     });
 }
 
-/// Seed deterministic UI state for headless visual verification and screenshot capture.
+/// Seed deterministic UI fixture state (`UI_FIXTURE`) for layout testing only.
+/// For creative acceptance, use `bind_live_runtime_state_for_capture` (`LIVE_RUNTIME`).
+pub fn seed_ui_fixture_state_for_capture(ctx: &Context, open: bool, power_on: bool) {
+    seed_acceptance_state_for_capture(ctx, open, power_on);
+}
+
+/// Seed deterministic UI fixture state (`UI_FIXTURE`) for headless layout verification.
 pub fn seed_acceptance_state_for_capture(ctx: &Context, open: bool, power_on: bool) {
     let st = shared(ctx);
     let Ok(mut s) = st.lock() else { return };
@@ -383,6 +391,8 @@ pub fn seed_acceptance_state_for_capture(ctx: &Context, open: bool, power_on: bo
     s.working = false;
     s.power_on = power_on;
     s.transport_connected = power_on;
+    s.capture_mode = Some("UI_FIXTURE".into());
+    s.last_status = Instant::now();
     s.model_state = if power_on {
         "READY".into()
     } else {
@@ -400,21 +410,22 @@ pub fn seed_acceptance_state_for_capture(ctx: &Context, open: bool, power_on: bo
         ChatTurn {
             role: "user".into(),
             text: "صمّم تتر موشن تايبوجرافي احترافي بـ Hierarchy واضح وEasy Ease".into(),
-            badge: Some("Brief".into()),
+            badge: Some("Brief · UI_FIXTURE".into()),
         },
         ChatTurn {
             role: "tron".into(),
-            text: "راجعنا الكومبوزيشن على 24fps وجهزنا اتجاهين مختلفين فعلاً في الإيقاع والتكوين البصري: الأول مبني على Kinetic Authority بـ Overshoot محسوب، والتاني Editorial Split بـ Matte نظيف.".into(),
-            badge: Some("Art Direction · اتجاهين".into()),
+            text: "[UI_FIXTURE] راجعنا الكومبوزيشن على 24fps وجهزنا اتجاهين مختلفين فعلاً في الإيقاع والتكوين البصري: الأول مبني على Kinetic Authority بـ Overshoot محسوب، والتاني Editorial Split بـ Matte نظيف.".into(),
+            badge: Some("UI_FIXTURE · Art Direction".into()),
         },
     ];
     s.proposal = Some(json!({
         "ok": true,
         "result": {
             "ok": true,
+            "captureMode": "UI_FIXTURE",
             "selectedDirectionIndex": 0,
             "selectedDirectionId": "direction_a",
-            "userExplanation": "اتجاهين إبداعيين جاهزين للمقارنة والاعتماد قبل أي تعديل على الـ Timeline.",
+            "userExplanation": "[UI_FIXTURE] اتجاهين إبداعيين جاهزين للمقارنة والاعتماد قبل أي تعديل على الـ Timeline.",
             "exploredDirections": [
                 {
                     "id": "direction_a",
@@ -484,6 +495,85 @@ pub fn seed_acceptance_state_for_capture(ctx: &Context, open: bool, power_on: bo
     }));
 }
 
+/// Bind authentic live runtime outputs (`LIVE_RUNTIME`) from the shared GemiMCP broker,
+/// live model inference, native preflight review, native execution receipt, rendered frame
+/// samples, and multimodal vision critique into the TRON UI state for live acceptance capture.
+#[allow(clippy::too_many_arguments)]
+pub fn bind_live_runtime_state_for_capture(
+    ctx: &Context,
+    open: bool,
+    docked: bool,
+    live_status: &Value,
+    prompt: &str,
+    selected_direction: usize,
+    live_proposal: Option<Value>,
+    live_review: Option<Value>,
+    live_execution: Option<Value>,
+    rendered_samples: Vec<Value>,
+    live_critique: Option<Value>,
+) {
+    let st = shared(ctx);
+    let Ok(mut s) = st.lock() else { return };
+    s.open = open;
+    s.docked = docked;
+    s.working = false;
+    s.task_label.clear();
+    s.error = None;
+    s.capture_mode = Some("LIVE_RUNTIME".into());
+    s.last_status = Instant::now();
+    #[cfg(not(target_arch = "wasm32"))]
+    update_status(&mut s, live_status);
+    s.power_on = s.thinking && s.warmed && s.model_state == "READY";
+    s.prompt = prompt.to_owned();
+    s.selected_direction = selected_direction;
+    s.history.clear();
+    if !prompt.trim().is_empty() {
+        s.history.push(ChatTurn {
+            role: "user".into(),
+            text: prompt.to_owned(),
+            badge: Some("Brief · LIVE_RUNTIME".into()),
+        });
+    }
+    if let Some(prop) = &live_proposal {
+        let res = prop.get("result").unwrap_or(prop);
+        if let Some(exp) = res
+            .get("directorResponseAr")
+            .or_else(|| res.get("userExplanation"))
+            .and_then(Value::as_str)
+        {
+            s.history.push(ChatTurn {
+                role: "tron".into(),
+                text: exp.to_owned(),
+                badge: Some("LIVE_RUNTIME · Model Plan".into()),
+            });
+        }
+    }
+    if let Some(crit) = &live_critique {
+        let c = crit.get("critique").or_else(|| crit.get("result")).unwrap_or(crit);
+        if let Some(txt) = c.get("critiqueText").or_else(|| c.get("userSummary")).and_then(Value::as_str) {
+            s.history.push(ChatTurn {
+                role: "tron".into(),
+                text: txt.to_owned(),
+                badge: Some("LIVE_RUNTIME · 5-Frame Vision QC".into()),
+            });
+        }
+    }
+    if let Some(rev) = &live_review {
+        s.reviewed_id = rev.get("planId").and_then(Value::as_str).map(str::to_owned);
+        s.reviewed_revision = rev.get("revision").and_then(Value::as_u64);
+        s.reviewed_digest = rev.get("planDigest").and_then(Value::as_str).map(str::to_owned);
+    } else {
+        s.reviewed_id = None;
+        s.reviewed_revision = None;
+        s.reviewed_digest = None;
+    }
+    s.proposal = live_proposal;
+    s.review = live_review;
+    s.execution = live_execution;
+    s.rendered_samples = rendered_samples;
+    s.critique = live_critique;
+}
+
 fn render_chat_contents(
     ui: &mut egui::Ui,
     s: &mut ChatState,
@@ -507,6 +597,14 @@ fn render_chat_contents(
             pal.text_secondary,
             RichText::new("AfterTron · المخرج الإبداعي للموشن والـVFX").strong(),
         );
+        if let Some(mode) = &s.capture_mode {
+            let badge_col = if mode == "LIVE_RUNTIME" {
+                pal.accent_emerald
+            } else {
+                pal.accent_gold
+            };
+            ui.colored_label(badge_col, RichText::new(format!("[{mode}]")).small().strong());
+        }
         ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
             if ui
                 .button(RichText::new("—").color(pal.text_primary))
@@ -942,11 +1040,23 @@ fn render_chat_contents(
                     .corner_radius(CornerRadius::same(6))
                     .inner_margin(Margin::symmetric(10, 8))
                     .show(ui, |ui| {
-                        ui.colored_label(
-                            pal.accent_gold,
-                            RichText::new("النقد البصري لـ 5 كادرات مرسومة (0% · 25% · 50% · 75% · 100%)")
-                                .strong(),
-                        );
+                        ui.horizontal(|ui| {
+                            ui.colored_label(
+                                pal.accent_gold,
+                                RichText::new("النقد البصري لـ 5 كادرات مرسومة (0% · 25% · 50% · 75% · 100%)")
+                                    .strong(),
+                            );
+                            let vis_ok = crit
+                                .get("visionInspected")
+                                .and_then(Value::as_bool)
+                                .unwrap_or(false);
+                            if vis_ok {
+                                ui.colored_label(
+                                    pal.accent_emerald,
+                                    RichText::new("● Vision Multimodal Verified").small().strong(),
+                                );
+                            }
+                        });
                         if let Some(text) = crit.get("critiqueText").and_then(Value::as_str) {
                             draw_bidi_paragraph(ui, text, pal.text_primary, false);
                         }

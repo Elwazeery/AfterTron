@@ -1,0 +1,7 @@
+asset:        docs/images/aftertron/challenge-a-typography-before-refinement.png
+title:        Pre-refinement hero frame of Challenge A (Premium Motion Typography)
+author:       AfterTron / GemiTron Team
+source:       original work
+license:      MIT OR Apache-2.0
+added:        2026-10-23 by AfterTron Team
+notes:        Rendered directly by effectcraft_render::render_frame before the vision-driven creative refinement pass in aftertron_acceptance.rs.

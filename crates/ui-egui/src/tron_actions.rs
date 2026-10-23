@@ -6,7 +6,7 @@ use effectcraft_automation::tron::{
     LocalMotionAuthority, MotionPlan, execute_approved, plan_digest_hex, preflight,
 };
 use effectcraft_engine::Session;
-use effectcraft_project::{LayerSource, Node};
+use effectcraft_project::{AlphaMode, ItemKind, LayerSource, Node};
 use serde_json::{Value, json};
 
 fn fnv1a_64(bytes: &[u8]) -> u64 {
@@ -161,8 +161,9 @@ pub fn apply(
 }
 
 /// Render 5 authoritative frames across the active composition (`0%`, `25%`, `50%`, `75%`, `100%`)
-/// snapped to exact `Tick` frame boundaries, returning real pixel luminance, contrast, alpha,
-/// and digest telemetry for post-execution visual critique.
+/// snapped to exact `Tick` frame boundaries, returning real PNG frame images (`base64Png`),
+/// spatial thirds luminance, contrast, alpha edge feathering, temporal motion delta, and digest
+/// telemetry for post-execution multimodal vision and technical critique.
 pub fn sample_rendered_frames(session: &Session) -> Result<Vec<Value>, String> {
     let cid = session
         .active_comp_id()
@@ -181,25 +182,34 @@ pub fn sample_rendered_frames(session: &Session) -> Result<Vec<Value>, String> {
     ];
 
     let mut out = Vec::with_capacity(samples.len());
+    let mut prev_rgba: Option<Vec<u8>> = None;
     for (label, ratio) in samples {
         let frame = ((last_frame as f64) * ratio).round() as i64;
         let tick = comp.frame_rate.tick_of(frame);
         let (w, h, rgba) = session
-            .render_rgba8(cid, tick, 640)
+            .render_rgba8(cid, tick, 480)
             .map_err(|e| e.to_string())?;
         let (_, _, alpha_rgba) = session
-            .render_rgba8_alpha(cid, tick, 640, true)
+            .render_rgba8_alpha(cid, tick, 480, true)
             .map_err(|e| e.to_string())?;
 
         let px_count = (w as usize * h as usize).max(1);
         let mut luma_sum = 0.0_f64;
         let mut lumas = Vec::with_capacity(px_count);
-        for px in rgba.chunks_exact(4) {
+        let mut thirds_sum = [0.0_f64; 3];
+        let mut thirds_cnt = [0usize; 3];
+        let h_usize = (h as usize).max(1);
+
+        for (idx, px) in rgba.chunks_exact(4).enumerate() {
             let l = 0.2126 * f64::from(px[0])
                 + 0.7152 * f64::from(px[1])
                 + 0.0722 * f64::from(px[2]);
             luma_sum += l;
             lumas.push(l);
+            let y = idx / (w as usize).max(1);
+            let band = ((y * 3) / h_usize).min(2);
+            thirds_sum[band] += l / 255.0;
+            thirds_cnt[band] += 1;
         }
         let mean_luma = luma_sum / (px_count as f64);
         let variance = lumas
@@ -211,13 +221,44 @@ pub fn sample_rendered_frames(session: &Session) -> Result<Vec<Value>, String> {
             .sum::<f64>()
             / (px_count as f64);
         let contrast_std = variance.sqrt();
+        let thirds_luma = [
+            ((thirds_sum[0] / (thirds_cnt[0].max(1) as f64)) * 1000.0).round() / 1000.0,
+            ((thirds_sum[1] / (thirds_cnt[1].max(1) as f64)) * 1000.0).round() / 1000.0,
+            ((thirds_sum[2] / (thirds_cnt[2].max(1) as f64)) * 1000.0).round() / 1000.0,
+        ];
 
         let non_zero_alpha = alpha_rgba
             .chunks_exact(4)
             .filter(|px| px[3] > 0)
             .count();
+        let semi_transparent_alpha = alpha_rgba
+            .chunks_exact(4)
+            .filter(|px| px[3] > 0 && px[3] < 255)
+            .count();
         let non_zero_alpha_ratio = (non_zero_alpha as f64) / (px_count as f64);
+        let semi_transparent_edge_ratio = (semi_transparent_alpha as f64) / (px_count as f64);
+
+        let motion_delta_from_prev = if let Some(prev) = prev_rgba.as_ref() {
+            if prev.len() == rgba.len() && !rgba.is_empty() {
+                let diff_sum: u64 = prev
+                    .iter()
+                    .zip(rgba.iter())
+                    .map(|(&a, &b)| u64::from(a.abs_diff(b)))
+                    .sum();
+                let norm = (diff_sum as f64) / ((rgba.len() as f64) * 255.0);
+                Some((norm * 10000.0).round() / 10000.0)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        prev_rgba = Some(rgba.clone());
+
         let digest = format!("{:016x}", fnv1a_64(&rgba));
+        let png_bytes = effectcraft_automation::encode_png(w, h, rgba, 512)
+            .map_err(|e| e.to_string())?;
+        let base64_png = effectcraft_automation::base64::encode(&png_bytes);
 
         out.push(json!({
             "label": label,
@@ -231,9 +272,13 @@ pub fn sample_rendered_frames(session: &Session) -> Result<Vec<Value>, String> {
             "height": h,
             "meanLuma": (mean_luma * 100.0).round() / 100.0,
             "contrastStd": (contrast_std * 100.0).round() / 100.0,
+            "thirdsLuma": thirds_luma,
             "nonZeroAlphaRatio": (non_zero_alpha_ratio * 10000.0).round() / 10000.0,
+            "semiTransparentEdgeRatio": (semi_transparent_edge_ratio * 10000.0).round() / 10000.0,
+            "motionDeltaFromPrev": motion_delta_from_prev,
             "pixelDigest": digest,
-            "sha256": digest
+            "sha256": digest,
+            "base64Png": base64_png
         }));
     }
     Ok(out)
@@ -248,6 +293,25 @@ pub fn live_context(session: &Session) -> Option<Value> {
         .map(|it| it.name.clone())
         .unwrap_or_else(|| format!("Comp {}", id.0));
     let cti = session.time_of(id);
+    let current_frame = comp.frame_rate.frame_at(cti);
+
+    let project_assets = session
+        .project
+        .items
+        .iter()
+        .filter_map(|(item_id, item)| match &item.kind {
+            ItemKind::Footage(ft) => Some(json!({
+                "id": item_id.0,
+                "name": item.name,
+                "kind": "footage",
+                "width": ft.width,
+                "height": ft.height,
+                "hasAlpha": ft.alpha != AlphaMode::Ignore,
+                "provenance": "imported"
+            })),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
 
     let layers = comp
         .layers
@@ -345,7 +409,9 @@ pub fn live_context(session: &Session) -> Option<Value> {
         "height": comp.height,
         "durationTicks": comp.duration.0,
         "ctiTick": cti.0,
+        "currentFrame": current_frame,
         "motionBlurEnabled": comp.enable_motion_blur,
+        "projectAssets": project_assets,
         "layers": layers,
     }))
 }

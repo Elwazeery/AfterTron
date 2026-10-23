@@ -18,7 +18,7 @@
   "items": {
     "1": {
       "id": 1,
-      "name": "Challenge A — Kinetic Typography",
+      "name": "Challenge A — Cairo Pavilion 2027 Kinetic Typography",
       "label": "Sandstone",
       "comment": "",
       "parent": null,
@@ -44,8 +44,8 @@
         ],
         "layers": [
           {
-            "id": 138,
-            "name": "Editorial Kicker",
+            "id": 133,
+            "name": "arabic_subtitle",
             "source": {
               "type": "Text"
             },
@@ -74,13 +74,13 @@
             "blend_mode": "Normal",
             "preserve_transparency": false,
             "track_matte": null,
-            "parent": 99,
+            "parent": null,
             "markers": [],
             "auto_orient": "Off",
             "props": {
-              "uid": 139,
+              "uid": 134,
               "match": "layer",
-              "name": "Editorial Kicker",
+              "name": "arabic_subtitle",
               "kind": {
                 "kind": "Plain"
               },
@@ -88,7 +88,7 @@
               "children": [
                 {
                   "node": "Group",
-                  "uid": 154,
+                  "uid": 149,
                   "match": "text",
                   "name": "Text",
                   "kind": {
@@ -98,20 +98,20 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 140,
+                      "uid": 135,
                       "match": "sourceText",
                       "name": "Source Text",
                       "value": {
                         "t": "Text",
                         "v": {
-                          "text": "توازن الكتلة والفراغ في كل إطار",
+                          "text": "جناح القاهرة ٢٠٢٧ — النور والأفق",
                           "font": "GemiFontSans",
-                          "style": "Medium",
-                          "size": 34.0,
+                          "style": "Regular",
+                          "size": 42.0,
                           "fill": [
-                            1.0,
-                            0.56,
-                            0.24,
+                            0.949,
+                            0.722,
+                            0.294,
                             1.0
                           ],
                           "stroke": [
@@ -124,7 +124,7 @@
                           "apply_fill": true,
                           "apply_stroke": false,
                           "stroke_over_fill": true,
-                          "tracking": 80.0,
+                          "tracking": 0.0,
                           "leading": null,
                           "justify": "Center",
                           "baseline_shift": 0.0,
@@ -168,7 +168,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 141,
+                      "uid": 136,
                       "match": "perChar3d",
                       "name": "Per-character 3D",
                       "value": {
@@ -187,7 +187,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 143,
+                      "uid": 138,
                       "match": "pathOptions",
                       "name": "Path Options",
                       "kind": {
@@ -197,7 +197,7 @@
                       "children": [
                         {
                           "node": "Prop",
-                          "uid": 142,
+                          "uid": 137,
                           "match": "path",
                           "name": "Path",
                           "value": {
@@ -219,7 +219,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 144,
+                          "uid": 139,
                           "match": "reversePath",
                           "name": "Reverse Path",
                           "value": {
@@ -238,7 +238,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 145,
+                          "uid": 140,
                           "match": "perpendicular",
                           "name": "Perpendicular To Path",
                           "value": {
@@ -257,7 +257,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 146,
+                          "uid": 141,
                           "match": "forceAlignment",
                           "name": "Force Alignment",
                           "value": {
@@ -276,7 +276,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 147,
+                          "uid": 142,
                           "match": "firstMargin",
                           "name": "First Margin",
                           "value": {
@@ -295,7 +295,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 148,
+                          "uid": 143,
                           "match": "lastMargin",
                           "name": "Last Margin",
                           "value": {
@@ -316,7 +316,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 149,
+                      "uid": 144,
                       "match": "moreOptions",
                       "name": "More Options",
                       "kind": {
@@ -326,7 +326,7 @@
                       "children": [
                         {
                           "node": "Prop",
-                          "uid": 150,
+                          "uid": 145,
                           "match": "anchorGrouping",
                           "name": "Anchor Point Grouping",
                           "value": {
@@ -351,7 +351,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 151,
+                          "uid": 146,
                           "match": "groupingAlignment",
                           "name": "Grouping Alignment",
                           "value": {
@@ -373,7 +373,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 152,
+                          "uid": 147,
                           "match": "fillStroke",
                           "name": "Fill & Stroke",
                           "value": {
@@ -397,7 +397,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 153,
+                          "uid": 148,
                           "match": "interCharBlend",
                           "name": "Inter-Character Blending",
                           "value": {
@@ -446,7 +446,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 155,
+                      "uid": 150,
                       "match": "animators",
                       "name": "Animators",
                       "kind": {
@@ -459,7 +459,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 156,
+                  "uid": 151,
                   "match": "masks",
                   "name": "Masks",
                   "kind": {
@@ -470,18 +470,396 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 157,
+                  "uid": 152,
                   "match": "effects",
                   "name": "Effects",
                   "kind": {
                     "kind": "Plain"
                   },
                   "enabled": true,
-                  "children": []
+                  "children": [
+                    {
+                      "node": "Group",
+                      "uid": 217,
+                      "match": "ec.stylize.glow",
+                      "name": "Glow",
+                      "kind": {
+                        "kind": "Effect",
+                        "effect": "ec.stylize.glow"
+                      },
+                      "enabled": true,
+                      "children": [
+                        {
+                          "node": "Prop",
+                          "uid": 218,
+                          "match": "based",
+                          "name": "Glow Based On",
+                          "value": {
+                            "t": "Enum",
+                            "v": 1
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "Alpha Channel",
+                              "Color Channels"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 219,
+                          "match": "threshold",
+                          "name": "Glow Threshold",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 42.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 100.0,
+                            "slider_min": 0.0,
+                            "slider_max": 100.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 220,
+                          "match": "radius",
+                          "name": "Glow Radius",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 44.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 1000.0,
+                            "slider_min": 0.0,
+                            "slider_max": 100.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 221,
+                          "match": "intensity",
+                          "name": "Glow Intensity",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 1.25
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 255.0,
+                            "slider_min": 0.0,
+                            "slider_max": 4.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 222,
+                          "match": "operation",
+                          "name": "Composite Original",
+                          "value": {
+                            "t": "Enum",
+                            "v": 0
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "On Top",
+                              "Behind",
+                              "None"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 223,
+                          "match": "glowOperation",
+                          "name": "Glow Operation",
+                          "value": {
+                            "t": "Enum",
+                            "v": 1
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "Normal",
+                              "Add",
+                              "Multiply",
+                              "Screen",
+                              "Overlay",
+                              "Soft Light",
+                              "Hard Light",
+                              "Color Dodge",
+                              "Color Burn",
+                              "Darken",
+                              "Lighten",
+                              "Difference",
+                              "Exclusion",
+                              "Hue",
+                              "Saturation",
+                              "Color",
+                              "Luminosity"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 224,
+                          "match": "colors",
+                          "name": "Glow Colors",
+                          "value": {
+                            "t": "Enum",
+                            "v": 0
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "Original Colors",
+                              "A & B Colors",
+                              "Arbitrary Map"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 225,
+                          "match": "arbitraryMap",
+                          "name": "Arbitrary Map",
+                          "value": {
+                            "t": "Str",
+                            "v": ""
+                          },
+                          "ui": {
+                            "kind": "Hidden"
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 226,
+                          "match": "colorLooping",
+                          "name": "Color Looping",
+                          "value": {
+                            "t": "Enum",
+                            "v": 2
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "Sawtooth A>B",
+                              "Sawtooth B>A",
+                              "Triangle A>B>A",
+                              "Triangle B>A>B"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 227,
+                          "match": "colorLoops",
+                          "name": "Color Loops",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 1.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 1.0,
+                            "max": 127.0,
+                            "slider_min": 1.0,
+                            "slider_max": 10.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 228,
+                          "match": "colorPhase",
+                          "name": "Color Phase",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 0.0
+                          },
+                          "ui": {
+                            "kind": "Angle"
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 229,
+                          "match": "abMidpoint",
+                          "name": "A & B Midpoint",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 50.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 100.0,
+                            "slider_min": 0.0,
+                            "slider_max": 100.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 230,
+                          "match": "colorA",
+                          "name": "Color A",
+                          "value": {
+                            "t": "Color",
+                            "v": [
+                              1.0,
+                              1.0,
+                              1.0,
+                              1.0
+                            ]
+                          },
+                          "ui": {
+                            "kind": "Color"
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 231,
+                          "match": "colorB",
+                          "name": "Color B",
+                          "value": {
+                            "t": "Color",
+                            "v": [
+                              0.0,
+                              0.0,
+                              0.0,
+                              1.0
+                            ]
+                          },
+                          "ui": {
+                            "kind": "Color"
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 232,
+                          "match": "glowDimensions",
+                          "name": "Glow Dimensions",
+                          "value": {
+                            "t": "Enum",
+                            "v": 0
+                          },
+                          "ui": {
+                            "kind": "Popup",
+                            "options": [
+                              "Horizontal and Vertical",
+                              "Horizontal",
+                              "Vertical"
+                            ]
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "node": "Group",
-                  "uid": 166,
+                  "uid": 161,
                   "match": "transform",
                   "name": "Transform",
                   "kind": {
@@ -491,7 +869,7 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 158,
+                      "uid": 153,
                       "match": "anchor",
                       "name": "Anchor Point",
                       "value": {
@@ -514,14 +892,14 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 159,
+                      "uid": 154,
                       "match": "position",
                       "name": "Position",
                       "value": {
                         "t": "Vec3",
                         "v": [
-                          0.0,
-                          116.0,
+                          960.0,
+                          595.0,
                           0.0
                         ]
                       },
@@ -537,7 +915,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 160,
+                      "uid": 155,
                       "match": "scale",
                       "name": "Scale",
                       "value": {
@@ -560,7 +938,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 161,
+                      "uid": 156,
                       "match": "orientation",
                       "name": "Orientation",
                       "value": {
@@ -583,7 +961,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 162,
+                      "uid": 157,
                       "match": "rotationX",
                       "name": "X Rotation",
                       "value": {
@@ -602,7 +980,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 163,
+                      "uid": 158,
                       "match": "rotationY",
                       "name": "Y Rotation",
                       "value": {
@@ -621,7 +999,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 164,
+                      "uid": 159,
                       "match": "rotation",
                       "name": "Rotation",
                       "value": {
@@ -640,7 +1018,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 165,
+                      "uid": 160,
                       "match": "opacity",
                       "name": "Opacity",
                       "value": {
@@ -666,7 +1044,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 167,
+                  "uid": 162,
                   "match": "materialOptions",
                   "name": "Material Options",
                   "kind": {
@@ -676,7 +1054,7 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 168,
+                      "uid": 163,
                       "match": "castsShadows",
                       "name": "Casts Shadows",
                       "value": {
@@ -700,7 +1078,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 169,
+                      "uid": 164,
                       "match": "lightTransmission",
                       "name": "Light Transmission",
                       "value": {
@@ -719,7 +1097,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 170,
+                      "uid": 165,
                       "match": "acceptsShadows",
                       "name": "Accepts Shadows",
                       "value": {
@@ -743,7 +1121,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 171,
+                      "uid": 166,
                       "match": "acceptsLights",
                       "name": "Accepts Lights",
                       "value": {
@@ -762,7 +1140,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 172,
+                      "uid": 167,
                       "match": "ambient",
                       "name": "Ambient",
                       "value": {
@@ -781,7 +1159,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 173,
+                      "uid": 168,
                       "match": "diffuse",
                       "name": "Diffuse",
                       "value": {
@@ -800,7 +1178,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 174,
+                      "uid": 169,
                       "match": "specularIntensity",
                       "name": "Specular Intensity",
                       "value": {
@@ -819,7 +1197,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 175,
+                      "uid": 170,
                       "match": "specularShininess",
                       "name": "Specular Shininess",
                       "value": {
@@ -838,7 +1216,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 176,
+                      "uid": 171,
                       "match": "metal",
                       "name": "Metal",
                       "value": {
@@ -861,8 +1239,8 @@
             }
           },
           {
-            "id": 99,
-            "name": "Hero Kinetic Headline",
+            "id": 94,
+            "name": "hero_title",
             "source": {
               "type": "Text"
             },
@@ -891,13 +1269,13 @@
             "blend_mode": "Normal",
             "preserve_transparency": false,
             "track_matte": null,
-            "parent": null,
+            "parent": 133,
             "markers": [],
             "auto_orient": "Off",
             "props": {
-              "uid": 100,
+              "uid": 95,
               "match": "layer",
-              "name": "Hero Kinetic Headline",
+              "name": "hero_title",
               "kind": {
                 "kind": "Plain"
               },
@@ -905,7 +1283,7 @@
               "children": [
                 {
                   "node": "Group",
-                  "uid": 115,
+                  "uid": 110,
                   "match": "text",
                   "name": "Text",
                   "kind": {
@@ -915,20 +1293,20 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 101,
+                      "uid": 96,
                       "match": "sourceText",
                       "name": "Source Text",
                       "value": {
                         "t": "Text",
                         "v": {
-                          "text": "إيقاع الحركة يصنع المعنى",
+                          "text": "CAIRO PAVILION 2027 — LIGHT & HORIZON",
                           "font": "GemiFontSans",
                           "style": "Bold",
-                          "size": 76.0,
+                          "size": 64.0,
                           "fill": [
-                            0.98,
-                            0.97,
-                            0.95,
+                            0.969,
+                            0.961,
+                            0.941,
                             1.0
                           ],
                           "stroke": [
@@ -941,7 +1319,7 @@
                           "apply_fill": true,
                           "apply_stroke": false,
                           "stroke_over_fill": true,
-                          "tracking": 20.0,
+                          "tracking": 0.0,
                           "leading": null,
                           "justify": "Center",
                           "baseline_shift": 0.0,
@@ -967,7 +1345,7 @@
                           "indent_first": 0.0,
                           "space_before": 0.0,
                           "space_after": 0.0,
-                          "direction": "Rtl",
+                          "direction": "Ltr",
                           "composer": "EveryLine",
                           "hanging_punctuation": false,
                           "vertical": false
@@ -985,7 +1363,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 102,
+                      "uid": 97,
                       "match": "perChar3d",
                       "name": "Per-character 3D",
                       "value": {
@@ -1004,7 +1382,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 104,
+                      "uid": 99,
                       "match": "pathOptions",
                       "name": "Path Options",
                       "kind": {
@@ -1014,7 +1392,7 @@
                       "children": [
                         {
                           "node": "Prop",
-                          "uid": 103,
+                          "uid": 98,
                           "match": "path",
                           "name": "Path",
                           "value": {
@@ -1036,7 +1414,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 105,
+                          "uid": 100,
                           "match": "reversePath",
                           "name": "Reverse Path",
                           "value": {
@@ -1055,7 +1433,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 106,
+                          "uid": 101,
                           "match": "perpendicular",
                           "name": "Perpendicular To Path",
                           "value": {
@@ -1074,7 +1452,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 107,
+                          "uid": 102,
                           "match": "forceAlignment",
                           "name": "Force Alignment",
                           "value": {
@@ -1093,7 +1471,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 108,
+                          "uid": 103,
                           "match": "firstMargin",
                           "name": "First Margin",
                           "value": {
@@ -1112,7 +1490,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 109,
+                          "uid": 104,
                           "match": "lastMargin",
                           "name": "Last Margin",
                           "value": {
@@ -1133,7 +1511,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 110,
+                      "uid": 105,
                       "match": "moreOptions",
                       "name": "More Options",
                       "kind": {
@@ -1143,7 +1521,7 @@
                       "children": [
                         {
                           "node": "Prop",
-                          "uid": 111,
+                          "uid": 106,
                           "match": "anchorGrouping",
                           "name": "Anchor Point Grouping",
                           "value": {
@@ -1168,7 +1546,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 112,
+                          "uid": 107,
                           "match": "groupingAlignment",
                           "name": "Grouping Alignment",
                           "value": {
@@ -1190,7 +1568,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 113,
+                          "uid": 108,
                           "match": "fillStroke",
                           "name": "Fill & Stroke",
                           "value": {
@@ -1214,7 +1592,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 114,
+                          "uid": 109,
                           "match": "interCharBlend",
                           "name": "Inter-Character Blending",
                           "value": {
@@ -1263,7 +1641,7 @@
                     },
                     {
                       "node": "Group",
-                      "uid": 116,
+                      "uid": 111,
                       "match": "animators",
                       "name": "Animators",
                       "kind": {
@@ -1276,7 +1654,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 117,
+                  "uid": 112,
                   "match": "masks",
                   "name": "Masks",
                   "kind": {
@@ -1287,7 +1665,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 118,
+                  "uid": 113,
                   "match": "effects",
                   "name": "Effects",
                   "kind": {
@@ -1297,154 +1675,7 @@
                   "children": [
                     {
                       "node": "Group",
-                      "uid": 177,
-                      "match": "ec.perspective.dropshadow",
-                      "name": "Drop Shadow",
-                      "kind": {
-                        "kind": "Effect",
-                        "effect": "ec.perspective.dropshadow"
-                      },
-                      "enabled": true,
-                      "children": [
-                        {
-                          "node": "Prop",
-                          "uid": 178,
-                          "match": "color",
-                          "name": "Shadow Color",
-                          "value": {
-                            "t": "Color",
-                            "v": [
-                              0.0,
-                              0.0,
-                              0.0,
-                              1.0
-                            ]
-                          },
-                          "ui": {
-                            "kind": "Color"
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 179,
-                          "match": "opacity",
-                          "name": "Opacity",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 0.78
-                          },
-                          "ui": {
-                            "kind": "Slider",
-                            "min": 0.0,
-                            "max": 100.0,
-                            "slider_min": 0.0,
-                            "slider_max": 100.0,
-                            "decimals": 0
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 180,
-                          "match": "direction",
-                          "name": "Direction",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 135.0
-                          },
-                          "ui": {
-                            "kind": "Angle"
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 181,
-                          "match": "distance",
-                          "name": "Distance",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 16.0
-                          },
-                          "ui": {
-                            "kind": "Slider",
-                            "min": 0.0,
-                            "max": 32000.0,
-                            "slider_min": 0.0,
-                            "slider_max": 120.0,
-                            "decimals": 1
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 182,
-                          "match": "softness",
-                          "name": "Softness",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 32.0
-                          },
-                          "ui": {
-                            "kind": "Slider",
-                            "min": 0.0,
-                            "max": 1000.0,
-                            "slider_min": 0.0,
-                            "slider_max": 250.0,
-                            "decimals": 1
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 183,
-                          "match": "shadowOnly",
-                          "name": "Shadow Only",
-                          "value": {
-                            "t": "Bool",
-                            "v": false
-                          },
-                          "ui": {
-                            "kind": "Checkbox"
-                          },
-                          "spatial": false,
-                          "hold_only": true,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        }
-                      ]
-                    },
-                    {
-                      "node": "Group",
-                      "uid": 184,
+                      "uid": 179,
                       "match": "ec.color.levels",
                       "name": "Levels",
                       "kind": {
@@ -1455,7 +1686,7 @@
                       "children": [
                         {
                           "node": "Prop",
-                          "uid": 185,
+                          "uid": 180,
                           "match": "channel",
                           "name": "Channel",
                           "value": {
@@ -1481,7 +1712,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 186,
+                          "uid": 181,
                           "match": "inBlack",
                           "name": "Input Black",
                           "value": {
@@ -1505,7 +1736,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 187,
+                          "uid": 182,
                           "match": "inWhite",
                           "name": "Input White",
                           "value": {
@@ -1529,7 +1760,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 188,
+                          "uid": 183,
                           "match": "gamma",
                           "name": "Gamma",
                           "value": {
@@ -1553,7 +1784,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 189,
+                          "uid": 184,
                           "match": "outBlack",
                           "name": "Output Black",
                           "value": {
@@ -1577,7 +1808,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 190,
+                          "uid": 185,
                           "match": "outWhite",
                           "name": "Output White",
                           "value": {
@@ -1601,7 +1832,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 191,
+                          "uid": 186,
                           "match": "clipToOutputBlack",
                           "name": "Clip To Output Black",
                           "value": {
@@ -1625,7 +1856,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 192,
+                          "uid": 187,
                           "match": "clipToOutputWhite",
                           "name": "Clip To Output White",
                           "value": {
@@ -1649,7 +1880,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 193,
+                          "uid": 188,
                           "match": "noClip",
                           "name": "Don't Clip",
                           "value": {
@@ -1668,7 +1899,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 194,
+                          "uid": 189,
                           "match": "redInBlack",
                           "name": "Red Input Black",
                           "value": {
@@ -1692,7 +1923,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 195,
+                          "uid": 190,
                           "match": "redInWhite",
                           "name": "Red Input White",
                           "value": {
@@ -1716,7 +1947,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 196,
+                          "uid": 191,
                           "match": "redGamma",
                           "name": "Red Gamma",
                           "value": {
@@ -1740,7 +1971,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 197,
+                          "uid": 192,
                           "match": "redOutBlack",
                           "name": "Red Output Black",
                           "value": {
@@ -1764,7 +1995,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 198,
+                          "uid": 193,
                           "match": "redOutWhite",
                           "name": "Red Output White",
                           "value": {
@@ -1788,7 +2019,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 199,
+                          "uid": 194,
                           "match": "redClipToOutputBlack",
                           "name": "Red Clip To Output Black",
                           "value": {
@@ -1812,7 +2043,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 200,
+                          "uid": 195,
                           "match": "redClipToOutputWhite",
                           "name": "Red Clip To Output White",
                           "value": {
@@ -1836,7 +2067,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 201,
+                          "uid": 196,
                           "match": "greenInBlack",
                           "name": "Green Input Black",
                           "value": {
@@ -1860,7 +2091,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 202,
+                          "uid": 197,
                           "match": "greenInWhite",
                           "name": "Green Input White",
                           "value": {
@@ -1884,7 +2115,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 203,
+                          "uid": 198,
                           "match": "greenGamma",
                           "name": "Green Gamma",
                           "value": {
@@ -1908,7 +2139,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 204,
+                          "uid": 199,
                           "match": "greenOutBlack",
                           "name": "Green Output Black",
                           "value": {
@@ -1932,7 +2163,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 205,
+                          "uid": 200,
                           "match": "greenOutWhite",
                           "name": "Green Output White",
                           "value": {
@@ -1956,7 +2187,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 206,
+                          "uid": 201,
                           "match": "greenClipToOutputBlack",
                           "name": "Green Clip To Output Black",
                           "value": {
@@ -1980,7 +2211,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 207,
+                          "uid": 202,
                           "match": "greenClipToOutputWhite",
                           "name": "Green Clip To Output White",
                           "value": {
@@ -2004,7 +2235,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 208,
+                          "uid": 203,
                           "match": "blueInBlack",
                           "name": "Blue Input Black",
                           "value": {
@@ -2028,7 +2259,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 209,
+                          "uid": 204,
                           "match": "blueInWhite",
                           "name": "Blue Input White",
                           "value": {
@@ -2052,7 +2283,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 210,
+                          "uid": 205,
                           "match": "blueGamma",
                           "name": "Blue Gamma",
                           "value": {
@@ -2076,7 +2307,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 211,
+                          "uid": 206,
                           "match": "blueOutBlack",
                           "name": "Blue Output Black",
                           "value": {
@@ -2100,7 +2331,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 212,
+                          "uid": 207,
                           "match": "blueOutWhite",
                           "name": "Blue Output White",
                           "value": {
@@ -2124,7 +2355,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 213,
+                          "uid": 208,
                           "match": "blueClipToOutputBlack",
                           "name": "Blue Clip To Output Black",
                           "value": {
@@ -2148,7 +2379,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 214,
+                          "uid": 209,
                           "match": "blueClipToOutputWhite",
                           "name": "Blue Clip To Output White",
                           "value": {
@@ -2172,7 +2403,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 215,
+                          "uid": 210,
                           "match": "alphaInBlack",
                           "name": "Alpha Input Black",
                           "value": {
@@ -2196,7 +2427,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 216,
+                          "uid": 211,
                           "match": "alphaInWhite",
                           "name": "Alpha Input White",
                           "value": {
@@ -2220,7 +2451,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 217,
+                          "uid": 212,
                           "match": "alphaGamma",
                           "name": "Alpha Gamma",
                           "value": {
@@ -2244,7 +2475,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 218,
+                          "uid": 213,
                           "match": "alphaOutBlack",
                           "name": "Alpha Output Black",
                           "value": {
@@ -2268,7 +2499,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 219,
+                          "uid": 214,
                           "match": "alphaOutWhite",
                           "name": "Alpha Output White",
                           "value": {
@@ -2292,7 +2523,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 220,
+                          "uid": 215,
                           "match": "alphaClipToOutputBlack",
                           "name": "Alpha Clip To Output Black",
                           "value": {
@@ -2316,7 +2547,7 @@
                         },
                         {
                           "node": "Prop",
-                          "uid": 221,
+                          "uid": 216,
                           "match": "alphaClipToOutputWhite",
                           "name": "Alpha Clip To Output White",
                           "value": {
@@ -2344,7 +2575,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 127,
+                  "uid": 122,
                   "match": "transform",
                   "name": "Transform",
                   "kind": {
@@ -2354,7 +2585,7 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 119,
+                      "uid": 114,
                       "match": "anchor",
                       "name": "Anchor Point",
                       "value": {
@@ -2377,131 +2608,17 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 120,
+                      "uid": 115,
                       "match": "position",
                       "name": "Position",
                       "value": {
                         "t": "Vec3",
                         "v": [
-                          960.0,
-                          512.0,
+                          0.0,
+                          -115.0,
                           0.0
                         ]
                       },
-                      "keys": [
-                        {
-                          "time": 0,
-                          "value": {
-                            "t": "Vec3",
-                            "v": [
-                              960.0,
-                              636.0,
-                              0.0
-                            ]
-                          },
-                          "in_interp": "Bezier",
-                          "out_interp": "Bezier",
-                          "in_ease": [
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            }
-                          ],
-                          "out_ease": [
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            }
-                          ],
-                          "continuous": false,
-                          "auto_bezier": false,
-                          "spatial_in": [
-                            0.0,
-                            0.0,
-                            0.0
-                          ],
-                          "spatial_out": [
-                            0.0,
-                            0.0,
-                            0.0
-                          ],
-                          "spatial_auto": true,
-                          "spatial_continuous": false,
-                          "roving": false
-                        },
-                        {
-                          "time": 455112000000,
-                          "value": {
-                            "t": "Vec3",
-                            "v": [
-                              960.0,
-                              512.0,
-                              0.0
-                            ]
-                          },
-                          "in_interp": "Bezier",
-                          "out_interp": "Bezier",
-                          "in_ease": [
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            }
-                          ],
-                          "out_ease": [
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            },
-                            {
-                              "speed": 0.0,
-                              "influence": 0.84
-                            }
-                          ],
-                          "continuous": false,
-                          "auto_bezier": false,
-                          "spatial_in": [
-                            0.0,
-                            0.0,
-                            0.0
-                          ],
-                          "spatial_out": [
-                            0.0,
-                            0.0,
-                            0.0
-                          ],
-                          "spatial_auto": true,
-                          "spatial_continuous": false,
-                          "roving": false
-                        }
-                      ],
                       "ui": {
                         "kind": "Point"
                       },
@@ -2514,7 +2631,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 121,
+                      "uid": 116,
                       "match": "scale",
                       "name": "Scale",
                       "value": {
@@ -2557,7 +2674,7 @@
                           "roving": false
                         },
                         {
-                          "time": 455112000000,
+                          "time": 508032000000,
                           "value": {
                             "t": "Vec3",
                             "v": [
@@ -2566,10 +2683,36 @@
                               0.0
                             ]
                           },
-                          "in_interp": "Linear",
-                          "out_interp": "Linear",
-                          "in_ease": [],
-                          "out_ease": [],
+                          "in_interp": "Bezier",
+                          "out_interp": "Bezier",
+                          "in_ease": [
+                            {
+                              "speed": 0.0,
+                              "influence": 0.8200000000000001
+                            },
+                            {
+                              "speed": 0.0,
+                              "influence": 0.8200000000000001
+                            },
+                            {
+                              "speed": 0.0,
+                              "influence": 0.8200000000000001
+                            }
+                          ],
+                          "out_ease": [
+                            {
+                              "speed": 0.0,
+                              "influence": 0.3333333333333333
+                            },
+                            {
+                              "speed": 0.0,
+                              "influence": 0.3333333333333333
+                            },
+                            {
+                              "speed": 0.0,
+                              "influence": 0.3333333333333333
+                            }
+                          ],
                           "continuous": false,
                           "auto_bezier": false,
                           "spatial_in": [
@@ -2599,7 +2742,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 122,
+                      "uid": 117,
                       "match": "orientation",
                       "name": "Orientation",
                       "value": {
@@ -2622,7 +2765,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 123,
+                      "uid": 118,
                       "match": "rotationX",
                       "name": "X Rotation",
                       "value": {
@@ -2641,7 +2784,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 124,
+                      "uid": 119,
                       "match": "rotationY",
                       "name": "Y Rotation",
                       "value": {
@@ -2660,7 +2803,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 125,
+                      "uid": 120,
                       "match": "rotation",
                       "name": "Rotation",
                       "value": {
@@ -2679,13 +2822,77 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 126,
+                      "uid": 121,
                       "match": "opacity",
                       "name": "Opacity",
                       "value": {
                         "t": "Scalar",
                         "v": 100.0
                       },
+                      "keys": [
+                        {
+                          "time": 0,
+                          "value": {
+                            "t": "Scalar",
+                            "v": 0.0
+                          },
+                          "in_interp": "Linear",
+                          "out_interp": "Linear",
+                          "in_ease": [],
+                          "out_ease": [],
+                          "continuous": false,
+                          "auto_bezier": false,
+                          "spatial_in": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "spatial_out": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "spatial_auto": true,
+                          "spatial_continuous": false,
+                          "roving": false
+                        },
+                        {
+                          "time": 381024000000,
+                          "value": {
+                            "t": "Scalar",
+                            "v": 100.0
+                          },
+                          "in_interp": "Bezier",
+                          "out_interp": "Bezier",
+                          "in_ease": [
+                            {
+                              "speed": 0.0,
+                              "influence": 0.8200000000000001
+                            }
+                          ],
+                          "out_ease": [
+                            {
+                              "speed": 0.0,
+                              "influence": 0.3333333333333333
+                            }
+                          ],
+                          "continuous": false,
+                          "auto_bezier": false,
+                          "spatial_in": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "spatial_out": [
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
+                          "spatial_auto": true,
+                          "spatial_continuous": false,
+                          "roving": false
+                        }
+                      ],
                       "ui": {
                         "kind": "Slider",
                         "min": 0.0,
@@ -2705,7 +2912,7 @@
                 },
                 {
                   "node": "Group",
-                  "uid": 128,
+                  "uid": 123,
                   "match": "materialOptions",
                   "name": "Material Options",
                   "kind": {
@@ -2715,7 +2922,7 @@
                   "children": [
                     {
                       "node": "Prop",
-                      "uid": 129,
+                      "uid": 124,
                       "match": "castsShadows",
                       "name": "Casts Shadows",
                       "value": {
@@ -2739,7 +2946,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 130,
+                      "uid": 125,
                       "match": "lightTransmission",
                       "name": "Light Transmission",
                       "value": {
@@ -2758,7 +2965,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 131,
+                      "uid": 126,
                       "match": "acceptsShadows",
                       "name": "Accepts Shadows",
                       "value": {
@@ -2782,7 +2989,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 132,
+                      "uid": 127,
                       "match": "acceptsLights",
                       "name": "Accepts Lights",
                       "value": {
@@ -2801,7 +3008,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 133,
+                      "uid": 128,
                       "match": "ambient",
                       "name": "Ambient",
                       "value": {
@@ -2820,7 +3027,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 134,
+                      "uid": 129,
                       "match": "diffuse",
                       "name": "Diffuse",
                       "value": {
@@ -2839,7 +3046,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 135,
+                      "uid": 130,
                       "match": "specularIntensity",
                       "name": "Specular Intensity",
                       "value": {
@@ -2858,7 +3065,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 136,
+                      "uid": 131,
                       "match": "specularShininess",
                       "name": "Specular Shininess",
                       "value": {
@@ -2877,7 +3084,7 @@
                     },
                     {
                       "node": "Prop",
-                      "uid": 137,
+                      "uid": 132,
                       "match": "metal",
                       "name": "Metal",
                       "value": {
@@ -2901,7 +3108,7 @@
           },
           {
             "id": 27,
-            "name": "Kinetic Accent Frame",
+            "name": "brass_border",
             "source": {
               "type": "Shape"
             },
@@ -2936,7 +3143,7 @@
             "props": {
               "uid": 28,
               "match": "layer",
-              "name": "Kinetic Accent Frame",
+              "name": "brass_border",
               "kind": {
                 "kind": "Plain"
               },
@@ -3028,8 +3235,8 @@
                                   "value": {
                                     "t": "Vec2",
                                     "v": [
-                                      1306.0,
-                                      454.0
+                                      1480.0,
+                                      760.0
                                     ]
                                   },
                                   "ui": {
@@ -3071,7 +3278,7 @@
                                   "name": "Roundness",
                                   "value": {
                                     "t": "Scalar",
-                                    "v": 68.1
+                                    "v": 114.0
                                   },
                                   "ui": {
                                     "kind": "Pixels"
@@ -3145,9 +3352,9 @@
                                   "value": {
                                     "t": "Color",
                                     "v": [
-                                      1.0,
-                                      0.36000001430511475,
-                                      0.14000000059604645,
+                                      0.9020000100135803,
+                                      0.7059999704360962,
+                                      0.3140000104904175,
                                       1.0
                                     ]
                                   },
@@ -3192,7 +3399,7 @@
                                   "name": "Stroke Width",
                                   "value": {
                                     "t": "Scalar",
-                                    "v": 4.0
+                                    "v": 3.0
                                   },
                                   "ui": {
                                     "kind": "Pixels"
@@ -3799,108 +4006,6 @@
                           ]
                         }
                       ]
-                    },
-                    {
-                      "node": "Group",
-                      "uid": 94,
-                      "match": "trim",
-                      "name": "Trim Paths 1",
-                      "kind": {
-                        "kind": "Indexed"
-                      },
-                      "enabled": true,
-                      "children": [
-                        {
-                          "node": "Prop",
-                          "uid": 95,
-                          "match": "start",
-                          "name": "Start",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 0.0
-                          },
-                          "ui": {
-                            "kind": "Slider",
-                            "min": 0.0,
-                            "max": 100.0,
-                            "slider_min": 0.0,
-                            "slider_max": 100.0,
-                            "decimals": 1
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 96,
-                          "match": "end",
-                          "name": "End",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 100.0
-                          },
-                          "ui": {
-                            "kind": "Slider",
-                            "min": 0.0,
-                            "max": 100.0,
-                            "slider_min": 0.0,
-                            "slider_max": 100.0,
-                            "decimals": 1
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 97,
-                          "match": "offset",
-                          "name": "Offset",
-                          "value": {
-                            "t": "Scalar",
-                            "v": 0.0
-                          },
-                          "ui": {
-                            "kind": "Angle"
-                          },
-                          "spatial": false,
-                          "hold_only": false,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        },
-                        {
-                          "node": "Prop",
-                          "uid": 98,
-                          "match": "mode",
-                          "name": "Trim Multiple Shapes",
-                          "value": {
-                            "t": "Enum",
-                            "v": 0
-                          },
-                          "ui": {
-                            "kind": "Popup",
-                            "options": [
-                              "Simultaneously",
-                              "Individually"
-                            ]
-                          },
-                          "spatial": false,
-                          "hold_only": true,
-                          "three_d_only": false,
-                          "two_d_only": false,
-                          "shown_dims": 0,
-                          "static_only": false
-                        }
-                      ]
                     }
                   ]
                 },
@@ -3924,7 +4029,155 @@
                     "kind": "Plain"
                   },
                   "enabled": true,
-                  "children": []
+                  "children": [
+                    {
+                      "node": "Group",
+                      "uid": 172,
+                      "match": "ec.perspective.dropshadow",
+                      "name": "Drop Shadow",
+                      "kind": {
+                        "kind": "Effect",
+                        "effect": "ec.perspective.dropshadow"
+                      },
+                      "enabled": true,
+                      "children": [
+                        {
+                          "node": "Prop",
+                          "uid": 173,
+                          "match": "color",
+                          "name": "Shadow Color",
+                          "value": {
+                            "t": "Color",
+                            "v": [
+                              0.0,
+                              0.0,
+                              0.0,
+                              1.0
+                            ]
+                          },
+                          "ui": {
+                            "kind": "Color"
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 174,
+                          "match": "opacity",
+                          "name": "Opacity",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 50.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 100.0,
+                            "slider_min": 0.0,
+                            "slider_max": 100.0,
+                            "decimals": 0
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 175,
+                          "match": "direction",
+                          "name": "Direction",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 135.0
+                          },
+                          "ui": {
+                            "kind": "Angle"
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 176,
+                          "match": "distance",
+                          "name": "Distance",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 5.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 32000.0,
+                            "slider_min": 0.0,
+                            "slider_max": 120.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 177,
+                          "match": "softness",
+                          "name": "Softness",
+                          "value": {
+                            "t": "Scalar",
+                            "v": 0.0
+                          },
+                          "ui": {
+                            "kind": "Slider",
+                            "min": 0.0,
+                            "max": 1000.0,
+                            "slider_min": 0.0,
+                            "slider_max": 250.0,
+                            "decimals": 1
+                          },
+                          "spatial": false,
+                          "hold_only": false,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        },
+                        {
+                          "node": "Prop",
+                          "uid": 178,
+                          "match": "shadowOnly",
+                          "name": "Shadow Only",
+                          "value": {
+                            "t": "Bool",
+                            "v": false
+                          },
+                          "ui": {
+                            "kind": "Checkbox"
+                          },
+                          "spatial": false,
+                          "hold_only": true,
+                          "three_d_only": false,
+                          "two_d_only": false,
+                          "shown_dims": 0,
+                          "static_only": false
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "node": "Group",
@@ -4309,7 +4562,7 @@
           },
           {
             "id": 4,
-            "name": "Obsidian Stage BG",
+            "name": "backdrop",
             "source": {
               "type": "Solid",
               "item": 3
@@ -4345,7 +4598,7 @@
             "props": {
               "uid": 5,
               "match": "layer",
-              "name": "Obsidian Stage BG",
+              "name": "backdrop",
               "kind": {
                 "kind": "Plain"
               },
@@ -4820,16 +5073,16 @@
     },
     "3": {
       "id": 3,
-      "name": "Obsidian Stage BG",
+      "name": "backdrop",
       "label": "Red",
       "comment": "",
       "parent": 2,
       "kind": {
         "type": "Solid",
         "color": [
-          0.05,
-          0.06,
-          0.09
+          0.02745098,
+          0.03529412,
+          0.05882353
         ],
         "width": 1920,
         "height": 1080,
@@ -4837,5 +5090,5 @@
       }
     }
   },
-  "next_id": 222
+  "next_id": 233
 }

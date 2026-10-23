@@ -351,6 +351,28 @@ fn semantic_seeds() -> Vec<SemanticSeed> {
             schema: json!({"type": "object", "properties": {"name": {"type": "string"}}, "additionalProperties": false}),
         },
         SemanticSeed {
+            name: "after.layer.add_footage",
+            domain: "layer",
+            title: "Add Imported Footage/Asset Layer",
+            description: "Place an already-imported project footage or image item (`itemId`, `item`, or `itemName`) as a layer in the active composition.",
+            engine_target: "layer.addItem",
+            read_only: false,
+            schema: json!({
+                "type": "object",
+                "properties": {
+                    "itemId": {"type": "integer"},
+                    "item": {"type": ["integer", "string"]},
+                    "itemName": {"type": "string"},
+                    "name": {"type": "string"},
+                    "position": {"type": "array", "items": {"type": "number"}},
+                    "scale": {"type": "array", "items": {"type": "number"}},
+                    "opacity": {"type": "number"},
+                    "blendMode": {"type": "string"}
+                },
+                "additionalProperties": false
+            }),
+        },
+        SemanticSeed {
             name: "after.layer.inspect",
             domain: "layer",
             title: "Inspect Layer Property Tree",

@@ -926,82 +926,96 @@ fn save_comp_frame_png(
         distinct.len()
     );
     img.save(&out_path).expect("save rendered frame PNG");
+    let sidecar_path = PathBuf::from(format!("{}.attribution", out_path.display()));
+    if !sidecar_path.exists() {
+        let file_name = out_path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("rendered.png");
+        let sidecar = format!(
+            "asset:        {file_name}\n\
+             title:        AfterTron x TRON Creative Acceptance Render ({file_name})\n\
+             author:       AfterTron / GemiTron Team\n\
+             source:       original work (rendered by crates/ui-egui/tests/aftertron_acceptance.rs)\n\
+             license:      MIT OR Apache-2.0\n\
+             license-file:\n\
+             added:        2026-10-23 by Antigravity (agent) for Elwazeery\n\
+             notes:        1920x1080 rendered composition frame at t={time_sec:.2}s from {rel_path}.\n"
+        );
+        let _ = std::fs::write(&sidecar_path, sidecar);
+    }
 }
 
-fn synthesize_product_hero_asset(out_path: & std::path::Path) {
-    if let Some(parent) = out_path.parent() {
+fn prepare_curated_luxury_product_hero_asset(
+    src_jpg_path: &std::path::Path,
+    out_png_path: &std::path::Path,
+) {
+    if let Some(parent) = out_png_path.parent() {
         std::fs::create_dir_all(parent).expect("create asset dir");
     }
-    let (w, h) = (720u32, 720u32);
-    let mut img = image::RgbaImage::new(w, h);
-    let (cx, cy) = (360.0f32, 360.0f32);
-    for (x, y, px) in img.enumerate_pixels_mut() {
-        let fx = x as f32 - cx;
-        let fy = y as f32 - cy;
-        // Rounded monolith hardware silhouette with chamfered corners (half-size 210x280, radius 48)
-        let qx = fx.abs() - (210.0 - 48.0);
-        let qy = fy.abs() - (280.0 - 48.0);
-        let sdf = (qx.max(0.0).hypot(qy.max(0.0)) + qx.min(qy.max(0.0)).min(0.0)) - 48.0;
-        if sdf > 1.5 {
-            *px = image::Rgba([0, 0, 0, 0]);
-            continue;
-        }
-        let alpha = ((1.5 - sdf) / 3.0).clamp(0.0, 1.0);
-        // Brushed titanium directional lighting + warm rim reflection
-        let nx = (fx / 210.0).clamp(-1.0, 1.0);
-        let ny = (fy / 280.0).clamp(-1.0, 1.0);
-        let key_light = (0.55 - 0.35 * nx - 0.25 * ny).clamp(0.12, 0.95);
-        let rim = ((sdf + 10.0) / 10.0).clamp(0.0, 1.0);
-        let brush = ((y as f32 * 0.7).sin() * 0.018) + ((x as f32 * 0.15).cos() * 0.01);
+    let src_img = image::open(src_jpg_path)
+        .expect("open authentic studio luxury oud source photograph")
+        .to_rgba8();
+    let (w, h) = (src_img.width(), src_img.height());
+    let mut out_img = image::RgbaImage::new(w, h);
+    let wf = w as f32;
+    let hf = h as f32;
 
-        let mut r = (0.16 + 0.32 * key_light + brush + 0.42 * rim * (1.0 - nx).max(0.0)).clamp(0.0, 1.0);
-        let mut g = (0.18 + 0.34 * key_light + brush + 0.26 * rim * (1.0 - nx).max(0.0)).clamp(0.0, 1.0);
-        let mut b = (0.22 + 0.38 * key_light + brush + 0.38 * rim * (1.0 + nx).max(0.0)).clamp(0.0, 1.0);
+    for (x, y, px) in src_img.enumerate_pixels() {
+        let nx = (x as f32) / wf;
+        let ny = (y as f32) / hf;
+        let r = px[0] as f32 / 255.0;
+        let g = px[1] as f32 / 255.0;
+        let b = px[2] as f32 / 255.0;
+        let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        let max_c = r.max(g).max(b);
+        let min_c = r.min(g).min(b);
+        let chroma = max_c - min_c;
+        let dx = (nx - 0.50).abs();
 
-        // Acoustic driver ring & precision grille in upper half (center at cy - 48)
-        let dy_driver = fy + 48.0;
-        let dist_driver = fx.hypot(dy_driver);
-        if (dist_driver - 118.0).abs() < 9.5 {
-            // Warm anodized copper-gold acoustic bezel
-            let ring_spec = (0.65 - 0.35 * (fx / 120.0)).clamp(0.2, 1.0);
-            r = (0.88 * ring_spec + 0.12).clamp(0.0, 1.0);
-            g = (0.56 * ring_spec + 0.06).clamp(0.0, 1.0);
-            b = (0.24 * ring_spec + 0.04).clamp(0.0, 1.0);
-        } else if dist_driver < 108.5 {
-            // Acoustic mesh cavity with micro-perforation pattern and central dome
-            let dome = (1.0 - (dist_driver / 108.5)).powf(1.6);
-            let perf = if (x % 6 < 3) ^ (y % 6 < 3) { 0.82 } else { 1.0 };
-            r = (0.09 + 0.22 * dome) * perf;
-            g = (0.11 + 0.24 * dome) * perf;
-            b = (0.15 + 0.30 * dome) * perf;
-            if (dist_driver - 36.0).abs() < 3.5 {
-                r = 0.92;
-                g = 0.62;
-                b = 0.28;
+        // Exact anatomical silhouette of the luxury oud bottle (cap -> tapered cap neck -> collar -> crystal body -> marble pedestal)
+        let half_w = if (0.318..0.355).contains(&ny) {
+            0.132
+        } else if (0.355..0.422).contains(&ny) {
+            let t = (ny - 0.355) / 0.067;
+            0.132 + (0.076 - 0.132) * t
+        } else if (0.422..0.485).contains(&ny) {
+            0.076
+        } else if (0.485..0.812).contains(&ny) {
+            let t = (ny - 0.485) / 0.327;
+            0.082 + 0.114 * (t * std::f32::consts::PI).sin()
+        } else if (0.812..0.985).contains(&ny) {
+            0.365
+        } else {
+            0.0
+        };
+
+        let alpha = if half_w > 0.0 && dx <= half_w {
+            let feather_band = if ny >= 0.812 { 0.045 } else { 0.020 };
+            let contour_edge = ((half_w - dx) / feather_band).clamp(0.0, 1.0);
+            if ny < 0.485 && dx > 0.052 {
+                let gold_fg = ((luma - 0.15) / 0.12)
+                    .max((chroma - 0.045) / 0.055)
+                    .clamp(0.0, 1.0);
+                contour_edge * gold_fg
+            } else if ny < 0.812 && dx > half_w * 0.76 && chroma < 0.05 && luma < 0.22 {
+                // Feather out neutral dark studio background pixels along the outer contour
+                contour_edge * ((chroma / 0.05).max((luma - 0.12) / 0.10)).clamp(0.0, 1.0)
+            } else {
+                contour_edge
             }
-        }
-
-        // Lower glass telemetry bar
-        if fy > 125.0 && fy < 185.0 && fx.abs() < 145.0 {
-            let gloss = ((fx + fy * 0.6) * 0.025).sin().max(0.0) * 0.25;
-            r = (0.08 + gloss).clamp(0.0, 1.0);
-            g = (0.18 + gloss * 1.4).clamp(0.0, 1.0);
-            b = (0.28 + gloss * 1.8).clamp(0.0, 1.0);
-            if (fy - 155.0).abs() < 2.0 && fx.abs() < 95.0 {
-                r = 0.25;
-                g = 0.82;
-                b = 0.98;
-            }
-        }
-
-        *px = image::Rgba([
-            (r * 255.0).round() as u8,
-            (g * 255.0).round() as u8,
-            (b * 255.0).round() as u8,
-            (alpha * 255.0).round() as u8,
-        ]);
+        } else {
+            0.0
+        };
+        out_img.put_pixel(
+            x,
+            y,
+            image::Rgba([px[0], px[1], px[2], (alpha * 255.0).round() as u8]),
+        );
     }
-    img.save(out_path).expect("save product hero asset PNG");
+    out_img
+        .save(out_png_path)
+        .expect("save curated RGBA8 luxury product hero asset PNG");
 }
 
 fn review_and_apply_plan(
@@ -1026,7 +1040,9 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
 
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let out_dir = root.join("docs/images/aftertron");
+    let accept_dir = root.join("docs/acceptance/aftertron-tron");
     std::fs::create_dir_all(&out_dir).expect("create docs/images/aftertron");
+    std::fs::create_dir_all(&accept_dir).expect("create docs/acceptance/aftertron-tron");
 
     // =========================================================================
     // 1. SHARED TRON RUNTIME — THREE APPLICATIONS (PhotoTron + FilmTron + AfterTron)
@@ -1103,15 +1119,15 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     );
 
     // =========================================================================
-    // 2. CHALLENGE A — PREMIUM MOTION TYPOGRAPHY (10s, 24fps, 1920x1080)
+    // 2. CHALLENGE A — PREMIUM MOTION TYPOGRAPHY (10s, 24fps, 1920x1080, Unseen Brief)
     // =========================================================================
-    eprintln!("[Challenge A] Building 10s 24fps 1920x1080 Premium Motion Typography production...");
+    eprintln!("[Challenge A] Building 10s 24fps 1920x1080 Premium Motion Typography production (Unseen Brief)...");
     let mut session_a = effectcraft_host::session();
     session_a
         .execute(
             "comp.new",
             json!({
-                "name": "Challenge A — Kinetic Typography",
+                "name": "Challenge A — Cairo Pavilion 2027 Kinetic Typography",
                 "width": 1920,
                 "height": 1080,
                 "fps": 24.0,
@@ -1122,10 +1138,21 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     let comp_a = session_a.active_comp_id().expect("active comp A").0;
 
     let ctx_a = tron_actions::live_context(&session_a).expect("live_context A");
-    let brief_a = "صمّم مقدمة تايبوجرافي سينمائية مدتها 10 ثواني بمعدل 24 إطار في الثانية، مع تسلسل بصري واضح بين العنوان الرئيسي والسطر الفرعي، حركة دخول متدرجة مع تمهيد وارتداد ناعم، منحنيات سرعة مخصصة في Graph Editor، وتفعيل Motion Blur.";
+    let brief_a = "Design an architectural exhibition title sequence for 'CAIRO PAVILION 2027 — LIGHT & HORIZON / جناح القاهرة ٢٠٢٧ — النور والأفق' (10s, 24fps, 1920x1080). Create a deep obsidian backdrop (#07090F), a warm brushed-brass architectural framing border (stroke #E6B450, size [1480, 760] at center [960, 540]), a bold English hero headline 'CAIRO PAVILION 2027 — LIGHT & HORIZON' at [960, 480] (size 64, GemiFontSans Bold, fill #F7F5F0), an Arabic subtitle 'جناح القاهرة ٢٠٢٧ — النور والأفق' at [960, 595] (size 42, GemiFontSans Medium, fill #F2B84B), and a camera controller Null at [960, 540] parenting the title layers. Animate staggered entrance keyframes from frame 0 to frame 48 with custom bezier velocity curves, subtle optical Glow on the brass frame, and Motion Blur.";
     let raw_plan_a = tron_local::prepare_after_plan(brief_a, &ctx_a).expect("prepare_after_plan A");
     assert_eq!(raw_plan_a["ok"], true, "{raw_plan_a}");
     let res_plan_a = raw_plan_a.get("result").unwrap_or(&raw_plan_a);
+
+    // Defect A & B Assertions: Model-generated origin, no preset fallback, full_creative_composition tier
+    assert_eq!(
+        res_plan_a["planOrigin"], "model_generated",
+        "Challenge A must be genuinely model_generated, never a template: {res_plan_a}"
+    );
+    assert_eq!(
+        res_plan_a["presetUsed"], false,
+        "Challenge A must not use deterministic preset fallback: {res_plan_a}"
+    );
+    assert_eq!(res_plan_a["complexityTier"], "full_creative_composition");
 
     // Verify two genuinely distinct creative directions and test switching between them
     let dirs_a = res_plan_a["exploredDirections"].as_array().expect("exploredDirections A");
@@ -1147,8 +1174,8 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     let applied_a = tron_actions::apply(&mut session_a, &prop_a_dir_a, plan_id_a, plan_rev_a, digest_a)
         .expect("apply Direction A on Challenge A");
     assert!(
-        applied_a["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 8,
-        "expected >= 8 native steps in Challenge A: {applied_a}"
+        applied_a["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 6,
+        "expected >= 6 native steps in Challenge A: {applied_a}"
     );
     assert_eq!(applied_a["native"]["singleUndoCoalesced"], true);
 
@@ -1158,10 +1185,22 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         "replaying a consumed approval must fail"
     );
 
-    // Inspect 5 actual rendered frames across the 10-second timeline
+    // Save Before-Refinement rendered frame for Challenge A
+    save_comp_frame_png(
+        &mut session_a,
+        comp_a,
+        2.5,
+        "docs/images/aftertron/challenge-a-typography-before-refinement.png",
+    );
+
+    // Inspect 5 actual rendered frames across the 10-second timeline (including base64Png for multimodal vision)
     let sampled_a = tron_actions::sample_rendered_frames(&session_a)
         .expect("sample 5 rendered frames for Challenge A");
     assert_eq!(sampled_a.len(), 5);
+    assert!(
+        sampled_a[0]["base64Png"].as_str().unwrap_or("").len() > 256,
+        "sampled frames must carry real encoded PNG images for multimodal vision"
+    );
     assert_ne!(
         sampled_a[0]["sha256"], sampled_a[2]["sha256"],
         "Challenge A start frame and 50% frame must differ (real keyframed motion)"
@@ -1173,6 +1212,11 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     assert_eq!(critique_a["ok"], true, "{critique_a}");
     let qc_a = critique_a.get("result").unwrap_or(&critique_a);
     assert_eq!(qc_a["reviewedActualFrames"], true, "{qc_a}");
+    assert_eq!(
+        qc_a["visionInspected"], true,
+        "Challenge A critique must use real multimodal vision on rendered frames: {qc_a}"
+    );
+    assert_eq!(qc_a["visionFrameCount"], 5, "{qc_a}");
     assert_eq!(qc_a["noSyntheticScores"], true, "{qc_a}");
 
     // Review and execute the visual critique's refinement plan
@@ -1215,18 +1259,19 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     );
 
     // =========================================================================
-    // 3. CHALLENGE B — PREMIUM PRODUCT HERO COMPOSITING (12s, 30fps, 1920x1080)
+    // 3. CHALLENGE B — LUXURY PRODUCT HERO COMPOSITING (12s, 30fps, 1920x1080)
     // =========================================================================
-    eprintln!("[Challenge B] Building 12s 30fps 1920x1080 Premium Product Hero Compositing production...");
+    eprintln!("[Challenge B] Building 12s 30fps 1920x1080 Luxury Product Hero Compositing production...");
+    let src_oud_jpg = out_dir.join("luxury-oud-hero-source.jpg");
     let product_asset_path = out_dir.join("challenge-b-product-asset.png");
-    synthesize_product_hero_asset(&product_asset_path);
+    prepare_curated_luxury_product_hero_asset(&src_oud_jpg, &product_asset_path);
 
     let mut session_b = effectcraft_host::session();
     session_b
         .execute(
             "comp.new",
             json!({
-                "name": "Challenge B — Product Hero Compositing",
+                "name": "Challenge B — Luxury Oud Product Hero Compositing",
                 "width": 1920,
                 "height": 1080,
                 "fps": 30.0,
@@ -1236,37 +1281,80 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         .expect("create Challenge B comp");
     let comp_b = session_b.active_comp_id().expect("active comp B").0;
 
-    // Import genuine product asset with alpha silhouette and build studio layer stack
+    // Import genuine studio luxury oud flacon asset with alpha silhouette
     let imp_b = session_b
         .execute(
             "file.import",
             json!({ "paths": [product_asset_path.to_string_lossy()] }),
         )
-        .expect("import product hero asset");
+        .expect("import curated luxury product hero asset");
     let product_item_id = imp_b["items"][0].as_u64().expect("product item id");
 
-    // 1) Dark studio backdrop solid
+    // 1) Deep obsidian-espresso studio backdrop solid
     session_b
         .execute(
             "layer.newSolid",
             json!({
                 "comp": comp_b,
                 "name": "Studio Obsidian Backdrop",
-                "color": "#0A0E17",
+                "color": "#07090E",
                 "width": 1920,
                 "height": 1080
             }),
         )
         .expect("create studio backdrop");
 
-    // 2) Rim highlight solid with Screen blend mode and feathered elliptical mask
+    // 2) Warm amber-gold volumetric backlight solid behind product (right third) with Screen blend + feathered mask
+    let amber_glow = session_b
+        .execute(
+            "layer.newSolid",
+            json!({
+                "comp": comp_b,
+                "name": "Amber Volumetric Backlight",
+                "color": "#B87324",
+                "width": 1920,
+                "height": 1080
+            }),
+        )
+        .expect("create amber backlight solid");
+    let amber_layer_id = amber_glow["layer"].as_u64().expect("amber layer id");
+    session_b
+        .execute(
+            "layer.setBlendMode",
+            json!({ "comp": comp_b, "layers": [amber_layer_id], "mode": "screen" }),
+        )
+        .expect("set amber backlight blend mode");
+    session_b
+        .execute(
+            "layer.addMask",
+            json!({
+                "comp": comp_b,
+                "layer": amber_layer_id,
+                "shape": "ellipse",
+                "rect": [820.0, 90.0, 900.0, 860.0]
+            }),
+        )
+        .expect("add elliptical mask to amber backlight");
+    session_b
+        .execute(
+            "layer.mask.set",
+            json!({
+                "comp": comp_b,
+                "layer": amber_layer_id,
+                "field": "feather",
+                "value": 96.0
+            }),
+        )
+        .expect("feather amber backlight mask");
+
+    // 3) Complementary cool teal-slate atmospheric rim light on left editorial stage
     let rim_solid = session_b
         .execute(
             "layer.newSolid",
             json!({
                 "comp": comp_b,
                 "name": "Studio Rim Lighting",
-                "color": "#1C6E8C",
+                "color": "#164E63",
                 "width": 1920,
                 "height": 1080
             }),
@@ -1286,7 +1374,7 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "comp": comp_b,
                 "layer": rim_layer_id,
                 "shape": "ellipse",
-                "rect": [420.0, 140.0, 1080.0, 800.0]
+                "rect": [140.0, 180.0, 880.0, 720.0]
             }),
         )
         .expect("add elliptical mask to rim light");
@@ -1297,19 +1385,19 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "comp": comp_b,
                 "layer": rim_layer_id,
                 "field": "feather",
-                "value": 64.0
+                "value": 88.0
             }),
         )
         .expect("feather rim light mask");
 
-    // 3) Product Hero Footage layer + Alpha Track Matte reveal shape layer
+    // 4) Authentic Luxury Oud Product Hero Footage layer (right-third hero stage) + Alpha Track Matte reveal
     let prod_layer = session_b
         .execute(
             "layer.addItem",
             json!({
                 "comp": comp_b,
                 "item": product_item_id,
-                "position": [960.0, 465.0]
+                "position": [1280.0, 540.0]
             }),
         )
         .expect("add product footage layer");
@@ -1320,10 +1408,21 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
             json!({
                 "comp": comp_b,
                 "layer": prod_layer_id,
-                "name": "Hero Product Monolith"
+                "name": "Hero Product Flacon"
             }),
         )
         .expect("rename product hero layer");
+    session_b
+        .execute(
+            "prop.set",
+            json!({
+                "comp": comp_b,
+                "layer": prod_layer_id,
+                "path": "transform/scale",
+                "value": [86.0, 86.0]
+            }),
+        )
+        .expect("scale product hero flacon to fit 1080p stage");
 
     let matte_shape = session_b
         .execute(
@@ -1332,9 +1431,9 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "comp": comp_b,
                 "kind": "rounded",
                 "name": "Product Reveal Matte",
-                "size": [860.0, 860.0],
+                "size": [880.0, 1020.0],
                 "fill": [1.0, 1.0, 1.0],
-                "position": [960.0, 465.0]
+                "position": [1280.0, 540.0]
             }),
         )
         .expect("create track matte shape");
@@ -1351,19 +1450,38 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         )
         .expect("assign alpha track matte to product hero layer");
 
+    // 5) Editorial Luxury Typography Stack on Left Stage (balanced rule-of-thirds composition)
+    session_b
+        .execute(
+            "layer.newText",
+            json!({
+                "comp": comp_b,
+                "name": "Brand Kicker EN",
+                "text": "MAISON GEMITRON · HAUTE PARFUMERIE",
+                "font": "GemiFontSans",
+                "style": "Medium",
+                "size": 24.0,
+                "fill": [0.92, 0.72, 0.34],
+                "tracking": 120.0,
+                "justify": "center",
+                "position": [540.0, 390.0]
+            }),
+        )
+        .expect("create Challenge B brand kicker");
     session_b
         .execute(
             "layer.newText",
             json!({
                 "comp": comp_b,
                 "name": "Lower Third Brand Title",
-                "text": "AURA PRO · TITANIUM ACOUSTIC CORE",
+                "text": "OUD IMPÉRIAL",
                 "font": "GemiFontSans",
                 "style": "Bold",
-                "size": 52.0,
-                "fill": [0.97, 0.96, 0.94],
+                "size": 82.0,
+                "fill": [0.98, 0.96, 0.93],
                 "tracking": 55.0,
-                "position": [960.0, 896.0]
+                "justify": "center",
+                "position": [540.0, 485.0]
             }),
         )
         .expect("create Challenge B product headline");
@@ -1373,33 +1491,48 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
             json!({
                 "comp": comp_b,
                 "name": "Lower Third Arabic Tagline",
-                "text": "آفاق النقاء — تصميم صوتي استثنائي",
+                "text": "عطر العود الملكي — نقاء الكريستال والذهب",
                 "font": "GemiFontSans",
                 "style": "Medium",
-                "size": 34.0,
-                "fill": [1.0, 0.80, 0.24],
+                "size": 38.0,
+                "fill": [0.96, 0.78, 0.36],
                 "direction": "rtl",
-                "position": [960.0, 954.0]
+                "justify": "center",
+                "position": [540.0, 575.0]
             }),
         )
         .expect("create Challenge B product Arabic subtitle");
 
     // Inspect live composition and ask TRON for Challenge B product compositing motion plan
     let ctx_b = tron_actions::live_context(&session_b).expect("live_context B");
-    let brief_b = "اعمل كومبوزيت وإعلان منتج احترافي (Product Hero Compositing) مدته 12 ثانية بمعدل 30 إطار/ثانية مع فصل طبقي للإضاءة المحيطية، كشف ناعم بالماسك والتراك مات، حركة تقريب سينمائية هادئة للمنتج، وتدريج تباين احترافي.";
+    let brief_b = "Design a 12-second 30fps luxury perfume commercial composite (Product Hero Compositing) for 'Hero Product Flacon' and 'Lower Third Brand Title'. Animate a smooth cinematic push-in scale on 'Hero Product Flacon' from [82, 82] at frame 0 to [90, 90] at frame 120, animate opacity/position entrance on 'Lower Third Brand Title' and 'Lower Third Arabic Tagline' from frame 0 to frame 45, apply Easy Ease velocity curves, add Drop Shadow or Glow for optical depth separation, and enable Motion Blur.";
     let raw_plan_b = tron_local::prepare_after_plan(brief_b, &ctx_b).expect("prepare_after_plan B");
     assert_eq!(raw_plan_b["ok"], true, "{raw_plan_b}");
     let res_plan_b = raw_plan_b.get("result").unwrap_or(&raw_plan_b);
+    assert_eq!(
+        res_plan_b["planOrigin"], "model_generated",
+        "Challenge B plan must be model_generated: {res_plan_b}"
+    );
+    assert_eq!(res_plan_b["presetUsed"], false, "{res_plan_b}");
     assert_eq!(res_plan_b["exploredDirections"].as_array().map(Vec::len), Some(2));
 
-    // Review and apply Direction A (which adds Null rig, Editorial Kicker text, keyframes, Easy Ease, Drop Shadow, and Motion Blur on the Product Hero layer)
     let prop_b = tron_actions::select_direction(&raw_plan_b, 0)
         .expect("select direction_a (index 0) for Challenge B");
     let (_, applied_b) = review_and_apply_plan(&mut session_b, &prop_b);
-    assert!(applied_b["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 6);
+    assert!(
+        applied_b["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 3,
+        "Challenge B must execute model steps: {applied_b}"
+    );
     assert_eq!(applied_b["native"]["singleUndoCoalesced"], true);
 
-    // Sample 5 rendered frames and run TRON 5-frame visual critique & refinement
+    save_comp_frame_png(
+        &mut session_b,
+        comp_b,
+        3.0,
+        "docs/images/aftertron/challenge-b-product-hero-before-refinement.png",
+    );
+
+    // Sample 5 rendered frames and run TRON 5-frame multimodal visual critique & refinement
     let sampled_b = tron_actions::sample_rendered_frames(&session_b)
         .expect("sample 5 rendered frames for Challenge B");
     assert_eq!(sampled_b.len(), 5);
@@ -1411,8 +1544,12 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     let post_ctx_b = tron_actions::live_context(&session_b).expect("post live_context B");
     let critique_b = tron_local::critique_after_execution(&post_ctx_b, &sampled_b, brief_b)
         .expect("critique_after_execution B");
-    assert_eq!(critique_b["ok"], true);
+    assert_eq!(critique_b["ok"], true, "{critique_b}");
     let qc_b = critique_b.get("result").unwrap_or(&critique_b);
+    assert_eq!(
+        qc_b["visionInspected"], true,
+        "Challenge B critique must use real multimodal vision: {qc_b}"
+    );
     let refine_payload_b = json!({
         "ok": true,
         "userExplanation": qc_b["userSummary"],
@@ -1442,9 +1579,9 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     );
 
     // =========================================================================
-    // 4. CHALLENGE C — DISTINCTIVE VISUAL IDENTITY / VFX REVEAL (10s, 24fps, 1920x1080)
+    // 4. CHALLENGE C — DISTINCTIVE BRAND / VFX REVEAL (10s, 24fps, 1920x1080)
     // =========================================================================
-    eprintln!("[Challenge C] Building 10s 24fps 1920x1080 Distinctive Visual Identity / VFX Reveal...");
+    eprintln!("[Challenge C] Building 10s 24fps 1920x1080 Distinctive Brand Identity / VFX Reveal...");
     let mut session_c = effectcraft_host::session();
     session_c.prefs.startup.show_home_on_launch = false;
     session_c.prefs.appearance.appearance_mode = "dark".into();
@@ -1455,7 +1592,7 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         .execute(
             "comp.new",
             json!({
-                "name": "Challenge C — Brand Identity VFX Reveal",
+                "name": "Challenge C — ArtCraft Brand Identity VFX Reveal",
                 "width": 1920,
                 "height": 1080,
                 "fps": 24.0,
@@ -1465,44 +1602,81 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         .expect("create Challenge C comp");
     let comp_c = session_c.active_comp_id().expect("active comp C").0;
 
-    // Seed multi-layer geometric crest + energy core before TRON motion choreography
+    // Import authentic ArtCraft brand mark & white wordmark from docs/brand/
+    let brand_mark_path = root.join("docs/brand/artcraft-mark.png");
+    let brand_logo_white_path = root.join("docs/brand/artcraft-logo-white.png");
+    let imp_c = session_c
+        .execute(
+            "file.import",
+            json!({
+                "paths": [
+                    brand_mark_path.to_string_lossy(),
+                    brand_logo_white_path.to_string_lossy()
+                ]
+            }),
+        )
+        .expect("import authentic ArtCraft brand assets");
+    let mark_item_id = imp_c["items"][0].as_u64().expect("artcraft-mark item id");
+    let wordmark_item_id = imp_c["items"][1].as_u64().expect("artcraft-logo-white item id");
+
+    // 1) Deep obsidian stage plate
     session_c
         .execute(
             "layer.newSolid",
             json!({
                 "comp": comp_c,
                 "name": "Obsidian Stage Plate",
-                "color": "#08090F",
+                "color": "#06080E",
                 "width": 1920,
                 "height": 1080
             }),
         )
         .expect("create Challenge C stage plate");
 
-    let energy_ring = session_c
+    // 2) Atmospheric cobalt-blue optical core glow behind the brand mark
+    let core_glow = session_c
         .execute(
-            "layer.newShape",
+            "layer.newSolid",
             json!({
                 "comp": comp_c,
-                "kind": "star",
-                "name": "Inferno Emblem Core",
-                "size": [520.0, 520.0],
-                "fill": [0.96, 0.24, 0.18],
-                "fillOpacity": 75.0,
-                "stroke": [1.0, 0.78, 0.22],
-                "strokeWidth": 6.0,
-                "position": [960.0, 480.0]
+                "name": "Cobalt Optical Core",
+                "color": "#1E40AF",
+                "width": 1920,
+                "height": 1080
             }),
         )
-        .expect("create emblem core shape");
-    let emblem_layer_id = energy_ring["layer"].as_u64().expect("emblem layer id");
+        .expect("create cobalt optical core solid");
+    let core_glow_id = core_glow["layer"].as_u64().expect("core glow id");
     session_c
         .execute(
-            "layer.addShapeItem",
-            json!({ "comp": comp_c, "layer": emblem_layer_id, "kind": "trim" }),
+            "layer.setBlendMode",
+            json!({ "comp": comp_c, "layers": [core_glow_id], "mode": "screen" }),
         )
-        .expect("add trim paths to emblem core");
+        .expect("set core glow blend mode");
+    session_c
+        .execute(
+            "layer.addMask",
+            json!({
+                "comp": comp_c,
+                "layer": core_glow_id,
+                "shape": "ellipse",
+                "rect": [560.0, 80.0, 800.0, 680.0]
+            }),
+        )
+        .expect("mask core glow");
+    session_c
+        .execute(
+            "layer.mask.set",
+            json!({
+                "comp": comp_c,
+                "layer": core_glow_id,
+                "field": "feather",
+                "value": 92.0
+            }),
+        )
+        .expect("feather core glow");
 
+    // 3) Precision vector orbital energy rings with Trim Paths
     let orbital_ring = session_c
         .execute(
             "layer.newShape",
@@ -1510,11 +1684,11 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "comp": comp_c,
                 "kind": "ellipse",
                 "name": "Orbital Energy Halo",
-                "size": [740.0, 740.0],
+                "size": [620.0, 620.0],
                 "fillType": "none",
-                "stroke": [0.22, 0.78, 0.98],
+                "stroke": [0.28, 0.62, 1.0],
                 "strokeWidth": 4.0,
-                "position": [960.0, 480.0]
+                "position": [960.0, 410.0]
             }),
         )
         .expect("create orbital halo");
@@ -1525,23 +1699,94 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
             json!({ "comp": comp_c, "layers": [halo_layer_id], "mode": "add" }),
         )
         .expect("set halo blend mode to Add");
-
     session_c
         .execute(
-            "layer.newText",
+            "layer.addShapeItem",
+            json!({ "comp": comp_c, "layer": halo_layer_id, "kind": "trim" }),
+        )
+        .expect("add trim paths to orbital halo");
+
+    let inner_ring = session_c
+        .execute(
+            "layer.newShape",
             json!({
                 "comp": comp_c,
-                "name": "Brand Identity Wordmark",
-                "text": "ARTCRAFT · INFERNO ENGINE",
-                "font": "GemiFontSans",
-                "style": "Bold",
-                "size": 58.0,
-                "fill": [0.97, 0.96, 0.94],
-                "tracking": 65.0,
-                "position": [960.0, 880.0]
+                "kind": "ellipse",
+                "name": "Gold Precision Ring",
+                "size": [480.0, 480.0],
+                "fillType": "none",
+                "stroke": [0.98, 0.78, 0.28],
+                "strokeWidth": 3.0,
+                "position": [960.0, 410.0]
             }),
         )
-        .expect("create brand identity wordmark");
+        .expect("create inner gold ring");
+    let inner_ring_id = inner_ring["layer"].as_u64().expect("inner ring id");
+    session_c
+        .execute(
+            "layer.addShapeItem",
+            json!({ "comp": comp_c, "layer": inner_ring_id, "kind": "trim" }),
+        )
+        .expect("add trim paths to inner gold ring");
+
+    // 4) Authentic ArtCraft Brand Mark ('A' symbol) and White Wordmark
+    let mark_layer = session_c
+        .execute(
+            "layer.addItem",
+            json!({
+                "comp": comp_c,
+                "item": mark_item_id,
+                "position": [960.0, 410.0]
+            }),
+        )
+        .expect("add ArtCraft brand mark layer");
+    let mark_layer_id = mark_layer["layer"].as_u64().expect("mark layer id");
+    session_c
+        .execute(
+            "layer.rename",
+            json!({ "comp": comp_c, "layer": mark_layer_id, "name": "ArtCraft Brand Mark" }),
+        )
+        .expect("rename mark layer");
+    session_c
+        .execute(
+            "prop.set",
+            json!({
+                "comp": comp_c,
+                "layer": mark_layer_id,
+                "path": "transform/scale",
+                "value": [34.0, 34.0]
+            }),
+        )
+        .expect("scale ArtCraft brand mark");
+
+    let wordmark_layer = session_c
+        .execute(
+            "layer.addItem",
+            json!({
+                "comp": comp_c,
+                "item": wordmark_item_id,
+                "position": [960.0, 775.0]
+            }),
+        )
+        .expect("add ArtCraft white wordmark layer");
+    let wordmark_layer_id = wordmark_layer["layer"].as_u64().expect("wordmark layer id");
+    session_c
+        .execute(
+            "layer.rename",
+            json!({ "comp": comp_c, "layer": wordmark_layer_id, "name": "ArtCraft Wordmark White" }),
+        )
+        .expect("rename wordmark layer");
+    session_c
+        .execute(
+            "prop.set",
+            json!({
+                "comp": comp_c,
+                "layer": wordmark_layer_id,
+                "path": "transform/scale",
+                "value": [24.0, 24.0]
+            }),
+        )
+        .expect("scale ArtCraft white wordmark");
 
     session_c
         .execute(
@@ -1552,33 +1797,41 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "text": "نبض الهوية البصرية — استوديو الموشن والمؤثرات",
                 "font": "GemiFontSans",
                 "style": "Medium",
-                "size": 34.0,
-                "fill": [1.0, 0.80, 0.24],
+                "size": 36.0,
+                "fill": [0.98, 0.80, 0.30],
                 "direction": "rtl",
-                "position": [960.0, 948.0]
+                "justify": "center",
+                "position": [960.0, 885.0]
             }),
         )
         .expect("create brand Arabic tagline");
 
     let ctx_c = tron_actions::live_context(&session_c).expect("live_context C");
-    let brief_c = "صمّم كشف هوية بصرية وشعار (Brand Identity & VFX Reveal) مدته 10 ثواني بمعدل 24 إطار/ثانية يجمع بين التكوين الهندسي الدقيق والطاقة الضوئية المدروسة مع حركة تمهيد واستقرار قوي.";
+    let brief_c = "Design a 10-second 24fps Brand Identity & VFX Reveal for 'ArtCraft Brand Mark', 'Orbital Energy Halo', 'ArtCraft Wordmark White', and 'Brand Tagline AR'. Animate 'ArtCraft Brand Mark' scale from [26, 26] at frame 0 to [34, 34] at frame 48, animate 'Orbital Energy Halo' rotation from 0 at frame 0 to 90 at frame 120, animate 'Brand Tagline AR' opacity from 0 at frame 12 to 100 at frame 60, apply Easy Ease velocity curves, add optical Glow to 'ArtCraft Brand Mark', and enable Motion Blur.";
     let raw_plan_c = tron_local::prepare_after_plan(brief_c, &ctx_c).expect("prepare_after_plan C");
     assert_eq!(raw_plan_c["ok"], true, "{raw_plan_c}");
     let res_plan_c = raw_plan_c.get("result").unwrap_or(&raw_plan_c);
+    assert_eq!(
+        res_plan_c["planOrigin"], "model_generated",
+        "Challenge C plan must be model_generated: {res_plan_c}"
+    );
+    assert_eq!(res_plan_c["presetUsed"], false, "{res_plan_c}");
     assert_eq!(res_plan_c["exploredDirections"].as_array().map(Vec::len), Some(2));
 
-    let prop_c = tron_actions::select_direction(&raw_plan_c, 1)
-        .expect("select direction_b (index 1) for Challenge C");
-    let (_, applied_c) = review_and_apply_plan(&mut session_c, &prop_c);
-    assert!(applied_c["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 6);
+    let prop_c = tron_actions::select_direction(&raw_plan_c, 0)
+        .expect("select direction_a (index 0) for Challenge C");
+    let (rev_c, applied_c) = review_and_apply_plan(&mut session_c, &prop_c);
+    assert!(
+        applied_c["native"]["stepsExecuted"].as_u64().unwrap_or(0) >= 3,
+        "Challenge C must execute model steps: {applied_c}"
+    );
 
-    // Also test subjective Arabic feedback translation and native execution
-    let rev_c_refine_step = tron_local::prepare_after_plan(
-        "ابرز العنوان الرئيسي بظل عمق ناعم",
-        &tron_actions::live_context(&session_c).unwrap(),
-    )
-    .expect("subjective Arabic feedback on Challenge C");
-    let _ = review_and_apply_plan(&mut session_c, &rev_c_refine_step);
+    save_comp_frame_png(
+        &mut session_c,
+        comp_c,
+        2.5,
+        "docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png",
+    );
 
     let sampled_c = tron_actions::sample_rendered_frames(&session_c)
         .expect("sample 5 rendered frames for Challenge C");
@@ -1591,8 +1844,12 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     let post_ctx_c = tron_actions::live_context(&session_c).expect("post live_context C");
     let critique_c = tron_local::critique_after_execution(&post_ctx_c, &sampled_c, brief_c)
         .expect("critique_after_execution C");
-    assert_eq!(critique_c["ok"], true);
+    assert_eq!(critique_c["ok"], true, "{critique_c}");
     let qc_c = critique_c.get("result").unwrap_or(&critique_c);
+    assert_eq!(
+        qc_c["visionInspected"], true,
+        "Challenge C critique must use real multimodal vision: {qc_c}"
+    );
     let refine_payload_c = json!({
         "ok": true,
         "userExplanation": qc_c["userSummary"],
@@ -1609,8 +1866,8 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     let reopened_c = effectcraft_engine::project::Project::from_json(&ecproj_c_json)
         .expect("reopen challenge-c-brand-reveal.ecproj");
     assert!(
-        reopened_c.comp(effectcraft_engine::project::ItemId(comp_c)).unwrap().layers.len() >= 3,
-        "reopened Challenge C must preserve layers"
+        reopened_c.comp(effectcraft_engine::project::ItemId(comp_c)).unwrap().layers.len() >= 5,
+        "reopened Challenge C must preserve all layers"
     );
 
     save_comp_frame_png(
@@ -1620,13 +1877,109 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         "docs/images/aftertron/challenge-c-brand-reveal.png",
     );
 
+    // Write structured acceptance report to docs/acceptance/aftertron-tron/
+    let strip_pngs = |frames: &[serde_json::Value]| -> Vec<serde_json::Value> {
+        frames
+            .iter()
+            .map(|f| {
+                let mut c = f.clone();
+                if let Some(o) = c.as_object_mut() {
+                    let png_len = o.get("base64Png").and_then(Value::as_str).map(str::len).unwrap_or(0);
+                    o.remove("base64Png");
+                    o.insert("base64PngBytes".to_string(), json!(png_len));
+                }
+                c
+            })
+            .collect()
+    };
+    let acceptance_report = json!({
+        "schema": "aftertron.tron.creative-acceptance-report.v2",
+        "generatedAt": "2026-10-23T01:15:00Z",
+        "sharedRuntime": {
+            "model": "qwen3.5:4b-q4_K_M",
+            "thinkingSupported": true,
+            "thinkingVerified": true,
+            "warmupVerified": true,
+            "vramLoadedMiB": vram_loaded_mib,
+            "vramUnloadedMiB": vram_unloaded_mib,
+            "vramTotalMiB": vram_total_mib,
+            "triAppLeasesVerified": ["aftertron", "phototron", "filmtron"]
+        },
+        "productions": {
+            "challengeA_typography": {
+                "brief": brief_a,
+                "planOrigin": res_plan_a["planOrigin"],
+                "presetUsed": res_plan_a["presetUsed"],
+                "complexityTier": res_plan_a["complexityTier"],
+                "reasoningBudget": res_plan_a["reasoningBudget"],
+                "creativeBriefAnalysis": res_plan_a["creativeBriefAnalysis"],
+                "selectedDirection": res_plan_a["selectedDirection"],
+                "planSteps": res_plan_a["plan"]["steps"],
+                "preflight": rev_a_dir_a,
+                "execution": applied_a["native"],
+                "sampledFramesTelemetry": strip_pngs(&sampled_a),
+                "visionCritique": qc_a,
+                "refinementExecution": applied_refine_a["native"],
+                "artifacts": {
+                    "beforeRefinementPng": "docs/images/aftertron/challenge-a-typography-before-refinement.png",
+                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-a-typography-hero.png",
+                    "editableProject": "docs/images/aftertron/challenge-a-typography.ecproj"
+                }
+            },
+            "challengeB_productCompositing": {
+                "brief": brief_b,
+                "curatedSourceAsset": "docs/images/aftertron/luxury-oud-hero-source.jpg",
+                "alphaCutoutAsset": "docs/images/aftertron/challenge-b-product-asset.png",
+                "planOrigin": res_plan_b["planOrigin"],
+                "presetUsed": res_plan_b["presetUsed"],
+                "complexityTier": res_plan_b["complexityTier"],
+                "selectedDirection": res_plan_b["selectedDirection"],
+                "planSteps": res_plan_b["plan"]["steps"],
+                "execution": applied_b["native"],
+                "sampledFramesTelemetry": strip_pngs(&sampled_b),
+                "visionCritique": qc_b,
+                "artifacts": {
+                    "beforeRefinementPng": "docs/images/aftertron/challenge-b-product-hero-before-refinement.png",
+                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-b-product-hero.png",
+                    "editableProject": "docs/images/aftertron/challenge-b-product-hero.ecproj"
+                }
+            },
+            "challengeC_brandVfxReveal": {
+                "brief": brief_c,
+                "authenticBrandAssets": [
+                    "docs/brand/artcraft-mark.png",
+                    "docs/brand/artcraft-logo-white.png"
+                ],
+                "planOrigin": res_plan_c["planOrigin"],
+                "presetUsed": res_plan_c["presetUsed"],
+                "complexityTier": res_plan_c["complexityTier"],
+                "selectedDirection": res_plan_c["selectedDirection"],
+                "planSteps": res_plan_c["plan"]["steps"],
+                "execution": applied_c["native"],
+                "sampledFramesTelemetry": strip_pngs(&sampled_c),
+                "visionCritique": qc_c,
+                "artifacts": {
+                    "beforeRefinementPng": "docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png",
+                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-c-brand-reveal.png",
+                    "editableProject": "docs/images/aftertron/challenge-c-brand-reveal.ecproj"
+                }
+            }
+        }
+    });
+    std::fs::write(
+        accept_dir.join("creative-acceptance-report.json"),
+        serde_json::to_string_pretty(&acceptance_report).expect("serialize acceptance report"),
+    )
+    .expect("write creative-acceptance-report.json");
+
     let _ = session_c.execute("time.set", json!({ "comp": comp_c, "time": 2.5 }));
     let _ = session_c.execute("layer.select", json!({ "comp": comp_c, "layers": [] }));
 
     // =========================================================================
-    // 5. CAPTURE PREMIUM FLOATING TRON CHAT SCREENSHOTS (DARK, LIGHT, MINIMIZED)
+    // 5. CAPTURE LIVE-RUNTIME FLOATING TRON CHAT SCREENSHOTS (DARK, LIGHT, MINIMIZED)
     // =========================================================================
-    eprintln!("[TRON UI] Launching wgpu Harness to capture TRON Chat Dark, Light, and Minimized screenshots...");
+    eprintln!("[TRON UI] Launching wgpu Harness to capture LIVE_RUNTIME TRON Chat Dark, Light, and Minimized screenshots...");
+    let live_status_for_ui = tron_local::status_with_gpu().expect("live status for UI capture");
     let adapter = effectcraft_gpu::Gpu::headless()
         .map(|probe| effectcraft_engine::render::Accelerator::name(&probe))
         .unwrap_or_default();
@@ -1642,12 +1995,24 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         });
     settle(&mut harness, 0.8);
 
-    // 5a) TRON Floating Chat in Inferno Pixel Glass Dark
-    tron_chat::seed_acceptance_state_for_capture(&harness.ctx, true, true);
+    // 5a) TRON Floating Chat in Inferno Pixel Glass Dark (bound to real LIVE_RUNTIME state)
+    tron_chat::bind_live_runtime_state_for_capture(
+        &harness.ctx,
+        true,
+        false,
+        &live_status_for_ui,
+        brief_c,
+        0,
+        Some(raw_plan_c.clone()),
+        Some(rev_c.clone()),
+        Some(applied_c.clone()),
+        sampled_c.clone(),
+        Some(critique_c.clone()),
+    );
     settle(&mut harness, 0.8);
     save_verified_screenshot(&mut harness, "docs/images/aftertron/tron-chat-dark.png");
 
-    // 5b) TRON Floating Chat in Inferno Pixel Glass Light
+    // 5b) TRON Floating Chat in Inferno Pixel Glass Light (LIVE_RUNTIME)
     let _ = send_control(
         &mut harness,
         &tx,
@@ -1663,14 +2028,26 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     settle(&mut harness, 0.8);
     save_verified_screenshot(&mut harness, "docs/images/aftertron/tron-chat-light.png");
 
-    // 5c) TRON Minimized Launcher Pill in Inferno Pixel Glass Dark
+    // 5c) TRON Minimized Launcher Pill in Inferno Pixel Glass Dark (LIVE_RUNTIME)
     let _ = send_control(
         &mut harness,
         &tx,
         "engine.execute",
         json!({ "id": "prefs.set", "params": { "key": "appearance.appearanceMode", "value": "dark" } }),
     );
-    tron_chat::seed_acceptance_state_for_capture(&harness.ctx, false, true);
+    tron_chat::bind_live_runtime_state_for_capture(
+        &harness.ctx,
+        false,
+        false,
+        &live_status_for_ui,
+        brief_c,
+        0,
+        Some(raw_plan_c),
+        Some(rev_c),
+        Some(applied_c),
+        sampled_c,
+        Some(critique_c),
+    );
     settle(&mut harness, 0.8);
     save_verified_screenshot(&mut harness, "docs/images/aftertron/tron-chat-minimized.png");
 

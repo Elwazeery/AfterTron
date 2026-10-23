@@ -95,6 +95,7 @@ pub fn native_command(tool: &str, p: &Value) -> Option<&'static str> {
         "after.layer.create_solid" => Some("layer.newSolid"),
         "after.layer.create_null" => Some("layer.newNull"),
         "after.layer.create_adjustment" => Some("layer.newAdjustment"),
+        "after.layer.add_footage" => Some("layer.addItem"),
         "after.layer.set_parent" => Some("layer.setParent"),
         "after.layer.set_blend_mode" => Some("layer.setBlendMode"),
         "after.layer.set_in_out" => Some("layer.timing"),
@@ -215,6 +216,9 @@ fn allowed_keys_for_tool(tool: &str) -> &'static [&'static str] {
             "size",
             "position",
             "roundness",
+            "points",
+            "innerRadius",
+            "outerRadius",
             "fill",
             "fillColor",
             "fillType",
@@ -230,6 +234,17 @@ fn allowed_keys_for_tool(tool: &str) -> &'static [&'static str] {
         ],
         "after.layer.create_null" => &["comp", "name", "position"],
         "after.layer.create_adjustment" => &["comp", "name"],
+        "after.layer.add_footage" => &[
+            "comp",
+            "item",
+            "itemId",
+            "itemName",
+            "name",
+            "position",
+            "scale",
+            "opacity",
+            "blendMode",
+        ],
         "after.layer.set_parent" => &["comp", "layer", "layers", "parent", "compensate"],
         "after.layer.set_blend_mode" => &["comp", "layer", "layers", "mode", "step"],
         "after.layer.set_in_out" => &[
@@ -445,12 +460,21 @@ pub fn normalize_property_path(raw: &str) -> String {
         .replace(['_', '-', ' '], "")
         .as_str()
     {
-        "position" | "transform/position" => "transform/position".to_string(),
-        "scale" | "transform/scale" => "transform/scale".to_string(),
-        "rotation" | "transform/rotation" | "zrotation" | "transform/zrotation" => {
-            "transform/rotation".to_string()
+        "position" | "transform/position" | "switches/position" | "layer/position" => {
+            "transform/position".to_string()
         }
-        "opacity" | "transform/opacity" => "transform/opacity".to_string(),
+        "scale" | "transform/scale" | "switches/scale" | "layer/scale" => {
+            "transform/scale".to_string()
+        }
+        "rotation"
+        | "transform/rotation"
+        | "zrotation"
+        | "transform/zrotation"
+        | "switches/rotation"
+        | "layer/rotation" => "transform/rotation".to_string(),
+        "opacity" | "transform/opacity" | "switches/opacity" | "layer/opacity" => {
+            "transform/opacity".to_string()
+        }
         "anchor" | "anchorpoint" | "transform/anchor" | "transform/anchorpoint" => {
             "transform/anchor".to_string()
         }
@@ -810,12 +834,15 @@ fn execute_single_step(
                         "strokeColor" => {
                             qo.insert("stroke".to_string(), v.clone());
                         }
-                        "roundness" | "trim" => {}
+                        "roundness" | "trim" | "points" | "innerRadius" | "outerRadius" => {}
                         _ => {
                             qo.insert(k.clone(), v.clone());
                         }
                     }
                 }
+            }
+            if qo.get("kind").and_then(Value::as_str) == Some("polystar") {
+                qo.insert("kind".to_string(), json!("polygon"));
             }
             if roundness > 0.0
                 && qo
@@ -903,6 +930,122 @@ fn execute_single_step(
             let out = session
                 .execute_checked("layer.newAdjustment", q)
                 .map_err(|e| e.to_string())?;
+            Ok((cmd, out))
+        }
+        "after.layer.add_footage" => {
+            let explicit_id = p
+                .get("itemId")
+                .or_else(|| p.get("item"))
+                .and_then(Value::as_u64);
+            let name_query = p
+                .get("itemName")
+                .or_else(|| p.get("item"))
+                .and_then(Value::as_str);
+            let valid_explicit_id = explicit_id.filter(|&id_val| {
+                let iid = effectcraft_engine::project::ItemId(id_val);
+                id_val != comp_id
+                    && session.project.items.contains_key(&iid)
+                    && session.project.comp(iid).is_none()
+            });
+            let resolved_item_id = if let Some(id_val) = valid_explicit_id {
+                Some(id_val)
+            } else if let Some(nq) = name_query {
+                let nq_lower = nq.to_ascii_lowercase();
+                session
+                    .project
+                    .items
+                    .iter()
+                    .find(|(id, it)| {
+                        id.0 != comp_id
+                            && session.project.comp(**id).is_none()
+                            && (it.name.eq_ignore_ascii_case(nq)
+                                || it.name.to_ascii_lowercase().contains(&nq_lower))
+                    })
+                    .map(|(id, _)| id.0)
+                    .or_else(|| {
+                        session
+                            .project
+                            .items
+                            .iter()
+                            .find(|(id, _)| id.0 != comp_id && session.project.comp(**id).is_none())
+                            .map(|(id, _)| id.0)
+                    })
+            } else {
+                session
+                    .project
+                    .items
+                    .iter()
+                    .find(|(id, _)| id.0 != comp_id && session.project.comp(**id).is_none())
+                    .map(|(id, _)| id.0)
+            }
+            .ok_or_else(|| err("PROJECT_FOOTAGE_ITEM_NOT_FOUND"))?;
+
+            let mut q = json!({
+                "comp": comp_id,
+                "item": resolved_item_id
+            });
+            if let Some(pos) = p.get("position") {
+                q["position"] = pos.clone();
+            }
+            let out = session
+                .execute_checked("layer.addItem", q)
+                .map_err(|e| e.to_string())?;
+            if let Some(lid) = out
+                .get("layer")
+                .or_else(|| out.get("id"))
+                .and_then(Value::as_u64)
+            {
+                if let Some(name) = p.get("name").and_then(Value::as_str)
+                    && !name.trim().is_empty()
+                {
+                    let _ = session.execute_checked(
+                        "layer.rename",
+                        json!({
+                            "comp": comp_id,
+                            "layer": lid,
+                            "name": name
+                        }),
+                    );
+                }
+                if let Some(scale) = p.get("scale") {
+                    session
+                        .execute_checked(
+                            "prop.set",
+                            json!({
+                                "comp": comp_id,
+                                "layer": lid,
+                                "path": "transform/scale",
+                                "value": scale
+                            }),
+                        )
+                        .map_err(|e| e.to_string())?;
+                }
+                if let Some(opacity) = p.get("opacity") {
+                    session
+                        .execute_checked(
+                            "prop.set",
+                            json!({
+                                "comp": comp_id,
+                                "layer": lid,
+                                "path": "transform/opacity",
+                                "value": opacity
+                            }),
+                        )
+                        .map_err(|e| e.to_string())?;
+                }
+                if let Some(bm) = p.get("blendMode").and_then(Value::as_str) {
+                    session
+                        .execute_checked(
+                            "layer.setBlendMode",
+                            json!({
+                                "comp": comp_id,
+                                "layers": [lid],
+                                "mode": bm
+                            }),
+                        )
+                        .map_err(|e| e.to_string())?;
+                }
+            }
             Ok((cmd, out))
         }
         "after.layer.set_parent" => {

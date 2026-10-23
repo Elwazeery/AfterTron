@@ -63,9 +63,13 @@ Screenshots of EffectCraft itself, rendered headlessly, showing only procedurall
 | `docs/images/aftertron/aftertron-graph-editor-effects.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Graph Editor and Effect Controls | MIT OR Apache-2.0 |
 | `docs/images/aftertron/aftertron-render-queue-and-scopes.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Render Queue and Lumetri Scopes | MIT OR Apache-2.0 |
 | `docs/images/aftertron/aftertron-about-and-settings.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron Appearance Settings | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-a-typography-before-refinement.png` | AfterTron / GemiTron Team | Original work: rendered pre-refinement hero frame of Challenge A (Premium Motion Typography) | MIT OR Apache-2.0 |
 | `docs/images/aftertron/challenge-a-typography-hero.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge A (Premium Motion Typography) | MIT OR Apache-2.0 |
-| `docs/images/aftertron/challenge-b-product-asset.png` | AfterTron / GemiTron Team | Original work: procedurally synthesized RGBA8 flagship audio monolith product asset | MIT OR Apache-2.0 |
+| `docs/images/aftertron/luxury-oud-hero-source.jpg` | GemiTron Studio / PhotoTron Corpus | Original work: studio product photograph of obsidian glass luxury oud elixir bottle | CC0-1.0 |
+| `docs/images/aftertron/challenge-b-product-asset.png` | GemiTron Studio / AfterTron Team | Original work: RGBA8 matte-isolated luxury oud bottle asset prepared from `luxury-oud-hero-source.jpg` | CC0-1.0 |
+| `docs/images/aftertron/challenge-b-product-hero-before-refinement.png` | AfterTron / GemiTron Team | Original work: rendered pre-refinement hero frame of Challenge B (Premium Product Hero Compositing) | MIT OR Apache-2.0 |
 | `docs/images/aftertron/challenge-b-product-hero.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge B (Premium Product Hero Compositing) | MIT OR Apache-2.0 |
+| `docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png` | AfterTron / GemiTron Team | Original work: rendered pre-refinement hero frame of Challenge C (Distinctive Visual Identity / VFX Reveal) | MIT OR Apache-2.0 |
 | `docs/images/aftertron/challenge-c-brand-reveal.png` | AfterTron / GemiTron Team | Original work: rendered hero frame of Challenge C (Distinctive Visual Identity / VFX Reveal) | MIT OR Apache-2.0 |
 | `docs/images/aftertron/tron-chat-dark.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron x TRON floating chat in Inferno Pixel Glass Dark | MIT OR Apache-2.0 |
 | `docs/images/aftertron/tron-chat-light.png` | AfterTron / GemiTron Team | Original work: headless wgpu render of AfterTron x TRON floating chat in Inferno Pixel Glass Light | MIT OR Apache-2.0 |

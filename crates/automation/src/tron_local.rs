@@ -9,7 +9,7 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 const MAX_REPLY_BYTES: u64 = 4 * 1024 * 1024;
-const MAX_REQUEST_BYTES: usize = 1024 * 1024;
+const MAX_REQUEST_BYTES: usize = 4 * 1024 * 1024;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -242,7 +242,9 @@ pub fn critique_after_execution(
     broker_request("/tron/after/critique", Some(json!({
         "leaseId": id(),
         "projectState": project_state,
+        "sampledFrames": rendered_frames,
         "renderedFrames": rendered_frames,
+        "brief": user_prompt,
         "userPrompt": user_prompt
     })))
 }
