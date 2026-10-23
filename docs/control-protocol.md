@@ -23,13 +23,23 @@ unknown option prints an error and the app exits with status 1 before it opens a
   the server closes the connection, so nothing sent after it runs. An HTTP request (for example a web
   page's cross-origin `fetch` to `127.0.0.1:<port>`) therefore can't smuggle a command in its body: its
   request line is rejected first. At most 16 connections are served at once; further ones get an error
-  line and are closed. The port has no authentication, so only enable it while you use it.
+  line and are closed. The current control-server implementation requires a per-launch 256-bit bearer token, using an `auth` request before accepting commands. Keep this listener on loopback and never expose its token beyond the current user.
 
 Quick test:
 
 ```sh
 printf '{"id":1,"method":"engine.execute","params":{"command":"comp.new","params":{"name":"A"}}}\n' | nc 127.0.0.1 9877
 ```
+
+## TronCS read-only native project identity
+
+With the current authenticated control server already started, issue:
+
+```json
+{"id":"troncs-identity","method":"doc.identity","params":{}}
+```
+
+The result is `product: "aftertron"`, `scope: "active_project"`, `path: string | null`, `revision: u64`, `savedRevision: u64`, and `dirty: boolean`, read from the actual `EffectcraftApp.session.path/document_revision()/saved_revision` fields. `null` path means no saved project file identity yet; do not match it by composition name. This call never opens/edits/saves any native file and is distinct from `doc.revision` (a standalone session-revision query). It is not a signed process attestation and proves no AEP/AEPX version parity. TronCS refuses to bind path outside the explicitly selected workspace root.
 
 ## Engine
 
