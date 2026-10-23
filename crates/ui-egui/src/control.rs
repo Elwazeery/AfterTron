@@ -226,6 +226,7 @@ pub fn handle(app: &mut EffectcraftApp, ctx: &egui::Context, req: &ControlReques
             Err(e) => err(e),
         },
         "ui.menu.list" => ok(serde_json::to_value(crate::menus::menu_items(app)).unwrap_or_default()),
+        "doc.identity" => ok(project_identity(app.session.path.as_deref(), app.session.document_revision(), app.session.saved_revision)),
         "ui.inspect" => ok(inspect(app, ctx)),
         "ui.elements" => {
             let prefix = s("prefix").unwrap_or("");
@@ -554,6 +555,19 @@ pub fn base64(data: &[u8]) -> String {
     s
 }
 
+/// Read the active session's original project path/revision without opening a
+/// file or modifying a document. File identity still needs OS/device attestation.
+fn project_identity(path: Option<&str>, revision: u64, saved_revision: u64) -> Value {
+    json!({
+        "product": "aftertron",
+        "path": path.filter(|p| !p.is_empty()),
+        "revision": revision,
+        "savedRevision": saved_revision,
+        "dirty": revision != saved_revision,
+        "scope": "active_project",
+    })
+}
+
 pub fn inspect(app: &EffectcraftApp, ctx: &egui::Context) -> Value {
     let size = ctx.content_rect().size();
     let keyboard_focus = ctx.memory(|m| m.focused()).map(|id| {
@@ -685,6 +699,19 @@ pub fn encode_png(rgba: &[u8], w: u32, h: u32) -> Result<Vec<u8>, String> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn troncs_project_identity_uses_real_saved_path_and_revision() {
+        let none = super::project_identity(None, 1, 1);
+        assert!(none["path"].is_null());
+        assert_eq!(none["product"], "aftertron");
+        assert_eq!(none["dirty"], false);
+        let dirty = super::project_identity(Some("C:/Creative/VFX.ecproj"), 3, 2);
+        assert_eq!(dirty["path"], "C:/Creative/VFX.ecproj");
+        assert_eq!(dirty["revision"], 3);
+        assert_eq!(dirty["savedRevision"], 2);
+        assert_eq!(dirty["dirty"], true);
+    }
+
     #[test]
     fn base64_rfc4648_vectors() {
         for (i, o) in [("", ""), ("f", "Zg=="), ("fo", "Zm8="), ("foo", "Zm9v"), ("foob", "Zm9vYg=="), ("fooba", "Zm9vYmE="), ("foobar", "Zm9vYmFy")] {
