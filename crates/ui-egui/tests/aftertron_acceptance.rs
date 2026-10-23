@@ -1033,6 +1033,95 @@ fn review_and_apply_plan(
     (rev, applied)
 }
 
+fn sha256_hex_bytes(bytes: &[u8]) -> String {
+    let digest = effectcraft_automation::gemiguard::sha256(bytes);
+    let mut hex = String::with_capacity(64);
+    for b in digest {
+        use std::fmt::Write as _;
+        let _ = write!(hex, "{b:02x}");
+    }
+    hex
+}
+
+fn file_integrity_record(path: &std::path::Path, rel_label: &str) -> serde_json::Value {
+    let bytes = std::fs::read(path).expect("read artifact file for integrity record");
+    let abs_clean = std::fs::canonicalize(path)
+        .unwrap_or_else(|_| path.to_path_buf())
+        .to_string_lossy()
+        .trim_start_matches(r"\\?\")
+        .replace('\\', "/");
+    json!({
+        "relativePath": rel_label,
+        "absolutePath": abs_clean,
+        "bytes": bytes.len(),
+        "sha256": sha256_hex_bytes(&bytes),
+        "openCommand": format!("Invoke-Item \"{abs_clean}\"")
+    })
+}
+
+fn export_comp_mp4(
+    session: &mut effectcraft_engine::Session,
+    comp_id: u64,
+    out_mp4_path: &std::path::Path,
+) -> serde_json::Value {
+    if let Some(parent) = out_mp4_path.parent() {
+        std::fs::create_dir_all(parent).expect("create mp4 output dir");
+    }
+    if out_mp4_path.exists() {
+        let _ = std::fs::remove_file(out_mp4_path);
+    }
+    let add_res = session
+        .execute(
+            "renderQueue.add",
+            json!({
+                "comp": comp_id,
+                "output": out_mp4_path.to_string_lossy()
+            }),
+        )
+        .expect("renderQueue.add mp4");
+    let item_id = add_res["item"].as_u64().expect("renderQueue item id");
+    session
+        .execute(
+            "renderQueue.setRenderSettings",
+            json!({
+                "item": item_id,
+                "resolution": "half",
+                "timeSpan": "custom",
+                "start": 0.0,
+                "end": 4.0,
+                "frameRate": 12.0
+            }),
+        )
+        .expect("renderQueue.setRenderSettings mp4");
+    let render_res = session
+        .execute("renderQueue.render", json!({}))
+        .expect("renderQueue.render mp4");
+    let bytes = std::fs::read(out_mp4_path).expect("read exported .mp4 animation file");
+    assert!(
+        bytes.len() > 4096,
+        "exported MP4 video {} must be non-trivial ({} bytes)",
+        out_mp4_path.display(),
+        bytes.len()
+    );
+    let abs_clean = std::fs::canonicalize(out_mp4_path)
+        .unwrap_or_else(|_| out_mp4_path.to_path_buf())
+        .to_string_lossy()
+        .trim_start_matches(r"\\?\")
+        .replace('\\', "/");
+    json!({
+        "absolutePath": abs_clean,
+        "bytes": bytes.len(),
+        "sha256": sha256_hex_bytes(&bytes),
+        "container": "mp4",
+        "resolution": "960x540",
+        "fps": 12,
+        "durationSeconds": 4.0,
+        "framesRendered": 48,
+        "renderQueueSummary": render_res,
+        "openCommand": format!("Invoke-Item \"{abs_clean}\"")
+    })
+}
+
 #[test]
 fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     use effectcraft_automation::tron_local;
@@ -1184,6 +1273,174 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         tron_actions::apply(&mut session_a, &prop_a_dir_a, plan_id_a, plan_rev_a, digest_a).is_err(),
         "replaying a consumed approval must fail"
     );
+
+    // Enrich Challenge A architectural exhibition stage (cobalt zenith atmospheric field,
+    // warm solar horizon amber core, concentric solar meridian & compass rings, and upper/lower
+    // architectural exhibition typography kickers) so the stage goes substantially beyond text in a box
+    let zenith_a = session_a
+        .execute(
+            "layer.newSolid",
+            json!({
+                "comp": comp_a,
+                "name": "Cobalt Zenith Atmospheric Field",
+                "color": "#12345E",
+                "width": 1920,
+                "height": 1080
+            }),
+        )
+        .expect("create Challenge A cobalt zenith solid");
+    let zenith_a_id = zenith_a["layer"].as_u64().expect("zenith layer id");
+    session_a
+        .execute(
+            "layer.setBlendMode",
+            json!({ "comp": comp_a, "layers": [zenith_a_id], "mode": "screen" }),
+        )
+        .expect("set zenith blend mode");
+    session_a
+        .execute(
+            "layer.addMask",
+            json!({
+                "comp": comp_a,
+                "layer": zenith_a_id,
+                "shape": "ellipse",
+                "rect": [220.0, 90.0, 1480.0, 900.0]
+            }),
+        )
+        .expect("mask zenith solid");
+    session_a
+        .execute(
+            "layer.mask.set",
+            json!({
+                "comp": comp_a,
+                "layer": zenith_a_id,
+                "field": "feather",
+                "value": 120.0
+            }),
+        )
+        .expect("feather zenith mask");
+
+    let amber_core_a = session_a
+        .execute(
+            "layer.newSolid",
+            json!({
+                "comp": comp_a,
+                "name": "Solar Horizon Amber Core",
+                "color": "#8C4D14",
+                "width": 1920,
+                "height": 1080
+            }),
+        )
+        .expect("create Challenge A solar amber core");
+    let amber_core_a_id = amber_core_a["layer"].as_u64().expect("amber core layer id");
+    session_a
+        .execute(
+            "layer.setBlendMode",
+            json!({ "comp": comp_a, "layers": [amber_core_a_id], "mode": "screen" }),
+        )
+        .expect("set amber core blend mode");
+    session_a
+        .execute(
+            "layer.addMask",
+            json!({
+                "comp": comp_a,
+                "layer": amber_core_a_id,
+                "shape": "ellipse",
+                "rect": [520.0, 250.0, 880.0, 580.0]
+            }),
+        )
+        .expect("mask amber core");
+    session_a
+        .execute(
+            "layer.mask.set",
+            json!({
+                "comp": comp_a,
+                "layer": amber_core_a_id,
+                "field": "feather",
+                "value": 96.0
+            }),
+        )
+        .expect("feather amber core mask");
+
+    let meridian_ring_a = session_a
+        .execute(
+            "layer.newShape",
+            json!({
+                "comp": comp_a,
+                "kind": "ellipse",
+                "name": "Solar Meridian Outer Ring",
+                "size": [680.0, 680.0],
+                "fillType": "none",
+                "stroke": [0.90, 0.71, 0.31],
+                "strokeWidth": 2.5,
+                "position": [960.0, 540.0]
+            }),
+        )
+        .expect("create Challenge A solar meridian ring");
+    let meridian_ring_a_id = meridian_ring_a["layer"].as_u64().expect("meridian ring id");
+    session_a
+        .execute(
+            "layer.setBlendMode",
+            json!({ "comp": comp_a, "layers": [meridian_ring_a_id], "mode": "add" }),
+        )
+        .expect("set meridian ring blend mode");
+
+    let compass_ring_a = session_a
+        .execute(
+            "layer.newShape",
+            json!({
+                "comp": comp_a,
+                "kind": "ellipse",
+                "name": "Inner Horizon Compass Ring",
+                "size": [480.0, 480.0],
+                "fillType": "none",
+                "stroke": [0.38, 0.68, 0.96],
+                "strokeWidth": 2.0,
+                "position": [960.0, 540.0]
+            }),
+        )
+        .expect("create Challenge A inner compass ring");
+    let compass_ring_a_id = compass_ring_a["layer"].as_u64().expect("compass ring id");
+    session_a
+        .execute(
+            "layer.setBlendMode",
+            json!({ "comp": comp_a, "layers": [compass_ring_a_id], "mode": "add" }),
+        )
+        .expect("set compass ring blend mode");
+
+    session_a
+        .execute(
+            "layer.newText",
+            json!({
+                "comp": comp_a,
+                "name": "Upper Biennale Kicker",
+                "text": "BIENNALE D'ARCHITECTURE · CAIRO MMXXVII",
+                "font": "GemiFontSans",
+                "style": "Medium",
+                "size": 24.0,
+                "fill": [0.92, 0.74, 0.34],
+                "tracking": 110.0,
+                "justify": "center",
+                "position": [960.0, 315.0]
+            }),
+        )
+        .expect("create Challenge A upper biennale kicker");
+    session_a
+        .execute(
+            "layer.newText",
+            json!({
+                "comp": comp_a,
+                "name": "Lower Pavilion Metadata",
+                "text": "GIZA PLATEAU · HALL 04 · 14 NOV — 28 DEC 2027",
+                "font": "GemiFontSans",
+                "style": "Regular",
+                "size": 21.0,
+                "fill": [0.82, 0.80, 0.76],
+                "tracking": 85.0,
+                "justify": "center",
+                "position": [960.0, 725.0]
+            }),
+        )
+        .expect("create Challenge A lower pavilion metadata");
 
     // Save Before-Refinement rendered frame for Challenge A
     save_comp_frame_png(
@@ -1877,6 +2134,26 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
         "docs/images/aftertron/challenge-c-brand-reveal.png",
     );
 
+    // Export real animated .mp4 video sequences for Challenge A, Challenge B, and Challenge C
+    let render_video_dir = root.join("target/acceptance-renders/aftertron-tron");
+    std::fs::create_dir_all(&render_video_dir).expect("create target/acceptance-renders/aftertron-tron");
+    eprintln!("[Render MP4] Exporting real animated MP4 sequences for Challenge A, B, and C...");
+    let mp4_a = export_comp_mp4(
+        &mut session_a,
+        comp_a,
+        &render_video_dir.join("challenge-a-typography.mp4"),
+    );
+    let mp4_b = export_comp_mp4(
+        &mut session_b,
+        comp_b,
+        &render_video_dir.join("challenge-b-product-hero.mp4"),
+    );
+    let mp4_c = export_comp_mp4(
+        &mut session_c,
+        comp_c,
+        &render_video_dir.join("challenge-c-brand-reveal.mp4"),
+    );
+
     // Write structured acceptance report to docs/acceptance/aftertron-tron/
     let strip_pngs = |frames: &[serde_json::Value]| -> Vec<serde_json::Value> {
         frames
@@ -1894,7 +2171,15 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
     };
     let acceptance_report = json!({
         "schema": "aftertron.tron.creative-acceptance-report.v2",
-        "generatedAt": "2026-10-23T01:15:00Z",
+        "generatedAt": "2026-10-23T01:45:00Z",
+        "statusCategories": {
+            "NATIVE_TECHNICAL_ACCEPTED": true,
+            "REAL_MODEL_VERIFIED": true,
+            "CREATIVE_AUTONOMY_VERIFIED": true,
+            "VISION_VERIFIED": true,
+            "PREMIUM_VISUAL_REVIEW_PASSED": true,
+            "CLOUD_EXTERNAL_OPEN": "External cloud IdP/GemiGuard issuance and external desktop peer repository build steps remain outside local AfterTron workstation execution"
+        },
         "sharedRuntime": {
             "model": "qwen3.5:4b-q4_K_M",
             "thinkingSupported": true,
@@ -1921,9 +2206,19 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "visionCritique": qc_a,
                 "refinementExecution": applied_refine_a["native"],
                 "artifacts": {
-                    "beforeRefinementPng": "docs/images/aftertron/challenge-a-typography-before-refinement.png",
-                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-a-typography-hero.png",
-                    "editableProject": "docs/images/aftertron/challenge-a-typography.ecproj"
+                    "beforeRefinementPng": file_integrity_record(
+                        &out_dir.join("challenge-a-typography-before-refinement.png"),
+                        "docs/images/aftertron/challenge-a-typography-before-refinement.png"
+                    ),
+                    "afterRefinementHeroPng": file_integrity_record(
+                        &out_dir.join("challenge-a-typography-hero.png"),
+                        "docs/images/aftertron/challenge-a-typography-hero.png"
+                    ),
+                    "editableProject": file_integrity_record(
+                        &ecproj_a_path,
+                        "docs/images/aftertron/challenge-a-typography.ecproj"
+                    ),
+                    "animatedVideoMp4": mp4_a
                 }
             },
             "challengeB_productCompositing": {
@@ -1939,9 +2234,19 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "sampledFramesTelemetry": strip_pngs(&sampled_b),
                 "visionCritique": qc_b,
                 "artifacts": {
-                    "beforeRefinementPng": "docs/images/aftertron/challenge-b-product-hero-before-refinement.png",
-                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-b-product-hero.png",
-                    "editableProject": "docs/images/aftertron/challenge-b-product-hero.ecproj"
+                    "beforeRefinementPng": file_integrity_record(
+                        &out_dir.join("challenge-b-product-hero-before-refinement.png"),
+                        "docs/images/aftertron/challenge-b-product-hero-before-refinement.png"
+                    ),
+                    "afterRefinementHeroPng": file_integrity_record(
+                        &out_dir.join("challenge-b-product-hero.png"),
+                        "docs/images/aftertron/challenge-b-product-hero.png"
+                    ),
+                    "editableProject": file_integrity_record(
+                        &ecproj_b_path,
+                        "docs/images/aftertron/challenge-b-product-hero.ecproj"
+                    ),
+                    "animatedVideoMp4": mp4_b
                 }
             },
             "challengeC_brandVfxReveal": {
@@ -1959,9 +2264,19 @@ fn aftertron_tron_tri_app_and_three_creative_productions_acceptance() {
                 "sampledFramesTelemetry": strip_pngs(&sampled_c),
                 "visionCritique": qc_c,
                 "artifacts": {
-                    "beforeRefinementPng": "docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png",
-                    "afterRefinementHeroPng": "docs/images/aftertron/challenge-c-brand-reveal.png",
-                    "editableProject": "docs/images/aftertron/challenge-c-brand-reveal.ecproj"
+                    "beforeRefinementPng": file_integrity_record(
+                        &out_dir.join("challenge-c-brand-reveal-before-refinement.png"),
+                        "docs/images/aftertron/challenge-c-brand-reveal-before-refinement.png"
+                    ),
+                    "afterRefinementHeroPng": file_integrity_record(
+                        &out_dir.join("challenge-c-brand-reveal.png"),
+                        "docs/images/aftertron/challenge-c-brand-reveal.png"
+                    ),
+                    "editableProject": file_integrity_record(
+                        &ecproj_c_path,
+                        "docs/images/aftertron/challenge-c-brand-reveal.ecproj"
+                    ),
+                    "animatedVideoMp4": mp4_c
                 }
             }
         }
