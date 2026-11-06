@@ -657,8 +657,8 @@ fn run(cmd: &str, args: &Args, json_out: bool) -> Result<(), Failure> {
         "antigravity-direct" => {
             use effectcraft_automation::antigravity_brain::{
                 AntigravityAuthMode, AntigravityDirectRequest, AntigravityEffortLevel,
-                AntigravityFleetNodeId, AntigravityModelId, AntigravityVibePreset,
-                direct_with_antigravity_brain,
+                AntigravityExecutionScope, AntigravityFleetNodeId, AntigravityModelId,
+                AntigravityVibePreset, direct_with_antigravity_brain,
             };
             let preset = match args.opt("--preset") {
                 Some(raw) => AntigravityVibePreset::from_slug(raw)
@@ -691,6 +691,7 @@ fn run(cmd: &str, args: &Args, json_out: bool) -> Result<(), Failure> {
                 model,
                 effort,
                 auth_mode: AntigravityAuthMode::AgyMcpHost,
+                execution_scope: AntigravityExecutionScope::DeviceFleet,
                 node,
                 custom_node_endpoint: None,
             };

@@ -13,10 +13,11 @@ use egui::{
 use serde_json::{Value, json};
 
 use effectcraft_automation::antigravity_brain::{
-    AntigravityAuthMode, AntigravityDirectOutcome, AntigravityDirectRequest,
-    AntigravityEffortLevel, AntigravityFleetNodeId, AntigravityModelId, AntigravityVibePreset,
-    FleetAddressBook, FleetNodeLiveStatus, STUDIO_OWNER_CONTROL_HUB_URL,
-    direct_with_antigravity_brain_session, probe_fleet_node_live_status,
+    AGY_REMOTE_AGENT_RELAY_URL, AntigravityAuthMode, AntigravityDirectOutcome,
+    AntigravityDirectRequest, AntigravityEffortLevel, AntigravityExecutionScope,
+    AntigravityFleetNodeId, AntigravityModelId, AntigravityVibePreset, FleetAddressBook,
+    FleetNodeLiveStatus, STUDIO_OWNER_CONTROL_HUB_URL, direct_with_antigravity_brain_session,
+    probe_fleet_node_live_status,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
@@ -62,6 +63,7 @@ struct ChatState {
     history: Vec<ChatTurn>,
     capture_mode: Option<String>,
     last_status: Instant,
+    pub agy_execution_scope: AntigravityExecutionScope,
     agy_preset: AntigravityVibePreset,
     agy_model: AntigravityModelId,
     agy_effort: AntigravityEffortLevel,
@@ -103,6 +105,7 @@ impl Default for ChatState {
             history: Vec::new(),
             capture_mode: None,
             last_status: Instant::now(),
+            agy_execution_scope: AntigravityExecutionScope::default(),
             agy_preset,
             agy_model: AntigravityModelId::default(),
             agy_effort: AntigravityEffortLevel::default(),
@@ -612,7 +615,7 @@ fn render_agy_brain_contents(
     trigger_agy_direct: &mut bool,
     trigger_undo: &mut bool,
 ) {
-    // 1. 5 Fleet Node Pills + Collapsible 4-Device IP Config & Live Ping
+    // 1. Execution Scope Toggle + 5 Fleet Node Pills + Collapsible 4-Device IP Config & Live Ping
     Frame::new()
         .fill(pal.bg_card)
         .stroke(Stroke::new(1.0, pal.border))
@@ -622,83 +625,124 @@ fn render_agy_brain_contents(
             ui.horizontal_wrapped(|ui| {
                 ui.colored_label(
                     pal.accent_gold,
-                    RichText::new("AGY Fleet Node:").small().strong(),
+                    RichText::new("Execution Scope:").small().strong(),
                 );
-                for node in AntigravityFleetNodeId::ALL {
-                    let selected = s.agy_node == node;
-                    if ui
-                        .selectable_label(
-                            selected,
-                            RichText::new(node.pill_label()).small().strong(),
-                        )
-                        .clicked()
-                    {
-                        s.agy_node = node;
-                        let custom = s.agy_fleet_ips.endpoint_for(node).to_string();
-                        s.agy_fleet_status =
-                            probe_fleet_node_live_status(node, Some(&custom)).ok();
-                    }
+                let is_device = s.agy_execution_scope == AntigravityExecutionScope::DeviceFleet;
+                if ui
+                    .selectable_label(
+                        is_device,
+                        RichText::new("🖥️ Device Agent (Fleet IPs)").small().strong(),
+                    )
+                    .clicked()
+                {
+                    s.agy_execution_scope = AntigravityExecutionScope::DeviceFleet;
+                }
+                let is_remote =
+                    s.agy_execution_scope == AntigravityExecutionScope::AccountRemoteAgent;
+                if ui
+                    .selectable_label(
+                        is_remote,
+                        RichText::new("🌐 Remote Agent (Account-Bound)")
+                            .small()
+                            .strong(),
+                    )
+                    .clicked()
+                {
+                    s.agy_execution_scope = AntigravityExecutionScope::AccountRemoteAgent;
                 }
             });
 
-            if let Some(st) = &s.agy_fleet_status {
-                ui.horizontal_wrapped(|ui| {
-                    let col = if st.reachable {
-                        pal.accent_emerald
-                    } else {
-                        pal.accent_gold
-                    };
-                    ui.colored_label(col, RichText::new(&st.status_badge).small().strong());
-                    ui.colored_label(pal.text_muted, RichText::new(&st.endpoint).small());
-                });
-            }
-
-            egui::CollapsingHeader::new(
-                RichText::new("Configure 4-Device IPs & Live Ping")
+            if s.agy_execution_scope == AntigravityExecutionScope::AccountRemoteAgent {
+                ui.colored_label(
+                    pal.accent_emerald,
+                    RichText::new(format!(
+                        "🌐 Antigravity Remote Agent · GemiAccess -> {AGY_REMOTE_AGENT_RELAY_URL} · Zero IP Config"
+                    ))
                     .small()
-                    .color(pal.text_secondary),
-            )
-            .default_open(false)
-            .show(ui, |ui| {
-                ui.horizontal(|ui| {
-                    ui.label(RichText::new("💻 Windows:").small());
-                    ui.text_edit_singleline(&mut s.agy_fleet_ips.win_local);
-                });
-                ui.horizontal(|ui| {
-                    ui.label(RichText::new("🍎 Mac:").small());
-                    ui.text_edit_singleline(&mut s.agy_fleet_ips.mac_local);
-                });
-                ui.horizontal(|ui| {
-                    ui.label(RichText::new("☁️ VPS 01:").small());
-                    ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_01);
-                });
-                ui.horizontal(|ui| {
-                    ui.label(RichText::new("🚀 VPS 02:").small());
-                    ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_02);
-                });
+                    .strong(),
+                );
+            } else {
                 ui.horizontal_wrapped(|ui| {
-                    if ui
-                        .button(RichText::new("Live Ping Active Node").small().strong())
-                        .clicked()
-                    {
-                        let ep = s.agy_fleet_ips.endpoint_for(s.agy_node).to_string();
-                        match probe_fleet_node_live_status(s.agy_node, Some(&ep)) {
-                            Ok(st) => {
-                                s.agy_fleet_status = Some(st);
-                                s.error = None;
-                            }
-                            Err(e) => s.error = Some(e),
+                    ui.colored_label(
+                        pal.accent_gold,
+                        RichText::new("AGY Fleet Node:").small().strong(),
+                    );
+                    for node in AntigravityFleetNodeId::ALL {
+                        let selected = s.agy_node == node;
+                        if ui
+                            .selectable_label(
+                                selected,
+                                RichText::new(node.pill_label()).small().strong(),
+                            )
+                            .clicked()
+                        {
+                            s.agy_node = node;
+                            let custom = s.agy_fleet_ips.endpoint_for(node).to_string();
+                            s.agy_fleet_status =
+                                probe_fleet_node_live_status(node, Some(&custom)).ok();
                         }
                     }
-                    ui.colored_label(
-                        pal.text_muted,
-                        RichText::new(format!(
-                            "Studio Owner Control Hub: {STUDIO_OWNER_CONTROL_HUB_URL}"
-                        ))
-                        .small(),
-                    );
                 });
-            });
+
+                if let Some(st) = &s.agy_fleet_status {
+                    ui.horizontal_wrapped(|ui| {
+                        let col = if st.reachable {
+                            pal.accent_emerald
+                        } else {
+                            pal.accent_gold
+                        };
+                        ui.colored_label(col, RichText::new(&st.status_badge).small().strong());
+                        ui.colored_label(pal.text_muted, RichText::new(&st.endpoint).small());
+                    });
+                }
+
+                egui::CollapsingHeader::new(
+                    RichText::new("Configure 4-Device IPs & Live Ping")
+                        .small()
+                        .color(pal.text_secondary),
+                )
+                .default_open(false)
+                .show(ui, |ui| {
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new("💻 Windows:").small());
+                        ui.text_edit_singleline(&mut s.agy_fleet_ips.win_local);
+                    });
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new("🍎 Mac:").small());
+                        ui.text_edit_singleline(&mut s.agy_fleet_ips.mac_local);
+                    });
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new("☁️ VPS 01:").small());
+                        ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_01);
+                    });
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new("🚀 VPS 02:").small());
+                        ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_02);
+                    });
+                    ui.horizontal_wrapped(|ui| {
+                        if ui
+                            .button(RichText::new("Live Ping Active Node").small().strong())
+                            .clicked()
+                        {
+                            let ep = s.agy_fleet_ips.endpoint_for(s.agy_node).to_string();
+                            match probe_fleet_node_live_status(s.agy_node, Some(&ep)) {
+                                Ok(st) => {
+                                    s.agy_fleet_status = Some(st);
+                                    s.error = None;
+                                }
+                                Err(e) => s.error = Some(e),
+                            }
+                        }
+                        ui.colored_label(
+                            pal.text_muted,
+                            RichText::new(format!(
+                                "Studio Owner Control Hub: {STUDIO_OWNER_CONTROL_HUB_URL}"
+                            ))
+                            .small(),
+                        );
+                    });
+                });
+            }
         });
 
     ui.add_space(4.0);
@@ -1605,6 +1649,7 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
             model: s.agy_model,
             effort: s.agy_effort,
             auth_mode: AntigravityAuthMode::AgyMcpHost,
+            execution_scope: s.agy_execution_scope,
             node: s.agy_node,
             custom_node_endpoint: Some(ep),
         };

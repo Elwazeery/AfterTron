@@ -21,6 +21,47 @@ use crate::tron::{LocalMotionAuthority, MotionPlan, MotionStep, PLAN_SCHEMA, exe
 /// Canonical Studio Owner Control Hub reference URL for 4-device fleet management.
 pub const STUDIO_OWNER_CONTROL_HUB_URL: &str = "https://studio.gemitron.net/control-hub#agy-fleet";
 
+/// Canonical Account-Bound Antigravity Remote Agent relay URL (`GemiAccess` zero-IP-config).
+pub const AGY_REMOTE_AGENT_RELAY_URL: &str = "https://mcp.gemitron.net/v1/agy/remote-agent";
+
+/// Execution scope for Antigravity Brain (`DeviceFleet` vs `AccountRemoteAgent`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum AntigravityExecutionScope {
+    #[default]
+    #[serde(rename = "device-fleet")]
+    DeviceFleet,
+    #[serde(rename = "account-remote-agent")]
+    AccountRemoteAgent,
+}
+
+impl AntigravityExecutionScope {
+    pub const ALL: [Self; 2] = [Self::DeviceFleet, Self::AccountRemoteAgent];
+
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::DeviceFleet => "device-fleet",
+            Self::AccountRemoteAgent => "account-remote-agent",
+        }
+    }
+
+    pub const fn toggle_label(self) -> &'static str {
+        match self {
+            Self::DeviceFleet => "🖥️ Device Agent (Fleet IPs)",
+            Self::AccountRemoteAgent => "🌐 Remote Agent (Account-Bound)",
+        }
+    }
+
+    pub fn from_str_scope(raw: &str) -> Option<Self> {
+        match raw.trim().to_ascii_lowercase().as_str() {
+            "device-fleet" | "device" | "fleet" => Some(Self::DeviceFleet),
+            "account-remote-agent" | "remote-agent" | "remote" | "account" => {
+                Some(Self::AccountRemoteAgent)
+            }
+            _ => None,
+        }
+    }
+}
+
 /// Canonical ToS safety guard for Antigravity Brain host-inversion MCP integration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -637,6 +678,8 @@ pub struct AntigravityDirectRequest {
     #[serde(default)]
     pub auth_mode: AntigravityAuthMode,
     #[serde(default)]
+    pub execution_scope: AntigravityExecutionScope,
+    #[serde(default)]
     pub node: AntigravityFleetNodeId,
     #[serde(default)]
     pub custom_node_endpoint: Option<String>,
@@ -651,6 +694,7 @@ impl Default for AntigravityDirectRequest {
             model: AntigravityModelId::default(),
             effort: AntigravityEffortLevel::default(),
             auth_mode: AntigravityAuthMode::default(),
+            execution_scope: AntigravityExecutionScope::default(),
             node: AntigravityFleetNodeId::default(),
             custom_node_endpoint: None,
         }
@@ -669,6 +713,8 @@ pub struct AntigravityDirectReceipt {
     pub effort: String,
     pub thinking_budget_tokens: u32,
     pub auth_mode: String,
+    #[serde(default)]
+    pub execution_scope: AntigravityExecutionScope,
     pub fleet_node: String,
     pub resolved_endpoint: String,
     pub control_hub_url: String,
@@ -962,10 +1008,19 @@ fn build_choreography_plan(
         },
     ];
 
+    static PLAN_SEQ: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+    let seq = PLAN_SEQ.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
     MotionPlan {
         schema: PLAN_SCHEMA.to_string(),
         product: "aftertron".to_string(),
-        plan_id: format!("agy-{}-rev{}", req.preset.slug(), revision),
+        plan_id: format!(
+            "agy-{}-{}-rev{}-{}",
+            req.preset.slug(),
+            req.execution_scope.as_str(),
+            revision,
+            seq
+        ),
         project_id: project_id.to_string(),
         comp_id,
         expected_revision: revision,
@@ -1112,7 +1167,13 @@ pub fn direct_with_antigravity_brain_session(
     req: &AntigravityDirectRequest,
 ) -> Result<AntigravityDirectOutcome, String> {
     let tos_guard = verify_tos_safety_guard(&req.prompt)?;
-    let fleet_status = probe_fleet_node_live_status(req.node, req.custom_node_endpoint.as_deref())?;
+    let mut fleet_status = probe_fleet_node_live_status(req.node, req.custom_node_endpoint.as_deref())?;
+    if req.execution_scope == AntigravityExecutionScope::AccountRemoteAgent {
+        fleet_status.endpoint = AGY_REMOTE_AGENT_RELAY_URL.to_string();
+        fleet_status.status_badge = format!(
+            "🌐 Antigravity Remote Agent · GemiAccess -> {AGY_REMOTE_AGENT_RELAY_URL} · Zero IP Config"
+        );
+    }
     let spec = spec_for_preset(req.preset);
 
     // Snapshot undo state before any edits so the entire AGY Brain direction coalesces into 1 Undo step.
@@ -1203,10 +1264,11 @@ pub fn direct_with_antigravity_brain_session(
     );
 
     let digest_payload = format!(
-        "aftertron:agy:{}:{}:{}:{}:{}:{}:{}",
+        "aftertron:agy:{}:{}:{}:{}:{}:{}:{}:{}",
         req.preset.slug(),
         req.model.as_str(),
         req.effort.as_str(),
+        req.execution_scope.as_str(),
         fleet_status.endpoint,
         comp_id,
         revision_after,
@@ -1223,6 +1285,7 @@ pub fn direct_with_antigravity_brain_session(
         effort: req.effort.as_str().to_string(),
         thinking_budget_tokens: req.effort.thinking_budget_tokens(),
         auth_mode: req.auth_mode.as_str().to_string(),
+        execution_scope: req.execution_scope,
         fleet_node: req.node.as_str().to_string(),
         resolved_endpoint: fleet_status.endpoint.clone(),
         control_hub_url: STUDIO_OWNER_CONTROL_HUB_URL.to_string(),
@@ -1257,7 +1320,14 @@ pub fn direct_with_antigravity_brain(
 
     // Bridged backend path using `tools::run` / `backend.exec`.
     let tos_guard = verify_tos_safety_guard(&req.prompt)?;
-    let fleet_status = probe_fleet_node_live_status(req.node, req.custom_node_endpoint.as_deref())?;
+    let mut fleet_status =
+        probe_fleet_node_live_status(req.node, req.custom_node_endpoint.as_deref())?;
+    if req.execution_scope == AntigravityExecutionScope::AccountRemoteAgent {
+        fleet_status.endpoint = AGY_REMOTE_AGENT_RELAY_URL.to_string();
+        fleet_status.status_badge = format!(
+            "🌐 Antigravity Remote Agent · GemiAccess -> {AGY_REMOTE_AGENT_RELAY_URL} · Zero IP Config"
+        );
+    }
     let spec = spec_for_preset(req.preset);
     let revision_before = backend.document_revision().map_err(|e| e.to_string())?;
 
@@ -1358,6 +1428,7 @@ pub fn direct_with_antigravity_brain(
         effort: req.effort.as_str().to_string(),
         thinking_budget_tokens: req.effort.thinking_budget_tokens(),
         auth_mode: req.auth_mode.as_str().to_string(),
+        execution_scope: req.execution_scope,
         fleet_node: req.node.as_str().to_string(),
         resolved_endpoint: fleet_status.endpoint.clone(),
         control_hub_url: STUDIO_OWNER_CONTROL_HUB_URL.to_string(),
@@ -1458,12 +1529,17 @@ mod tests {
                 model: AntigravityModelId::Gemini31Pro,
                 effort: AntigravityEffortLevel::High,
                 auth_mode: AntigravityAuthMode::AgyMcpHost,
+                execution_scope: AntigravityExecutionScope::DeviceFleet,
                 node: AntigravityFleetNodeId::AutoBest,
                 custom_node_endpoint: None,
             };
             let outcome = direct_with_antigravity_brain_session(&mut session, &req).unwrap();
             assert!(outcome.ok);
             assert_eq!(outcome.receipt.preset, preset.slug());
+            assert_eq!(
+                outcome.receipt.execution_scope,
+                AntigravityExecutionScope::DeviceFleet
+            );
             assert_eq!(outcome.receipt.ticks_per_second, 254_016_000_000);
             assert!(outcome.receipt.sha256_digest.starts_with("sha256:"));
             assert!(outcome.receipt.critique_report.passed);
@@ -1480,6 +1556,23 @@ mod tests {
             assert!(session.undo());
             assert_eq!(session.project.items.len(), 0);
         }
+
+        // Verify AccountRemoteAgent scope routes to AGY_REMOTE_AGENT_RELAY_URL
+        let mut remote_session = Session::default();
+        let remote_req = AntigravityDirectRequest {
+            execution_scope: AntigravityExecutionScope::AccountRemoteAgent,
+            ..AntigravityDirectRequest::default()
+        };
+        let remote_outcome =
+            direct_with_antigravity_brain_session(&mut remote_session, &remote_req).unwrap();
+        assert_eq!(
+            remote_outcome.receipt.execution_scope,
+            AntigravityExecutionScope::AccountRemoteAgent
+        );
+        assert_eq!(
+            remote_outcome.receipt.resolved_endpoint,
+            AGY_REMOTE_AGENT_RELAY_URL
+        );
     }
 
     #[test]
