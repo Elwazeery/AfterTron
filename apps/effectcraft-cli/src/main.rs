@@ -124,6 +124,8 @@ const USAGE: &str = "usage: effectcraft-cli <info|commands|exec|run|props|get|se
       [--automation-read-root DIR] [--automation-write-root DIR]
                                            confine the agent's file access: reads under a read or write root,
                                            writes under a write root (each repeatable); scripts are refused
+  antigravity-direct [--prompt TEXT] [--preset SLUG] [--model ID] [--effort TIER] [--node NODE] [--save-as FILE] [--json]
+                                           direct active composition with AGY Brain and output closed-loop JSON receipt
 options: --project F.ecproj | --demo | --empty   --save | --save-as F   --bridge PORT   --json   --gpu
 <comp>: id or name, '-' = active comp; <layer>: id, '#n' or name; <value>: JSON or bare string";
 
@@ -148,6 +150,12 @@ const VALUED: &[&str] = &[
     "--expression",
     "--depth",
     "--eval",
+    // antigravity-direct
+    "--prompt",
+    "--preset",
+    "--model",
+    "--effort",
+    "--node",
     // render
     "--template",
     "--values",
@@ -645,6 +653,56 @@ fn run(cmd: &str, args: &Args, json_out: bool) -> Result<(), Failure> {
                 Err(e) if e.kind() != std::io::ErrorKind::BrokenPipe => return Err(e.to_string().into()),
                 _ => {}
             }
+        }
+        "antigravity-direct" => {
+            use effectcraft_automation::antigravity_brain::{
+                AntigravityAuthMode, AntigravityDirectRequest, AntigravityEffortLevel,
+                AntigravityFleetNodeId, AntigravityModelId, AntigravityVibePreset,
+                direct_with_antigravity_brain,
+            };
+            let preset = match args.opt("--preset") {
+                Some(raw) => AntigravityVibePreset::from_slug(raw)
+                    .ok_or_else(|| Failure::Usage(format!("unknown --preset `{raw}`")))?,
+                None => AntigravityVibePreset::default(),
+            };
+            let model = match args.opt("--model") {
+                Some(raw) => AntigravityModelId::from_id(raw)
+                    .ok_or_else(|| Failure::Usage(format!("unknown --model `{raw}`")))?,
+                None => AntigravityModelId::default(),
+            };
+            let effort = match args.opt("--effort") {
+                Some(raw) => AntigravityEffortLevel::from_tier(raw)
+                    .ok_or_else(|| Failure::Usage(format!("unknown --effort `{raw}`")))?,
+                None => AntigravityEffortLevel::default(),
+            };
+            let node = match args.opt("--node") {
+                Some(raw) => AntigravityFleetNodeId::from_node(raw)
+                    .ok_or_else(|| Failure::Usage(format!("unknown --node `{raw}`")))?,
+                None => AntigravityFleetNodeId::default(),
+            };
+            let prompt = args
+                .opt("--prompt")
+                .map(str::to_string)
+                .unwrap_or_else(|| preset.default_prompt().to_string());
+            let mut b = backend(args, true)?;
+            let req = AntigravityDirectRequest {
+                prompt,
+                preset,
+                model,
+                effort,
+                auth_mode: AntigravityAuthMode::AgyMcpHost,
+                node,
+                custom_node_endpoint: None,
+            };
+            let outcome = direct_with_antigravity_brain(&mut b, &req).map_err(Failure::Error)?;
+            let saved = maybe_save(&mut b, args)?;
+            let mut out_val = serde_json::to_value(&outcome).unwrap_or_else(|_| json!({}));
+            if let Some(p) = saved
+                && let Some(obj) = out_val.as_object_mut()
+            {
+                obj.insert("saved".to_string(), json!(p));
+            }
+            emit(&out_val, json_out);
         }
         other => return usage_err(&format!("unknown subcommand `{other}`")),
     }

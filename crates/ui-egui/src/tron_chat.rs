@@ -12,6 +12,20 @@ use egui::{
 };
 use serde_json::{Value, json};
 
+use effectcraft_automation::antigravity_brain::{
+    AntigravityAuthMode, AntigravityDirectOutcome, AntigravityDirectRequest,
+    AntigravityEffortLevel, AntigravityFleetNodeId, AntigravityModelId, AntigravityVibePreset,
+    FleetAddressBook, FleetNodeLiveStatus, STUDIO_OWNER_CONTROL_HUB_URL,
+    direct_with_antigravity_brain_session, probe_fleet_node_live_status,
+};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum DualBrainMode {
+    #[default]
+    TronAi,
+    AgyAi,
+}
+
 #[derive(Clone, Debug)]
 pub struct ChatTurn {
     pub role: String,
@@ -22,6 +36,7 @@ pub struct ChatTurn {
 struct ChatState {
     open: bool,
     docked: bool,
+    brain_mode: DualBrainMode,
     working: bool,
     task_label: String,
     power_on: bool,
@@ -47,13 +62,22 @@ struct ChatState {
     history: Vec<ChatTurn>,
     capture_mode: Option<String>,
     last_status: Instant,
+    agy_preset: AntigravityVibePreset,
+    agy_model: AntigravityModelId,
+    agy_effort: AntigravityEffortLevel,
+    agy_node: AntigravityFleetNodeId,
+    agy_fleet_ips: FleetAddressBook,
+    agy_fleet_status: Option<FleetNodeLiveStatus>,
+    agy_outcome: Option<AntigravityDirectOutcome>,
 }
 
 impl Default for ChatState {
     fn default() -> Self {
+        let agy_preset = AntigravityVibePreset::default();
         Self {
             open: false,
             docked: false,
+            brain_mode: DualBrainMode::default(),
             working: false,
             task_label: String::new(),
             power_on: false,
@@ -66,7 +90,7 @@ impl Default for ChatState {
             vram_used_mb: None,
             vram_total_mb: None,
             error: None,
-            prompt: String::new(),
+            prompt: agy_preset.default_prompt().to_string(),
             selected_direction: 0,
             proposal: None,
             reviewed_id: None,
@@ -79,6 +103,13 @@ impl Default for ChatState {
             history: Vec::new(),
             capture_mode: None,
             last_status: Instant::now(),
+            agy_preset,
+            agy_model: AntigravityModelId::default(),
+            agy_effort: AntigravityEffortLevel::default(),
+            agy_node: AntigravityFleetNodeId::default(),
+            agy_fleet_ips: FleetAddressBook::default(),
+            agy_fleet_status: None,
+            agy_outcome: None,
         }
     }
 }
@@ -574,6 +605,293 @@ pub fn bind_live_runtime_state_for_capture(
     s.critique = live_critique;
 }
 
+fn render_agy_brain_contents(
+    ui: &mut egui::Ui,
+    s: &mut ChatState,
+    pal: InfernoGlassPalette,
+    trigger_agy_direct: &mut bool,
+    trigger_undo: &mut bool,
+) {
+    // 1. 5 Fleet Node Pills + Collapsible 4-Device IP Config & Live Ping
+    Frame::new()
+        .fill(pal.bg_card)
+        .stroke(Stroke::new(1.0, pal.border))
+        .corner_radius(CornerRadius::same(6))
+        .inner_margin(Margin::symmetric(8, 6))
+        .show(ui, |ui| {
+            ui.horizontal_wrapped(|ui| {
+                ui.colored_label(
+                    pal.accent_gold,
+                    RichText::new("AGY Fleet Node:").small().strong(),
+                );
+                for node in AntigravityFleetNodeId::ALL {
+                    let selected = s.agy_node == node;
+                    if ui
+                        .selectable_label(
+                            selected,
+                            RichText::new(node.pill_label()).small().strong(),
+                        )
+                        .clicked()
+                    {
+                        s.agy_node = node;
+                        let custom = s.agy_fleet_ips.endpoint_for(node).to_string();
+                        s.agy_fleet_status =
+                            probe_fleet_node_live_status(node, Some(&custom)).ok();
+                    }
+                }
+            });
+
+            if let Some(st) = &s.agy_fleet_status {
+                ui.horizontal_wrapped(|ui| {
+                    let col = if st.reachable {
+                        pal.accent_emerald
+                    } else {
+                        pal.accent_gold
+                    };
+                    ui.colored_label(col, RichText::new(&st.status_badge).small().strong());
+                    ui.colored_label(pal.text_muted, RichText::new(&st.endpoint).small());
+                });
+            }
+
+            egui::CollapsingHeader::new(
+                RichText::new("Configure 4-Device IPs & Live Ping")
+                    .small()
+                    .color(pal.text_secondary),
+            )
+            .default_open(false)
+            .show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("💻 Windows:").small());
+                    ui.text_edit_singleline(&mut s.agy_fleet_ips.win_local);
+                });
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("🍎 Mac:").small());
+                    ui.text_edit_singleline(&mut s.agy_fleet_ips.mac_local);
+                });
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("☁️ VPS 01:").small());
+                    ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_01);
+                });
+                ui.horizontal(|ui| {
+                    ui.label(RichText::new("🚀 VPS 02:").small());
+                    ui.text_edit_singleline(&mut s.agy_fleet_ips.vps_02);
+                });
+                ui.horizontal_wrapped(|ui| {
+                    if ui
+                        .button(RichText::new("Live Ping Active Node").small().strong())
+                        .clicked()
+                    {
+                        let ep = s.agy_fleet_ips.endpoint_for(s.agy_node).to_string();
+                        match probe_fleet_node_live_status(s.agy_node, Some(&ep)) {
+                            Ok(st) => {
+                                s.agy_fleet_status = Some(st);
+                                s.error = None;
+                            }
+                            Err(e) => s.error = Some(e),
+                        }
+                    }
+                    ui.colored_label(
+                        pal.text_muted,
+                        RichText::new(format!(
+                            "Studio Owner Control Hub: {STUDIO_OWNER_CONTROL_HUB_URL}"
+                        ))
+                        .small(),
+                    );
+                });
+            });
+        });
+
+    ui.add_space(4.0);
+
+    // 2. Selectors for 5 AfterTron Presets, 5 Models, and 4 Effort Tiers
+    Frame::new()
+        .fill(pal.bg_card)
+        .stroke(Stroke::new(1.0, pal.border))
+        .corner_radius(CornerRadius::same(6))
+        .inner_margin(Margin::symmetric(8, 6))
+        .show(ui, |ui| {
+            ui.colored_label(
+                pal.accent_gold,
+                RichText::new("Vibe Preset (5 Motion & VFX Choreography Styles):")
+                    .small()
+                    .strong(),
+            );
+            ui.horizontal_wrapped(|ui| {
+                for preset in AntigravityVibePreset::ALL {
+                    let sel = s.agy_preset == preset;
+                    if ui
+                        .selectable_label(sel, RichText::new(preset.label()).small())
+                        .clicked()
+                    {
+                        s.agy_preset = preset;
+                        s.prompt = preset.default_prompt().to_string();
+                    }
+                }
+            });
+
+            ui.add_space(3.0);
+            ui.colored_label(
+                pal.text_secondary,
+                RichText::new("Model (5 Brains):").small().strong(),
+            );
+            ui.horizontal_wrapped(|ui| {
+                for model in AntigravityModelId::ALL {
+                    let sel = s.agy_model == model;
+                    if ui
+                        .selectable_label(sel, RichText::new(model.label()).small())
+                        .clicked()
+                    {
+                        s.agy_model = model;
+                    }
+                }
+            });
+
+            ui.add_space(3.0);
+            ui.colored_label(
+                pal.text_secondary,
+                RichText::new("Effort Tier (Thinking Tokens & Critique Passes):")
+                    .small()
+                    .strong(),
+            );
+            ui.horizontal_wrapped(|ui| {
+                for effort in AntigravityEffortLevel::ALL {
+                    let sel = s.agy_effort == effort;
+                    if ui
+                        .selectable_label(sel, RichText::new(effort.label()).small())
+                        .clicked()
+                    {
+                        s.agy_effort = effort;
+                    }
+                }
+            });
+        });
+
+    if let Some(err) = &s.error {
+        ui.add_space(4.0);
+        Frame::new()
+            .fill(pal.bg_card_selected)
+            .stroke(Stroke::new(1.0, pal.accent_crimson))
+            .corner_radius(CornerRadius::same(6))
+            .inner_margin(Margin::symmetric(8, 5))
+            .show(ui, |ui| {
+                ui.colored_label(pal.accent_crimson, RichText::new(err).small().strong());
+            });
+    }
+
+    ui.add_space(4.0);
+
+    // 3. Creator Stream Badges & Closed-Loop Critique Receipt
+    ScrollArea::vertical()
+        .max_height(225.0)
+        .auto_shrink([false, false])
+        .show(ui, |ui| {
+            if let Some(outcome) = &s.agy_outcome {
+                for ev in &outcome.receipt.stream_events {
+                    let badge_col = match ev.kind.as_str() {
+                        "thinking" => pal.accent_gold,
+                        "tool_badge" => pal.accent_crimson,
+                        _ => pal.accent_emerald,
+                    };
+                    Frame::new()
+                        .fill(pal.bg_card)
+                        .stroke(Stroke::new(1.0, pal.border))
+                        .corner_radius(CornerRadius::same(6))
+                        .inner_margin(Margin::symmetric(8, 6))
+                        .show(ui, |ui| {
+                            ui.horizontal_wrapped(|ui| {
+                                ui.colored_label(
+                                    badge_col,
+                                    RichText::new(format!("[{}] {}", ev.kind, ev.badge))
+                                        .small()
+                                        .strong(),
+                                );
+                            });
+                            draw_bidi_paragraph(ui, &ev.message, pal.text_primary, false);
+                        });
+                    ui.add_space(4.0);
+                }
+
+                let rep = &outcome.receipt.critique_report;
+                Frame::new()
+                    .fill(pal.bg_card_selected)
+                    .stroke(Stroke::new(1.0, pal.accent_emerald))
+                    .corner_radius(CornerRadius::same(6))
+                    .inner_margin(Margin::symmetric(8, 6))
+                    .show(ui, |ui| {
+                        ui.colored_label(
+                            pal.accent_emerald,
+                            RichText::new(format!(
+                                "✓ Closed-Loop Critique Receipt · {} steps · {} pass(es)",
+                                outcome.receipt.steps_executed, rep.passes_run
+                            ))
+                            .small()
+                            .strong(),
+                        );
+                        ui.colored_label(
+                            pal.text_secondary,
+                            RichText::new(format!(
+                                "Timebase: {} ticks/sec · Easy-Ease: {} · Glow Hierarchy: {} · WCAG Contrast: {:.2}:1",
+                                rep.ticks_per_second,
+                                if rep.easy_ease_velocity_continuous { "OK" } else { "Check" },
+                                if rep.optical_glow_hierarchy_valid { "OK" } else { "Check" },
+                                rep.min_wcag_contrast_ratio
+                            ))
+                            .small(),
+                        );
+                        ui.colored_label(
+                            pal.text_muted,
+                            RichText::new(format!("Receipt Digest: {}", outcome.receipt.sha256_digest))
+                                .small(),
+                        );
+                    });
+            } else {
+                Frame::new()
+                    .fill(pal.bg_card)
+                    .stroke(Stroke::new(1.0, pal.border))
+                    .corner_radius(CornerRadius::same(6))
+                    .inner_margin(Margin::symmetric(8, 6))
+                    .show(ui, |ui| {
+                        draw_bidi_paragraph(
+                            ui,
+                            "✦ AGY AI (Host-Inversion MCP Client) — Select a preset, model, effort tier, and fleet node, then click Direct with AGY Brain ✦.",
+                            pal.text_secondary,
+                            false,
+                        );
+                    });
+            }
+        });
+
+    ui.add_space(4.0);
+    ui.add(
+        egui::TextEdit::multiline(&mut s.prompt)
+            .hint_text("Describe your motion & VFX direction for AGY Brain…")
+            .desired_rows(2),
+    );
+    ui.horizontal_wrapped(|ui| {
+        if ui
+            .add_enabled(
+                !s.working && !s.prompt.trim().is_empty(),
+                egui::Button::new(
+                    RichText::new("Direct with AGY Brain ✦")
+                        .color(pal.accent_gold)
+                        .strong(),
+                ),
+            )
+            .clicked()
+        {
+            *trigger_agy_direct = true;
+        }
+        if s.agy_outcome.is_some()
+            && ui
+                .button(RichText::new("Undo AGY Choreography ↶").small())
+                .clicked()
+        {
+            *trigger_undo = true;
+        }
+    });
+}
+
+#[allow(clippy::too_many_arguments)]
 fn render_chat_contents(
     ui: &mut egui::Ui,
     s: &mut ChatState,
@@ -586,6 +904,7 @@ fn render_chat_contents(
     trigger_critique: &mut bool,
     apply_refinement: &mut Option<Value>,
     trigger_undo: &mut bool,
+    trigger_agy_direct: &mut bool,
 ) {
     // Top Header Bar
     ui.horizontal(|ui| {
@@ -626,6 +945,35 @@ fn render_chat_contents(
     });
 
     ui.add_space(4.0);
+
+    // Unified Dual-Brain Switcher (⚡ TRON AI | ✦ AGY AI)
+    ui.horizontal(|ui| {
+        let is_tron = s.brain_mode == DualBrainMode::TronAi;
+        let is_agy = s.brain_mode == DualBrainMode::AgyAi;
+        if ui
+            .selectable_label(is_tron, RichText::new("⚡ TRON AI").strong())
+            .clicked()
+        {
+            s.brain_mode = DualBrainMode::TronAi;
+        }
+        if ui
+            .selectable_label(is_agy, RichText::new("✦ AGY AI").strong())
+            .clicked()
+        {
+            s.brain_mode = DualBrainMode::AgyAi;
+            if s.agy_fleet_status.is_none() {
+                let ep = s.agy_fleet_ips.endpoint_for(s.agy_node).to_string();
+                s.agy_fleet_status = probe_fleet_node_live_status(s.agy_node, Some(&ep)).ok();
+            }
+        }
+    });
+
+    ui.add_space(4.0);
+
+    if s.brain_mode == DualBrainMode::AgyAi {
+        render_agy_brain_contents(ui, s, pal, trigger_agy_direct, trigger_undo);
+        return;
+    }
 
     // Runtime & GPU Telemetry Strip
     Frame::new()
@@ -1196,6 +1544,7 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
     let mut trigger_critique = false;
     let mut apply_refinement: Option<Value> = None;
     let mut trigger_undo = false;
+    let mut trigger_agy_direct = false;
 
     let bounds = ctx.content_rect();
     let win_frame = Frame::window(&ctx.global_style())
@@ -1244,8 +1593,32 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
             &mut trigger_critique,
             &mut apply_refinement,
             &mut trigger_undo,
+            &mut trigger_agy_direct,
         );
     });
+
+    if trigger_agy_direct && let Ok(mut s) = st.lock() {
+        let ep = s.agy_fleet_ips.endpoint_for(s.agy_node).to_string();
+        let req = AntigravityDirectRequest {
+            prompt: s.prompt.clone(),
+            preset: s.agy_preset,
+            model: s.agy_model,
+            effort: s.agy_effort,
+            auth_mode: AntigravityAuthMode::AgyMcpHost,
+            node: s.agy_node,
+            custom_node_endpoint: Some(ep),
+        };
+        match direct_with_antigravity_brain_session(session, &req) {
+            Ok(outcome) => {
+                s.agy_fleet_status = Some(outcome.fleet_status.clone());
+                s.agy_outcome = Some(outcome);
+                s.error = None;
+            }
+            Err(e) => {
+                s.error = Some(e);
+            }
+        }
+    }
 
     if let Some(dir_idx) = switch_direction
         && let Ok(mut s) = st.lock()
@@ -1287,6 +1660,7 @@ pub fn show(ctx: &Context, session: &mut effectcraft_engine::Session) {
         if let Ok(mut s) = st.lock() {
             s.execution = None;
             s.critique = None;
+            s.agy_outcome = None;
             s.rendered_samples.clear();
             s.history.push(ChatTurn {
                 role: "tron".into(),
